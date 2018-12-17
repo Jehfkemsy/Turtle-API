@@ -16,6 +16,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.disable("x-powered-by");
 
-app.use("/pear", apiRouter);
+app.use("/", apiRouter);
 
 app.listen(PORT, console.log("> 🍐 Listening"));
