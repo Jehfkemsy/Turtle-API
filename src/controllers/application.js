@@ -29,9 +29,11 @@ const create = async (req, res) => {
 
       if (isValidApplicant) throw "Applicant is already signed up.";
 
-      const filename = fields.email.match(/.*?(?=@|$)/i)[0];
-      const resumeUrl = await drive.upload(file, filename);
-      fields.resume = resumeUrl;
+      if (file) {
+        const filename = fields.email.match(/.*?(?=@|$)/i)[0];
+        const resumeUrl = await drive.upload(file, filename);
+        fields.resume = resumeUrl;
+      }
 
       const applicant = await Applicant.create(fields);
 
