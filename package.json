@@ -7,7 +7,10 @@
     "start": "node build/main.js",
     "build": "backpack build",
     "dev": "backpack dev",
-    "deploy": "now --public && now alias"
+    "do:deploy": "pm2 start --name pear npm -- start --watch",
+    "do:restart": "pm2 restart pear",
+    "do:stop": "pm2 stop pear",
+    "do:delete": "pm2 delete pear"
   },
   "dependencies": {
     "backpack-core": "^0.8.1",
