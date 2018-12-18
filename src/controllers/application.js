@@ -5,6 +5,8 @@ import Applicant from "../models/applicant";
 
 import httpResponse from "../responses/httpResponses";
 
+import mailService from "../services/mail";
+
 const create = async (req, res) => {
   fileService.extractResume(req, res, async err => {
     if (err) return httpResponse.failureResponse(res, err);
@@ -22,21 +24,23 @@ const create = async (req, res) => {
       diet: req.body.diet || "N/A"
     };
 
-    try {
-      const isValidApplicant = await Applicant.findOne({ email: fields.email });
+    const result = await mailService.applied(fields);
 
-      if (isValidApplicant) throw "Applicant is already signed up.";
+    // try {
+    //   const isValidApplicant = await Applicant.findOne({ email: fields.email });
 
-      const filename = fields.email.match(/.*?(?=@|$)/i)[0];
-      const resumeUrl = await drive.upload(file, filename);
-      fields.resume = resumeUrl;
+    //   if (isValidApplicant) throw "Applicant is already signed up.";
 
-      const applicant = await Applicant.create(fields);
+    //   const filename = fields.email.match(/.*?(?=@|$)/i)[0];
+    //   const resumeUrl = await drive.upload(file, filename);
+    //   fields.resume = resumeUrl;
 
-      httpResponse.successResponse(res, applicant);
-    } catch (err) {
-      httpResponse.failureResponse(res, err);
-    }
+    //   const applicant = await Applicant.create(fields);
+
+    //   httpResponse.successResponse(res, applicant);
+    // } catch (err) {
+    //   httpResponse.failureResponse(res, err);
+    // }
   });
 };
 

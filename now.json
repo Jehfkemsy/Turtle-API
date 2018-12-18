@@ -1,6 +1,13 @@
 {
-  "version": 2,
-  "builds": [{ "src": "src/*.js", "use": "@now/node-server" }],
-  "name": "pearhype",
-  "alias": "pearhype"
+  "version": 1,
+  "type": "npm",
+  "name": "pear",
+  "alias": "pearhype",
+  "dotenv": true,
+  "scale": {
+    "sfo1": {
+      "min": 1,
+      "max": "auto"
+    }
+  }
 }
