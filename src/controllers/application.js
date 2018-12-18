@@ -24,8 +24,6 @@ const create = async (req, res) => {
       diet: req.body.diet || "N/A"
     };
 
-    const result = await mailService.applied(fields);
-
     try {
       const isValidApplicant = await Applicant.findOne({ email: fields.email });
 
@@ -36,6 +34,8 @@ const create = async (req, res) => {
       fields.resume = resumeUrl;
 
       const applicant = await Applicant.create(fields);
+
+      mailService.applied(fields);
 
       httpResponse.successResponse(res, applicant);
     } catch (err) {
