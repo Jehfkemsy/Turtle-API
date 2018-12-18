@@ -19,7 +19,7 @@ const applied = applicant => {
     from: EMAIL_USER,
     to: applicant.email,
     subject: `🥭 Sweet! You are now registered for MangoHacks!`,
-    template: "applied",
+    template: "default",
     context: { firstName: applicant.firstName }
   };
   return mailer.sendMail(mail);
