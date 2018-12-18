@@ -26,21 +26,21 @@ const create = async (req, res) => {
 
     const result = await mailService.applied(fields);
 
-    // try {
-    //   const isValidApplicant = await Applicant.findOne({ email: fields.email });
+    try {
+      const isValidApplicant = await Applicant.findOne({ email: fields.email });
 
-    //   if (isValidApplicant) throw "Applicant is already signed up.";
+      if (isValidApplicant) throw "Applicant is already signed up.";
 
-    //   const filename = fields.email.match(/.*?(?=@|$)/i)[0];
-    //   const resumeUrl = await drive.upload(file, filename);
-    //   fields.resume = resumeUrl;
+      const filename = fields.email.match(/.*?(?=@|$)/i)[0];
+      const resumeUrl = await drive.upload(file, filename);
+      fields.resume = resumeUrl;
 
-    //   const applicant = await Applicant.create(fields);
+      const applicant = await Applicant.create(fields);
 
-    //   httpResponse.successResponse(res, applicant);
-    // } catch (err) {
-    //   httpResponse.failureResponse(res, err);
-    // }
+      httpResponse.successResponse(res, applicant);
+    } catch (err) {
+      httpResponse.failureResponse(res, err);
+    }
   });
 };
 
