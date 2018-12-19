@@ -7,11 +7,13 @@ const applicantSchema = new mongoose.Schema({
   school: { type: String, required: true },
   major: { type: String, required: true },
   levelOfStudy: { type: String, required: true },
-  resume: { type: String, default: "N/A" },
+  resume: { type: String, required: true },
   gender: { type: String, required: true },
   shirtSize: { type: String, required: true },
   diet: { type: String, default: "N/A" },
-  mlh: { type: String, default: "AGREE" }
+  mlh: { type: String, default: "AGREE" },
+  timestamp: { type: Date, default: new Date() },
+  confirmation: { type: Boolean, default: false }
 });
 
 const Applicant = mongoose.model("Applicant", applicantSchema);

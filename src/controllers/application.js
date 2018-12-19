@@ -29,19 +29,19 @@ const create = async (req, res) => {
 
       if (isValidApplicant) throw "Applicant is already signed up.";
 
-      if (file) {
-        const filename = fields.email.match(/.*?(?=@|$)/i)[0];
-        const resumeUrl = await drive.upload(file, filename);
-        fields.resume = resumeUrl;
-      }
+      if (!file) throw "Resume is required.";
+
+      const filename = fields.email.match(/.*?(?=@|$)/i)[0];
+      const resumeUrl = await drive.upload(file, filename);
+      fields.resume = resumeUrl;
 
       const applicant = await Applicant.create(fields);
 
       mailService.applied(fields);
 
-      httpResponse.successResponse(res, applicant);
-    } catch (err) {
-      httpResponse.failureResponse(res, err);
+      res.send({ success: true, data: applicant });
+    } catch (e) {
+      res.send({ success: false, message: e });
     }
   });
 };

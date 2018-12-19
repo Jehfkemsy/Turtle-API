@@ -16,10 +16,10 @@ mailer.use("compile", nodemailerHandlebars({ viewEngine, viewPath }));
 
 const applied = applicant => {
   const mail = {
-    from: EMAIL_USER,
+    from: "MangoHacks",
     to: applicant.email,
     subject: `🥭 Sweet! You are now registered for MangoHacks!`,
-    template: "default",
+    template: "applied",
     context: { firstName: applicant.firstName }
   };
   return mailer.sendMail(mail);
