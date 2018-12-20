@@ -8,7 +8,7 @@
     "build": "backpack build",
     "dev": "backpack dev",
     "do:deploy": "yarn build && pm2 start --name pear npm -- start",
-    "do:restart": "pm2 restart pear",
+    "do:restart": "yarn build && pm2 restart pear",
     "do:stop": "pm2 stop pear",
     "do:delete": "pm2 delete pear"
   },
