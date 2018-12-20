@@ -1,5 +1,7 @@
 import fileService from "../services/file";
-import drive from "../services/drive";
+
+import drive from "../services/google/drive";
+import sheets from "../services/google/sheets";
 
 import Applicant from "../models/applicant";
 
@@ -38,9 +40,11 @@ const create = async (req, res) => {
       const applicant = await Applicant.create(fields);
 
       mailService.applied(fields);
+      sheets.write("Applicants", fields);
 
       res.send({ success: true, data: applicant });
     } catch (e) {
+      console.log({ e, fields });
       res.send({ success: false, message: e });
     }
   });

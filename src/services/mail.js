@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 import handlebars from "express-handlebars";
 import nodemailerHandlebars from "nodemailer-express-handlebars";
 
-const { EMAIL_USER, EMAIL_PASSWORD } = process.env;
+const { EMAIL_USER, EMAIL_PASSWORD, POC_EMAIL } = process.env;
 
 let mailer = nodemailer.createTransport({
   service: "gmail",
@@ -25,4 +25,14 @@ const applied = applicant => {
   return mailer.sendMail(mail);
 };
 
-export default { applied };
+const error = e => {
+  const mail = {
+    from: "MangoHacks",
+    to: POC_EMAIL,
+    subject: `⚠️ Oops! Something went wrong`,
+    html: e
+  };
+  return mailer.sendMail(mail);
+};
+
+export default { applied, error };
