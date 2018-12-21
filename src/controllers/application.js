@@ -1,13 +1,13 @@
+import mailService from "../services/mail";
 import fileService from "../services/file";
-
 import drive from "../services/google/drive";
 import sheets from "../services/google/sheets";
+import applicantService from "../services/applicant";
+
+import logger from "../utils/logger";
+import httpResponse from "../utils/httpResponses";
 
 import Applicant from "../models/applicant";
-
-import httpResponse from "../responses/httpResponses";
-
-import mailService from "../services/mail";
 
 const create = async (req, res) => {
   fileService.extractResume(req, res, async err => {
@@ -27,31 +27,41 @@ const create = async (req, res) => {
     };
 
     try {
-      const isValidApplicant = await Applicant.findOne({ email: fields.email });
-
-      if (isValidApplicant) throw "Applicant is already signed up.";
-
       if (!file) throw "Resume is required.";
 
+      /**
+       * Validate applicant fields
+       */
+      await applicantService.validateApplicant(fields);
+
+      /**
+       * Upload resume to google drive
+       */
       const filename = fields.email.match(/.*?(?=@|$)/i)[0];
       const resumeUrl = await drive.upload(file, filename);
       fields.resume = resumeUrl;
 
+      /**
+       * Insert applicant in the database
+       */
       const applicant = await Applicant.create(fields);
 
+      /**
+       * Send applicant email
+       */
       mailService.applied(fields);
+
+      /**
+       * Insert applicant in google sheets
+       */
       sheets.write("Applicants", fields);
 
-      res.send({ success: true, data: applicant });
+      httpResponse.successResponse(res, applicant);
     } catch (e) {
-      console.log({ e, fields });
-      res.send({ success: false, message: e });
+      logger.info({ e, email: fields.email });
+      httpResponse.failureResponse(res, e);
     }
   });
 };
 
-const read = (req, res) => {};
-const update = (req, res) => {};
-const remove = (req, res) => {};
-
-export default { create, read, update, remove };
+export default { create };
