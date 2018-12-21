@@ -26,29 +26,27 @@ const create = async (req, res) => {
       diet: req.body.diet || "N/A"
     };
 
-    mailService.applied(fields);
+    try {
+      const isValidApplicant = await Applicant.findOne({ email: fields.email });
 
-    // try {
-    //   const isValidApplicant = await Applicant.findOne({ email: fields.email });
+      if (isValidApplicant) throw "Applicant is already signed up.";
 
-    //   if (isValidApplicant) throw "Applicant is already signed up.";
+      if (!file) throw "Resume is required.";
 
-    //   if (!file) throw "Resume is required.";
+      const filename = fields.email.match(/.*?(?=@|$)/i)[0];
+      const resumeUrl = await drive.upload(file, filename);
+      fields.resume = resumeUrl;
 
-    //   const filename = fields.email.match(/.*?(?=@|$)/i)[0];
-    //   const resumeUrl = await drive.upload(file, filename);
-    //   fields.resume = resumeUrl;
+      const applicant = await Applicant.create(fields);
 
-    //   const applicant = await Applicant.create(fields);
+      mailService.applied(fields);
+      sheets.write("Applicants", fields);
 
-    //   mailService.applied(fields);
-    //   sheets.write("Applicants", fields);
-
-    //   res.send({ success: true, data: applicant });
-    // } catch (e) {
-    //   console.log({ e, fields });
-    //   res.send({ success: false, message: e });
-    // }
+      res.send({ success: true, data: applicant });
+    } catch (e) {
+      console.log({ e, fields });
+      res.send({ success: false, message: e });
+    }
   });
 };
 
