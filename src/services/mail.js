@@ -1,28 +1,28 @@
 import nodemailer from "nodemailer";
 import handlebars from "express-handlebars";
+import mg from "nodemailer-mailgun-transport";
 import nodemailerHandlebars from "nodemailer-express-handlebars";
 
-const { EMAIL_USER, EMAIL_PASSWORD, POC_EMAIL } = process.env;
+const { POC_EMAIL, MAILGUN_KEY, MAILGUN_DOMAIN, MAILGUN_EMAIL } = process.env;
 
-let mailer = nodemailer.createTransport({
-  service: "gmail",
-  auth: { user: EMAIL_USER, pass: EMAIL_PASSWORD }
-});
+const auth = { auth: { api_key: MAILGUN_KEY, domain: MAILGUN_DOMAIN } };
+
+const gun = nodemailer.createTransport(mg(auth));
 
 const viewEngine = handlebars.create({});
 const viewPath = "src/templates";
 
-mailer.use("compile", nodemailerHandlebars({ viewEngine, viewPath }));
+gun.use("compile", nodemailerHandlebars({ viewEngine, viewPath }));
 
 const applied = applicant => {
   const mail = {
-    from: "MangoHacks",
+    from: `MangoHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
     subject: `🥭 Sweet! You are now registered for MangoHacks!`,
     template: "applied",
     context: { firstName: applicant.firstName }
   };
-  return mailer.sendMail(mail);
+  gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
 };
 
 const error = e => {
@@ -32,7 +32,7 @@ const error = e => {
     subject: `⚠️ Oops! Something went wrong`,
     html: e
   };
-  return mailer.sendMail(mail);
+  return gun.sendMail(mail);
 };
 
 export default { applied, error };
