@@ -25,6 +25,52 @@ const applied = applicant => {
   gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
 };
 
+const workshop = applicant => {
+  const mail = {
+    from: `MangoHacks <${MAILGUN_EMAIL}>`,
+    to: applicant.email,
+    subject: `🍰 Super sweet! A MangoHacks Workshop.`,
+    template: "workshop",
+    context: {
+      firstName: applicant.firstName,
+      lastName: applicant.lastName,
+      title: applicant.title,
+      description: applicant.description
+    }
+  };
+  gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
+};
+
+const mentor = applicant => {
+  const mail = {
+    from: `MangoHacks <${MAILGUN_EMAIL}>`,
+    to: applicant.email,
+    subject: `🧁 Yay! A MangoHacks Mentor.`,
+    template: "mentor",
+    context: {
+      firstName: applicant.firstName,
+      lastName: applicant.lastName,
+      skills: applicant.skills
+    }
+  };
+  gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
+};
+
+const volunteer = applicant => {
+  const mail = {
+    from: `MangoHacks <${MAILGUN_EMAIL}>`,
+    to: applicant.email,
+    subject: `🍦 Wow! A MangoHacks Volunteer.`,
+    template: "volunteer",
+    context: {
+      firstName: applicant.firstName,
+      lastName: applicant.lastName,
+      email: applicant.email
+    }
+  };
+  gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
+};
+
 const error = e => {
   const mail = {
     from: "MangoHacks",
@@ -35,4 +81,4 @@ const error = e => {
   return gun.sendMail(mail);
 };
 
-export default { applied, error };
+export default { applied, workshop, mentor, volunteer, error };

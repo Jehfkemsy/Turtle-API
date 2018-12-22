@@ -2,7 +2,7 @@ import mailService from "../services/mail";
 import fileService from "../services/file";
 import drive from "../services/google/drive";
 import sheets from "../services/google/sheets";
-import applicantService from "../services/applicant";
+import applicationService from "../services/application";
 
 import logger from "../utils/logger";
 import httpResponse from "../utils/httpResponses";
@@ -32,7 +32,7 @@ const create = async (req, res) => {
       /**
        * Validate applicant fields
        */
-      await applicantService.validateApplicant(fields);
+      await applicationService.validateHacker(fields);
 
       /**
        * Upload resume to google drive
@@ -58,7 +58,7 @@ const create = async (req, res) => {
 
       httpResponse.successResponse(res, applicant);
     } catch (e) {
-      logger.info({ e, email: fields.email });
+      logger.info({ e, application: "Hacker", email: fields.email });
       httpResponse.failureResponse(res, e);
     }
   });
