@@ -3,6 +3,8 @@ import handlebars from "express-handlebars";
 import mg from "nodemailer-mailgun-transport";
 import nodemailerHandlebars from "nodemailer-express-handlebars";
 
+import logger from "../utils/logger";
+
 const { POC_EMAIL, MAILGUN_KEY, MAILGUN_DOMAIN, MAILGUN_EMAIL } = process.env;
 
 const auth = { auth: { api_key: MAILGUN_KEY, domain: MAILGUN_DOMAIN } };
@@ -71,6 +73,23 @@ const volunteer = applicant => {
   gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
 };
 
+const live = hackers => {
+  return Promise.all(
+    hackers.map(hacker => {
+      const mail = {
+        from: `MangoHacks <${MAILGUN_EMAIL}>`,
+        to: hacker.email,
+        subject: `MangoHacks registration is live! 🎉`,
+        template: "live"
+      };
+
+      logger.info({ message: `Live email sent to: ${hacker.email}` });
+
+      return gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
+    })
+  );
+};
+
 const error = e => {
   const mail = {
     from: "MangoHacks",
@@ -81,4 +100,4 @@ const error = e => {
   return gun.sendMail(mail);
 };
 
-export default { applied, workshop, mentor, volunteer, error };
+export default { applied, workshop, mentor, volunteer, live, error };
