@@ -1,4 +1,4 @@
-![Pear](https://github.com/hackfiu/pear/blob/mentor-and-workshops/assets/banner.jpg?raw=true)
+![Pear](https://github.com/hackfiu/pear/blob/master/assets/banner.jpg?raw=true)
 
 ## Getting started
 
