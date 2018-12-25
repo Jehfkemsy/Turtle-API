@@ -28,6 +28,6 @@ apiRouter.post("/volunteer", volunteer.create);
 apiRouter.post("/live", live.create);
 
 /* ------ Token Route ------ */
-apiRouter.get("/token", token.create);
+apiRouter.post("/token", token.create);
 
 export { apiRouter };
