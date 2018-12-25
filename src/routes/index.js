@@ -12,6 +12,7 @@ apiRouter.get("/", (req, res) => res.send("biensupernice."));
 
 /* ------ Application Routes ------ */
 apiRouter.post("/application", application.create);
+apiRouter.get("/application", application.read);
 
 /* ------ Workshop Routes ------ */
 apiRouter.post("/workshop", workshop.create);
