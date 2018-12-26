@@ -64,4 +64,37 @@ const create = async (req, res) => {
   });
 };
 
-export default { create };
+const read = async (req, res) => {
+  const { page = 0, limit = 30 } = req.body;
+
+  const queryLimit = parseInt(Math.abs(limit));
+  const pageQuery = parseInt(Math.abs(page)) * queryLimit;
+
+  const currentPage = pageQuery / queryLimit;
+
+  try {
+    const applicants = await Applicant.find({}, { _id: 0, __v: 0 })
+      .skip(pageQuery)
+      .limit(queryLimit)
+      .sort({ timestamp: -1 });
+
+    const count = await Applicant.countDocuments({});
+    const overallPages = Math.floor(count / queryLimit);
+    const currentQuery = applicants.length;
+
+    applicants.length <= 0 && reject("No Applicants found.");
+    currentPage > overallPages && reject("Out of range.");
+
+    httpResponse.successResponse(res, {
+      overallPages,
+      currentQuery,
+      count,
+      currentPage,
+      applicants
+    });
+  } catch (e) {
+    httpResponse.failureResponse(res, e);
+  }
+};
+
+export default { create, read };
