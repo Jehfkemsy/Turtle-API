@@ -65,7 +65,7 @@ const create = async (req, res) => {
 };
 
 const read = async (req, res) => {
-  const { page = 0, limit = 30 } = req.body;
+  const { page = 0, limit = 30 } = req.params;
 
   const queryLimit = parseInt(Math.abs(limit));
   const pageQuery = parseInt(Math.abs(page)) * queryLimit;
