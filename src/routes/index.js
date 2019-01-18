@@ -6,6 +6,8 @@ import workshop from "../controllers/workshop";
 import mentor from "../controllers/mentor";
 import token from "../controllers/token";
 import live from "../controllers/live";
+//Middleware
+import tokenAuthMiddleware from '../middleware/tokenAuthMiddleware';
 
 const apiRouter = Router();
 
@@ -13,7 +15,7 @@ apiRouter.get("/", (req, res) => res.send("biensupernice."));
 
 /* ------ Application Routes ------ */
 apiRouter.post("/application", application.create);
-apiRouter.get("/application", application.read);
+apiRouter.get("/application", tokenAuthMiddleware.validateToken, application.read);
 
 /* ------ Workshop Routes ------ */
 apiRouter.post("/workshop", workshop.create);
