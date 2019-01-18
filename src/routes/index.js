@@ -6,6 +6,8 @@ import workshop from "../controllers/workshop";
 import mentor from "../controllers/mentor";
 import token from "../controllers/token";
 import live from "../controllers/live";
+//Middleware
+import tokenAuthMiddleware from '../middleware/tokenAuthMiddleware';
 
 const apiRouter = Router();
 
