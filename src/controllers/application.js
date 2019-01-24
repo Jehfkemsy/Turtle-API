@@ -9,7 +9,7 @@ import httpResponse from "../utils/httpResponses";
 
 import Applicant from "../models/applicant";
 
-const { GOOGLE_FOLDER_ID } = process.env;
+const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID } = process.env;
 
 const create = async (req, res) => {
   fileService.extractResume(req, res, async err => {
@@ -41,13 +41,12 @@ const create = async (req, res) => {
        */
       const filename = fields.email.match(/.*?(?=@|$)/i)[0];
 
-      fields.resume = 'N/A';
+      fields.resume = "N/A";
 
-      if(GOOGLE_FOLDER_ID){
+      if (GOOGLE_FOLDER_ID) {
         const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
         fields.resume = resumeUrl;
       }
-
 
       /**
        * Insert applicant in the database
@@ -107,9 +106,14 @@ const read = async (req, res) => {
 
 const update = async (req, res) => {
   const { email } = req.body;
-  
+
   try {
-    const confirm = await Applicant.findOneAndUpdate({email}, {confirmation: true}, {new: true});
+    const confirm = await Applicant.findOneAndUpdate(
+      { email },
+      { confirmation: true },
+      { new: true }
+    );
+    
     const confirmFields = {
       firstName: confirm.firstName,
       lastName: confirm.lastName,
@@ -121,15 +125,17 @@ const update = async (req, res) => {
       diet: confirm.diet,
       confirmation: confirm.confirmation,
       shirtSize: confirm.shirtSize,
-      major: confirm.major, 
+      major: confirm.major
+    };
+
+    if (GOOGLE_SPREADSHEET_ID) {
+      sheets.write("Confirmed", confirmFields);
     }
-    
-    sheets.write("Confirmed", confirmFields);    
+
     httpResponse.successResponse(res, confirm);
-  } catch(e) {
+  } catch (e) {
     httpResponse.failureResponse(res, e.message);
   }
-
-}
+};
 
 export default { create, read, update };
