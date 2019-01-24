@@ -105,15 +105,15 @@ const read = async (req, res) => {
 };
 
 const update = async (req, res) => {
-  const { email } = req.body;
+  const { email } = req.query;
 
   try {
     const confirm = await Applicant.findOneAndUpdate(
       { email },
       { confirmation: true },
       { new: true }
-    );
-    
+    ).exec();
+
     const confirmFields = {
       firstName: confirm.firstName,
       lastName: confirm.lastName,
@@ -134,7 +134,7 @@ const update = async (req, res) => {
 
     httpResponse.successResponse(res, confirm);
   } catch (e) {
-    httpResponse.failureResponse(res, e.message);
+    httpResponse.failureResponse(res, e);
   }
 };
 
