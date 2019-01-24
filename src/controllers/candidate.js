@@ -22,7 +22,7 @@ const create = async (req, res) => {
       company
     };
     await applicationService.validateCandidate(candidateObj);
-    const candidate = await Candidate.create();
+    const candidate = await Candidate.create(candidateObj);
 
     httpResponse.successResponse(res, candidate);
   } catch (e) {
