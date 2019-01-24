@@ -65,9 +65,6 @@ const validateVolunteer = applicant =>
 
 const validateCandidate = applicant =>
   new Promise(async (resolve, reject) => {
-    console.log(applicant);
-    if (!applicant.firstName) reject("First Name was not defined");
-    if (!applicant.lastName) reject("Last Name was not defined");
     if (!applicant.email) reject("Email was not defined");
 
     resolve();
