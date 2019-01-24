@@ -63,9 +63,17 @@ const validateVolunteer = applicant =>
     resolve();
   });
 
+const validateCandidate = applicant =>
+  new Promise(async (resolve, reject) => {
+    if (!applicant.email) reject("Email was not defined");
+
+    resolve();
+  });
+
 export default {
   validateHacker,
   validateWorkshop,
   validateMentor,
-  validateVolunteer
+  validateVolunteer,
+  validateCandidate
 };

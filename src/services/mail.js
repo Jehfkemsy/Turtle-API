@@ -20,7 +20,7 @@ const applied = applicant => {
   const mail = {
     from: `MangoHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
-    subject: `🥭 Sweet! You are now registered for MangoHacks!`,
+    subject: `Sweet! You are now registered for MangoHacks!`,
     template: "applied",
     context: { firstName: applicant.firstName }
   };
@@ -31,7 +31,7 @@ const workshop = applicant => {
   const mail = {
     from: `MangoHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
-    subject: `🍰 Super sweet! A MangoHacks Workshop.`,
+    subject: `Super sweet! A MangoHacks Workshop.`,
     template: "workshop",
     context: {
       firstName: applicant.firstName,
@@ -47,7 +47,7 @@ const mentor = applicant => {
   const mail = {
     from: `MangoHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
-    subject: `🧁 Yay! A MangoHacks Mentor.`,
+    subject: `Yay! A MangoHacks Mentor.`,
     template: "mentor",
     context: {
       firstName: applicant.firstName,
@@ -62,7 +62,7 @@ const volunteer = applicant => {
   const mail = {
     from: `MangoHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
-    subject: `🍦 Wow! A MangoHacks Volunteer.`,
+    subject: `Wow! A MangoHacks Volunteer.`,
     template: "volunteer",
     context: {
       firstName: applicant.firstName,
@@ -79,7 +79,7 @@ const live = hackers => {
       const mail = {
         from: `MangoHacks <${MAILGUN_EMAIL}>`,
         to: hacker.email,
-        subject: `MangoHacks registration is live! 🎉`,
+        subject: `MangoHacks registration is live!`,
         template: "live"
       };
 
@@ -94,7 +94,7 @@ const error = e => {
   const mail = {
     from: "MangoHacks",
     to: POC_EMAIL,
-    subject: `⚠️ Oops! Something went wrong`,
+    subject: `Oops! Something went wrong`,
     html: e
   };
   return gun.sendMail(mail);

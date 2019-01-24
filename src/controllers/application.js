@@ -9,6 +9,8 @@ import httpResponse from "../utils/httpResponses";
 
 import Applicant from "../models/applicant";
 
+const { GOOGLE_FOLDER_ID } = process.env;
+
 const create = async (req, res) => {
   fileService.extractResume(req, res, async err => {
     if (err) return httpResponse.failureResponse(res, err);
@@ -38,8 +40,14 @@ const create = async (req, res) => {
        * Upload resume to google drive
        */
       const filename = fields.email.match(/.*?(?=@|$)/i)[0];
-      const resumeUrl = await drive.upload(file, filename);
-      fields.resume = resumeUrl;
+
+      fields.resume = 'N/A';
+
+      if(GOOGLE_FOLDER_ID){
+        const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
+        fields.resume = resumeUrl;
+      }
+
 
       /**
        * Insert applicant in the database
@@ -64,4 +72,64 @@ const create = async (req, res) => {
   });
 };
 
-export default { create };
+const read = async (req, res) => {
+  const { page = 0, limit = 30 } = req.params;
+
+  const queryLimit = parseInt(Math.abs(limit));
+  const pageQuery = parseInt(Math.abs(page)) * queryLimit;
+
+  const currentPage = pageQuery / queryLimit;
+
+  try {
+    const applicants = await Applicant.find({}, { _id: 0, __v: 0 })
+      .skip(pageQuery)
+      .limit(queryLimit)
+      .sort({ timestamp: -1 });
+
+    const count = await Applicant.countDocuments({});
+    const overallPages = Math.floor(count / queryLimit);
+    const currentQuery = applicants.length;
+
+    applicants.length <= 0 && reject("No Applicants found.");
+    currentPage > overallPages && reject("Out of range.");
+
+    httpResponse.successResponse(res, {
+      overallPages,
+      currentQuery,
+      count,
+      currentPage,
+      applicants
+    });
+  } catch (e) {
+    httpResponse.failureResponse(res, e);
+  }
+};
+
+const update = async (req, res) => {
+  const { email } = req.body;
+  
+  try {
+    const confirm = await Applicant.findOneAndUpdate({email}, {confirmation: true}, {new: true});
+    const confirmFields = {
+      firstName: confirm.firstName,
+      lastName: confirm.lastName,
+      email: confirm.email,
+      levelOfStudy: confirm.levelOfStudy,
+      gender: confirm.gender,
+      resume: confirm.resume,
+      school: confirm.school,
+      diet: confirm.diet,
+      confirmation: confirm.confirmation,
+      shirtSize: confirm.shirtSize,
+      major: confirm.major, 
+    }
+    
+    sheets.write("Confirmed", confirmFields);    
+    httpResponse.successResponse(res, confirm);
+  } catch(e) {
+    httpResponse.failureResponse(res, e.message);
+  }
+
+}
+
+export default { create, read, update };
