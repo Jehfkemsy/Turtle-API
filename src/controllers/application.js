@@ -108,30 +108,36 @@ const update = async (req, res) => {
   const { email } = req.query;
 
   try {
-    const confirm = await Applicant.findOneAndUpdate(
-      { email },
-      { confirmation: true },
-      { new: true }
-    ).exec();
+    const hasConfirmed = await Applicant.findOne({ email }).exec();
 
-    const confirmFields = {
-      firstName: confirm.firstName,
-      lastName: confirm.lastName,
-      email: confirm.email,
-      school: confirm.school,
-      major: confirm.major,
-      levelOfStudy: confirm.levelOfStudy,
-      gender: confirm.gender,
-      shirtSize: confirm.shirtSize,
-      diet: confirm.diet,
-      resume: confirm.resume
-    };
+    if (!hasConfirmed.confirmation) {
+      const confirm = await Applicant.findOneAndUpdate(
+        { email },
+        { confirmation: true },
+        { new: true }
+      ).exec();
 
-    if (GOOGLE_SPREADSHEET_ID) {
-      sheets.write("Confirmed", confirmFields);
+      const confirmFields = {
+        firstName: confirm.firstName,
+        lastName: confirm.lastName,
+        email: confirm.email,
+        school: confirm.school,
+        major: confirm.major,
+        levelOfStudy: confirm.levelOfStudy,
+        gender: confirm.gender,
+        shirtSize: confirm.shirtSize,
+        diet: confirm.diet,
+        resume: confirm.resume
+      };
+
+      if (GOOGLE_SPREADSHEET_ID) {
+        sheets.write("Confirmed", confirmFields);
+      }
+
+      httpResponse.successResponse(res, confirm);
+    } else {
+      httpResponse.successResponse(res, null);
     }
-
-    httpResponse.successResponse(res, confirm);
   } catch (e) {
     httpResponse.failureResponse(res, e);
   }
