@@ -107,12 +107,27 @@ const read = async (req, res) => {
 
 const update = async (req, res) => {
   const { email } = req.body;
-
+  
   try {
-    const confirm = await Application.updateOne({email}, {confirmation: true});
-    httpResponse.successResponse(res, {confirm});
+    const confirm = await Applicant.findOneAndUpdate({email}, {confirmation: true}, {new: true});
+    const confirmFields = {
+      firstName: confirm.firstName,
+      lastName: confirm.lastName,
+      email: confirm.email,
+      levelOfStudy: confirm.levelOfStudy,
+      gender: confirm.gender,
+      resume: confirm.resume,
+      school: confirm.school,
+      diet: confirm.diet,
+      confirmation: confirm.confirmation,
+      shirtSize: confirm.shirtSize,
+      major: confirm.major, 
+    }
+    
+    sheets.write("Confirmed", confirmFields);    
+    httpResponse.successResponse(res, confirm);
   } catch(e) {
-
+    httpResponse.failureResponse(res, e.message);
   }
 
 }
