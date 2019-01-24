@@ -118,14 +118,13 @@ const update = async (req, res) => {
       firstName: confirm.firstName,
       lastName: confirm.lastName,
       email: confirm.email,
+      school: confirm.school,
+      major: confirm.major,
       levelOfStudy: confirm.levelOfStudy,
       gender: confirm.gender,
-      resume: confirm.resume,
-      school: confirm.school,
-      diet: confirm.diet,
-      confirmation: confirm.confirmation,
       shirtSize: confirm.shirtSize,
-      major: confirm.major
+      diet: confirm.diet,
+      resume: confirm.resume
     };
 
     if (GOOGLE_SPREADSHEET_ID) {
