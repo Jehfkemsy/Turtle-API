@@ -9,6 +9,8 @@ import httpResponse from "../utils/httpResponses";
 
 import Applicant from "../models/applicant";
 
+const { GOOGLE_FOLDER_ID } = process.env;
+
 const create = async (req, res) => {
   fileService.extractResume(req, res, async err => {
     if (err) return httpResponse.failureResponse(res, err);
@@ -38,7 +40,7 @@ const create = async (req, res) => {
        * Upload resume to google drive
        */
       const filename = fields.email.match(/.*?(?=@|$)/i)[0];
-      const resumeUrl = await drive.upload(file, filename);
+      const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
       fields.resume = resumeUrl;
 
       /**
