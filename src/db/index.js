@@ -6,7 +6,8 @@ const options = {
   user: MONGO_USER,
   pass: MONGO_PASSWORD,
   useNewUrlParser: true,
-  useCreateIndex: true
+  useCreateIndex: true,
+  useFindAndModify: false
 };
 
 const db = () =>
