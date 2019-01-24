@@ -8,17 +8,15 @@ import Applicant from "../models/applicant";
 
 const create = async (req, res) => {
   let { hacker, company } = req.body;
-	try {	
-		await applicationService.validateCandidate(hacker);
-		const applicant = await Applicant.findOne({ email: hacker.email });
-		const { firstName, lastName, email, levelOfStudy, resume } = applicant;
-
+  try {
+    await applicationService.validateCandidate(hacker);
+    const applicant = await Applicant.findOne({ email: hacker.email });
     const candidateObj = {
-      firstName,
-      lastName,
-      email,
-      levelOfStudy,
-      resume,
+      firstName: applicant.firstName,
+      lastName: applicant.lastName,
+      email: applicant.email,
+      levelOfStudy: applicant.levelOfStudy,
+      resume: applicant.resume,
       company
     };
     const candidate = await Candidate.create(candidateObj);
