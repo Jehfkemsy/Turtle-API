@@ -40,8 +40,14 @@ const create = async (req, res) => {
        * Upload resume to google drive
        */
       const filename = fields.email.match(/.*?(?=@|$)/i)[0];
-      const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
-      fields.resume = resumeUrl;
+
+      fields.resume = 'N/A';
+
+      if(GOOGLE_FOLDER_ID){
+        const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
+        fields.resume = resumeUrl;
+      }
+
 
       /**
        * Insert applicant in the database
@@ -99,4 +105,16 @@ const read = async (req, res) => {
   }
 };
 
-export default { create, read };
+const update = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const confirm = await Application.updateOne({email}, {confirmation: true});
+    httpResponse.successResponse(res, {confirm});
+  } catch(e) {
+
+  }
+
+}
+
+export default { create, read, update };

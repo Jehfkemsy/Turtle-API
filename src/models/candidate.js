@@ -6,6 +6,7 @@ const candidateSchema = new mongoose.Schema({
   levelOfStudy: { type: String, required: true },
   email: { type: String, unique: true, required: true },
   resume: { type: String, required: true },
+  company: {type: String, required: true}, 
   timestamp: { type: Date, default: new Date() }
 });
 

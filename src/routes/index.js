@@ -22,6 +22,7 @@ apiRouter.get(
   tokenAuthMiddleware.validateToken,
   application.read
 );
+apiRouter.put('/application', application.update);
 
 /* ------ Workshop Routes ------ */
 apiRouter.post("/workshop", workshop.create);
