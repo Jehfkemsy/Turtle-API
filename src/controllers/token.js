@@ -2,15 +2,21 @@ import jwt from "jsonwebtoken";
 
 import httpResponse from "../utils/httpResponses";
 
-const { DASHBOARD_PASSWORD } = process.env;
+const { SECRET_KEY, DASHBOARD_PASSWORD } = process.env;
 
 const create = (req, res) => {
   const { password } = req.body;
-
-  const token = jwt.sign({ key: DASHBOARD_PASSWORD }, DASHBOARD_PASSWORD);
+  let expiresIn = 60 * 60 * 6; // 6 hours
 
   if (password == DASHBOARD_PASSWORD) {
-    return httpResponse.successResponse(res, { token });
+    const token = jwt.sign({ key: DASHBOARD_PASSWORD }, SECRET_KEY, {
+      expiresIn: expiresIn // expire in 6 hours
+    });
+
+    return httpResponse.successResponse(res, {
+      token,
+      expiresIn: expiresIn
+    });
   }
 
   httpResponse.failureResponse(res, "Incorrect Password.");

@@ -65,7 +65,7 @@ const create = async (req, res) => {
 };
 
 const read = async (req, res) => {
-  const { page = 0, limit = 30 } = req.body;
+  const { page = 0, limit = 30 } = req.query;
 
   const queryLimit = parseInt(Math.abs(limit));
   const pageQuery = parseInt(Math.abs(page)) * queryLimit;
@@ -78,14 +78,19 @@ const read = async (req, res) => {
       .limit(queryLimit)
       .sort({ timestamp: -1 });
 
+    if (!applicants || applicants.length <= 0) {
+      throw new Error("No Applicants found.");
+    }
+
     const count = await Applicant.countDocuments({});
     const overallPages = Math.floor(count / queryLimit);
     const currentQuery = applicants.length;
 
-    applicants.length <= 0 && reject("No Applicants found.");
-    currentPage > overallPages && reject("Out of range.");
+    if (currentPage > overallPages) {
+      throw new Error("Out of range.");
+    }
 
-    httpResponse.successResponse(res, {
+    return httpResponse.successResponse(res, {
       overallPages,
       currentQuery,
       count,
@@ -93,7 +98,7 @@ const read = async (req, res) => {
       applicants
     });
   } catch (e) {
-    httpResponse.failureResponse(res, e);
+    return httpResponse.failureResponse(res, e);
   }
 };
 
