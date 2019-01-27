@@ -27,6 +27,39 @@ const create = async (req, res) => {
     httpResponse.failureResponse(res, e);
   }
 };
-const read = (req, res) => {};
+const read = async (req, res) => {
+  const { page = 0, limit = 30, company = null } = req.params;
+
+  if (!company) throw "No company requested";
+
+  const queryLimit = parseInt(Math.abs(limit));
+  const pageQuery = parseInt(Math.abs(page)) * queryLimit;
+
+  const currentPage = pageQuery / queryLimit;
+
+  try {
+    const candidates = await Candidate.find({ company }, { _id: 0, __v: 0 })
+      .skip(pageQuery)
+      .limit(queryLimit)
+      .sort({ timestamp: -1 });
+
+    const count = await Candidate.countDocuments({ company });
+    const overallPages = Math.floor(count / queryLimit);
+    const currentQuery = applicants.length;
+
+    candidates.length <= 0 && reject("No Applicants found.");
+    currentPage > overallPages && reject("Out of range.");
+
+    httpResponse.successResponse(res, {
+      overallPages,
+      currentQuery,
+      count,
+      currentPage,
+      candidates
+    });
+  } catch (e) {
+    httpResponse.failureResponse(res, e);
+  }
+};
 
 export default { create, read };
