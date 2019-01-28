@@ -28,16 +28,16 @@ const create = async (req, res) => {
   }
 };
 const read = async (req, res) => {
-  const { page = 0, limit = 30, company = null } = req.params;
-
-  if (!company) throw "No company requested";
-
-  const queryLimit = parseInt(Math.abs(limit));
-  const pageQuery = parseInt(Math.abs(page)) * queryLimit;
-
-  const currentPage = pageQuery / queryLimit;
+  const { page = 0, limit = 30, company = null } = req.query;
 
   try {
+    if (!company) throw "No company requested";
+
+    const queryLimit = parseInt(Math.abs(limit));
+    const pageQuery = parseInt(Math.abs(page)) * queryLimit;
+
+    const currentPage = pageQuery / queryLimit;
+
     const candidates = await Candidate.find({ company }, { _id: 0, __v: 0 })
       .skip(pageQuery)
       .limit(queryLimit)
