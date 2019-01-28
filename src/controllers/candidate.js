@@ -44,8 +44,9 @@ const read = async (req, res) => {
       .sort({ timestamp: -1 });
 
     const count = await Candidate.countDocuments({ company });
+
     const overallPages = Math.floor(count / queryLimit);
-    const currentQuery = applicants.length;
+    const currentQuery = candidates.length;
 
     candidates.length <= 0 && reject("No Applicants found.");
     currentPage > overallPages && reject("Out of range.");
