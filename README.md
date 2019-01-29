@@ -1,10 +1,5 @@
 ![Pear](https://github.com/hackfiu/pear/blob/master/assets/banner.jpg?raw=true)
 
-## Getting started
-
-- ssh into server `@mangohacks.com`
-- platform location `/var/www`
-
 ## Start scripts
 
 - `yarn do:start`: rebuild service and start a PM2 process
@@ -100,22 +95,43 @@ Once you pass it through the inliner, you can now use it as a template.
 }
 ```
 
-### POST `/live`
+### GET `/cabinet/YOUR_ROUTE_HERE`
 
-This route is used for all the exported emails retrieved from Mailchimp
+This route is used to fetch any info
 
 - Example request
 
+- Route: api.mangohacks.com/cabinet/confirmed
+- Authorization : "Bearer eyJhbGciOiJIUzI1Nixxxxxxxx"
+
+returns
+
 ```json
-{
-  "hackers": [
-    {
-      "email": "foo@bar.com"
-    },
-    {
-      "email": "foo1@bar.com"
-    }
-    ....
+  "data": [
+        {
+          "diet": "N/A",
+          "mlh": "AGREE",
+          "timestamp": "2019-01-26T23:20:39.137Z",
+          "confirmation": false,
+          "_id": "xxx",
+          "firstName": "David",
+          "lastName": "Castaneda",
+          "email": "email@fiu.edu",
+          "school": "Florida International University",
+          "major": "Computer Science",
+          "levelOfStudy": "JUNIOR",
+          "resume": "https://drive.google.com/",
+          "gender": "MALE",
+          "shirtSize": "MEDIUM",
+          "__v": 0
+      },
   ]
-}
 ```
+
+
+Possible routes:
+- confirmed
+- unconfirmed
+- females
+- males
+

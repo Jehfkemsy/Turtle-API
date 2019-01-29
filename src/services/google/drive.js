@@ -34,7 +34,7 @@ const bufferToStream = buffer => {
   return stream;
 };
 
-const upload = async (file, filename) => {
+const upload = async (file, filename, folder) => {
   const { mimetype, buffer } = file;
 
   try {

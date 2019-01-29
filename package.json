@@ -11,7 +11,8 @@
     "do:restart": "yarn build && pm2 restart pear",
     "do:stop": "pm2 stop pear",
     "do:delete": "pm2 delete pear",
-    "logs": "tail -n 50 ./logs/pear.log"
+    "logs": "tail -n 50 ./logs/pear.log",
+    "hydrate": "node ./src/utils/hydrate.js"
   },
   "dependencies": {
     "backpack-core": "^0.8.1",

@@ -9,6 +9,8 @@ import httpResponse from "../utils/httpResponses";
 
 import Applicant from "../models/applicant";
 
+const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID } = process.env;
+
 const create = async (req, res) => {
   fileService.extractResume(req, res, async err => {
     if (err) return httpResponse.failureResponse(res, err);
@@ -38,8 +40,13 @@ const create = async (req, res) => {
        * Upload resume to google drive
        */
       const filename = fields.email.match(/.*?(?=@|$)/i)[0];
-      const resumeUrl = await drive.upload(file, filename);
-      fields.resume = resumeUrl;
+
+      fields.resume = "N/A";
+
+      if (GOOGLE_FOLDER_ID) {
+        const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
+        fields.resume = resumeUrl;
+      }
 
       /**
        * Insert applicant in the database
@@ -102,4 +109,43 @@ const read = async (req, res) => {
   }
 };
 
-export default { create, read };
+const update = async (req, res) => {
+  const { email } = req.query;
+
+  try {
+    const hasConfirmed = await Applicant.findOne({ email }).exec();
+
+    if (!hasConfirmed.confirmation) {
+      const confirm = await Applicant.findOneAndUpdate(
+        { email },
+        { confirmation: true },
+        { new: true }
+      ).exec();
+
+      const confirmFields = {
+        firstName: confirm.firstName,
+        lastName: confirm.lastName,
+        email: confirm.email,
+        school: confirm.school,
+        major: confirm.major,
+        levelOfStudy: confirm.levelOfStudy,
+        gender: confirm.gender,
+        shirtSize: confirm.shirtSize,
+        diet: confirm.diet,
+        resume: confirm.resume
+      };
+
+      if (GOOGLE_SPREADSHEET_ID) {
+        sheets.write("Confirmed", confirmFields);
+      }
+
+      httpResponse.successResponse(res, confirm);
+    } else {
+      httpResponse.successResponse(res, null);
+    }
+  } catch (e) {
+    httpResponse.failureResponse(res, e);
+  }
+};
+
+export default { create, read, update };

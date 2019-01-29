@@ -7,7 +7,8 @@ const options = {
   pass: MONGO_PASSWORD,
   useNewUrlParser: true,
   useCreateIndex: true,
-  dbName: "mango2019"
+  dbName: "mango2019",
+  useFindAndModify: false
 };
 
 const db = () =>
