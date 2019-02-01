@@ -12,7 +12,7 @@ const create = async (req, res) => {
     const verify = await Announcement.find({message_id: event.client_msg_id});
     if(verify.client_msg_id !== event.client_msg_id) {
       try{
-        const time = moment().format('h:mma');
+        const time = moment().tz('America/New_York').format('h:mma');
         const announce = await Announcement.create({ message_id: event.client_msg_id, message: event.text, time });
         req.io.emit('announcement', announce);
       } catch( e) {
