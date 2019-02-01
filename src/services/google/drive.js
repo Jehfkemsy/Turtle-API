@@ -1,5 +1,9 @@
 import { google } from "googleapis";
 import { Duplex } from "stream";
+import path from "path";
+import fs from "fs";
+import { WriteStream } from "tty";
+import axios from "axios";
 
 const {
   GOOGLE_CLIENT_EMAIL,
@@ -25,6 +29,33 @@ const asyncUpload = (drive, payload) =>
 
       resolve(res.data);
     });
+  });
+
+const asyncDownload = fileId =>
+  new Promise((resolve, reject) => {
+    const file_path = path.resolve(`tmp/${fileId}.pdf`);
+    const dest = fs.createWriteStream(file_path);
+
+    const drive = google.drive("v3");
+
+    drive.files.get(
+      { auth, fileId: fileId, alt: "media", mimeType: "application/pdf" },
+      {
+        responseType: "stream"
+      },
+      (err, response) => {
+        if (err) throw err;
+
+        response.data
+          .on("error", err => {
+            throw err;
+          })
+          .on("end", () => {
+            resolve(file_path);
+          })
+          .pipe(dest);
+      }
+    );
   });
 
 const bufferToStream = buffer => {
@@ -54,4 +85,17 @@ const upload = async (file, filename, folder) => {
   }
 };
 
-export default { upload };
+const download = async fileId => {
+  try {
+    await auth.authorize();
+
+    const dest = await asyncDownload(fileId);
+
+    return dest;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
+
+export default { upload, download };
