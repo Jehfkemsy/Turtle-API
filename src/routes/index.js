@@ -1,5 +1,6 @@
 import { Router } from "express";
 
+import announcement from "../controllers/announcement";
 import application from "../controllers/application";
 import volunteer from "../controllers/volunteer";
 import candidate from "../controllers/candidate";
@@ -60,6 +61,11 @@ apiRouter.get(
   cabinet.unconfirmed
 );
 apiRouter.get("/cabinet/download", cabinet.download);
+
+/* ------ Live-Site Announcements ------ */
+apiRouter.post("/announcement", announcement.create);
+apiRouter.get("/announcement", announcement.read);
+
 
 /* ------ Prereg signup Route ------ */
 // Deprecating this route, this alert is no longer needed
