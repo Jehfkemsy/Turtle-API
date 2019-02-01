@@ -6,7 +6,7 @@ const { SECRET_KEY, DASHBOARD_PASSWORD } = process.env;
 
 const create = (req, res) => {
   const { password } = req.body;
-  let expiresIn = 60 * 60 * 6; // 6 hours
+  let expiresIn = 60 * 60 * 144; // 144 hours
 
   if (password == DASHBOARD_PASSWORD) {
     const token = jwt.sign({ key: DASHBOARD_PASSWORD }, SECRET_KEY, {

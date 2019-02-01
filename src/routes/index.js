@@ -8,6 +8,8 @@ import cabinet from "../controllers/cabinet";
 import mentor from "../controllers/mentor";
 import token from "../controllers/token";
 import live from "../controllers/live";
+import walkIn from "../controllers/walkin";
+import checkin from "../controllers/checkin";
 
 import authMiddleware from "../middleware/auth";
 
@@ -18,6 +20,11 @@ apiRouter.get("/", (req, res) => res.send("biensupernice."));
 /* ------ Application Routes ------ */
 apiRouter.post("/application", application.create);
 apiRouter.get("/application", authMiddleware, application.read);
+apiRouter.put("/application", application.update);
+
+/* ------- Day of Routes --------*/
+apiRouter.post("/walkin", authMiddleware, walkIn.create);
+apiRouter.post("/checkin", authMiddleware, checkin.create);
 
 /* ------ Workshop Routes ------ */
 apiRouter.post("/workshop", workshop.create);

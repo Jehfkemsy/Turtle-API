@@ -3,6 +3,22 @@ import Volunteer from "../models/volunteer";
 import Workshop from "../models/workshop";
 import Mentor from "../models/mentor";
 
+const validateWalkin = applicant => {
+  new Promise(async (resolve, reject) => {
+    const isApplicant = await Applicant.findOne({ email: applicant.email });
+
+    if (isApplicant) reject("Applicant is already signed up.");
+
+    if (!applicant.firstName) reject("First Name was not defined");
+    if (!applicant.lastName) reject("Last Name was not defined");
+    if (!applicant.email) reject("Email was not defined");
+    if (!applicant.school) reject("School was not defined");
+    if (!applicant.major) reject("Major was not defined");
+
+    resolve();
+  });
+};
+
 const validateHacker = applicant =>
   new Promise(async (resolve, reject) => {
     const isApplicant = await Applicant.findOne({ email: applicant.email });
@@ -72,6 +88,7 @@ const validateCandidate = applicant =>
 
 export default {
   validateHacker,
+  validateWalkin,
   validateWorkshop,
   validateMentor,
   validateVolunteer,

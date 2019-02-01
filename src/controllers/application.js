@@ -104,6 +104,7 @@ const read = async (req, res) => {
     }
 
     const count = await Applicant.countDocuments({});
+    const checkedInCount = await Applicant.countDocuments({ checkIn: true });
     const overallPages = Math.floor(count / queryLimit);
     const currentQuery = applicants.length;
 
@@ -116,7 +117,8 @@ const read = async (req, res) => {
       currentQuery,
       count,
       currentPage,
-      applicants
+      applicants,
+      checkedInCount
     });
   } catch (e) {
     return httpResponse.failureResponse(res, e);
