@@ -11,7 +11,10 @@ import socket from 'socket.io';
 const app = express();
 const server = http.Server(app);
 const io = socket(server);
-
+app.use((req, res, next) => {
+    req.io = io;
+    next();
+  });
 const { PORT = 3000 } = process.env;
 
 app.use(cors());
@@ -20,15 +23,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.disable("x-powered-by");
 
+
+
 io.on('connection', function(socket) {
     console.log("Connected");
 });
 
 //Adds socket to middleware and makes it useable in routes
-app.use((req, res, next) => {
-  req.io = io;
-  next();
-});
+
 
 app.use("/", apiRouter);
 
