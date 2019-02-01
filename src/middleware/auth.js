@@ -1,26 +1,28 @@
+import passport from "passport";
+import { Strategy as BearerStrategy } from "passport-http-bearer";
 import jwt from "jsonwebtoken";
-const { SECRET_KEY } = process.env;
+const { SECRET_KEY, DASHBOARD_PASSWORD } = process.env;
 
-const auth = async (req, res, next) => {
-  const { authorization } = req.headers;
-
-  if (!authorization) {
-    return res.status(401).send("Unauthorized");
-  }
-
-  let token = authorization.split(" ")[1];
-
-  try {
-    let decoded = await jwt.verify(token, SECRET_KEY);
-    let key = decoded.secretKey;
-    if (key !== SECRET_KEY) {
-      return res.status(401).send("Unauthorized");
+passport.use(
+  new BearerStrategy(async (token, done) => {
+    let decoded;
+    try {
+      decoded = await jwt.verify(token, SECRET_KEY);
+    } catch (err) {
+      return done(null, false);
     }
 
-    next();
-  } catch (e) {
-    return res.status(401).send("Unauthorized");
-  }
-};
+    try {
+      if (decoded.key !== DASHBOARD_PASSWORD) {
+        throw new Error("Unauthorized auth attempt");
+      }
+      return done(null, true);
+    } catch (err) {
+      return done(err);
+    }
+  })
+);
 
-export default authCreator;
+const authMiddleware = passport.authenticate("bearer", { session: false });
+
+export default authMiddleware;

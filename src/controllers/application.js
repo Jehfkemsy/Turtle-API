@@ -72,35 +72,56 @@ const create = async (req, res) => {
 };
 
 const read = async (req, res) => {
-  const { page = 0, limit = 30 } = req.query;
+  const { page = 0, limit = 30, q } = req.query;
 
   const queryLimit = parseInt(Math.abs(limit));
   const pageQuery = parseInt(Math.abs(page)) * queryLimit;
 
   const currentPage = pageQuery / queryLimit;
 
+  let searchCriteria = {};
   try {
-    const applicants = await Applicant.find({}, { _id: 0, __v: 0 })
+    if (q && q.length > 0 && q !== "") {
+      searchCriteria = {
+        $or: [
+          { firstName: new RegExp(".*" + q + ".*", "i") },
+          { lastName: new RegExp(".*" + q + ".*", "i") },
+          { email: new RegExp(".*" + q + ".*", "i") }
+        ]
+      };
+    }
+
+    const applicants = await Applicant.find(searchCriteria, {
+      _id: 0,
+      __v: 0
+    })
       .skip(pageQuery)
       .limit(queryLimit)
       .sort({ timestamp: -1 });
 
+    if (!applicants || applicants.length <= 0) {
+      throw new Error("No Applicants found.");
+    }
+
     const count = await Applicant.countDocuments({});
+    const checkedInCount = await Applicant.countDocuments({ checkIn: true });
     const overallPages = Math.floor(count / queryLimit);
     const currentQuery = applicants.length;
 
-    applicants.length <= 0 && reject("No Applicants found.");
-    currentPage > overallPages && reject("Out of range.");
+    if (currentPage > overallPages) {
+      throw new Error("Out of range.");
+    }
 
-    httpResponse.successResponse(res, {
+    return httpResponse.successResponse(res, {
       overallPages,
       currentQuery,
       count,
       currentPage,
-      applicants
+      applicants,
+      checkedInCount
     });
   } catch (e) {
-    httpResponse.failureResponse(res, e);
+    return httpResponse.failureResponse(res, e);
   }
 };
 

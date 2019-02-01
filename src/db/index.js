@@ -7,6 +7,7 @@ const options = {
   pass: MONGO_PASSWORD,
   useNewUrlParser: true,
   useCreateIndex: true,
+  dbName: "mango2019",
   useFindAndModify: false
 };
 
@@ -20,4 +21,4 @@ const db = () =>
 
 db()
   .then(() => console.log("> 🗄  Mongo connected"))
-  .catch(e => console.log(e.message));
+  .catch(e => console.log("> Mongo error ", e.message));
