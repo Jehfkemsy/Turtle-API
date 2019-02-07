@@ -46,11 +46,11 @@ apiRouter.get("/cabinet/females", authMiddleware, cabinet.females);
 apiRouter.get("/cabinet/confirmed", authMiddleware, cabinet.confirmed);
 apiRouter.get("/cabinet/unconfirmed", authMiddleware, cabinet.unconfirmed);
 apiRouter.get("/cabinet/download", cabinet.download);
+apiRouter.get("/cabinet/checkin", cabinet.checkedIn);
 
 /* ------ Live-Site Announcements ------ */
 apiRouter.post("/announcement", announcement.create);
 apiRouter.get("/announcement", announcement.read);
-
 
 /* ------ Prereg signup Route ------ */
 // Deprecating this route, this alert is no longer needed

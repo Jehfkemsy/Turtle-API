@@ -24,6 +24,16 @@ const unconfirmed = async (req, res) => {
   }
 };
 
+const checkedIn = async (req, res) => {
+  try {
+    const checkin = await Applicant.find({ checkIn: true }).exec();
+
+    httpResponse.successResponse(res, checkin);
+  } catch (e) {
+    httpResponse.failureResponse(res, e);
+  }
+};
+
 const females = async (req, res) => {
   try {
     const females = await Applicant.find({ gender: "FEMALE" }).exec();
@@ -56,4 +66,4 @@ const download = async (req, res) => {
   }
 };
 
-export default { confirmed, unconfirmed, females, males, download };
+export default { confirmed, unconfirmed, females, males, download, checkedIn };
