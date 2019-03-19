@@ -9,7 +9,7 @@ import cabinet from "../controllers/cabinet";
 import mentor from "../controllers/mentor";
 import token from "../controllers/token";
 import live from "../controllers/live";
-import walkIn from "../controllers/walkin";
+import walkIn from "../controllers/walkIn";
 import checkin from "../controllers/checkin";
 
 import authMiddleware from "../middleware/auth";
