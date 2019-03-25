@@ -164,4 +164,39 @@ const update = async (req, res) => {
   }
 };
 
-export default { create, read, update };
+
+//changes a users status from applied to accepted
+const accept = async (req,res) => {
+  const {email} = req.body;
+
+  try{
+    const user = await Applicant.findOneAndUpdate(
+      {email},
+      {status:"accepted"}
+      ).exec();
+      return httpResponse.successResponse(res,null)
+  }
+  
+  catch(e){
+    httpResponse.failureResponse(res, e);
+  }
+}
+
+//changes a users status from accepted to confirmed
+const confirm = async (req,res) => {
+  const {email} = req.body;
+
+  try{
+    const user = await Applicant.findOneAndUpdate(
+      {email},
+      {status:"confirmed"}
+      ).exec();
+      return httpResponse.successResponse(res,null)
+  }
+  
+  catch(e){
+    httpResponse.failureResponse(res, e);
+  }
+}
+
+export default { create, read, update,confirm, accept };
