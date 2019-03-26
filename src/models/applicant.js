@@ -27,7 +27,10 @@ const applicantSchema = new mongoose.Schema({
   applicationStatus: {type: String, required: true},
   reimburesmentNeeded: {type: boolean, required: true},
   location: {type: String, required: true},
-  shellID: {type: String, required: true}
+  shellID: {type: String, required: true},
+  mlh: { type: String, default: "AGREE" },
+  fiu: { type: String, default: "AGREE" },
+  shellHacks: { type: String, default: "AGREE" },
 });
 
 const Applicant = mongoose.model("Applicant", applicantSchema);
