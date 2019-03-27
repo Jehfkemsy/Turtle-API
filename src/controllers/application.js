@@ -15,19 +15,21 @@ const create = async (req, res) => {
   
   fileService.extractResume(req, res, async err => {
     if (err) return httpResponse.failureResponse(res, err);
-    console.log('route hit')
+    console.log('test')
     // const { file } = req;
+    const{firstName,lastName,email,school,major,levelOfStudy,gender,shirtSize,
+      diet} = req.body;
 
     const fields = {
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      school: req.body.school,
-      major: req.body.major,
-      levelOfStudy: req.body.levelOfStudy,
-      gender: req.body.gender,
-      shirtSize: req.body.shirtSize,
-      diet: req.body.diet || "N/A"
+      firstName,
+      lastName,
+      email,
+      school,
+      major,
+      levelOfStudy,
+      gender,
+      shirtSize,
+      diet
     };
 
     try {
