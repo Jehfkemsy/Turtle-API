@@ -17,9 +17,9 @@ const create = async (req, res) => {
     if (err) return httpResponse.failureResponse(res, err);
     console.log('test')
     // const { file } = req;
-    const{firstName,lastName,email,school,major,levelOfStudy,gender,shirtSize,
-      diet} = req.body;
-
+    const{firstName,lastName,email,school,major,
+         levelOfStudy,gender,shirtSize,diet} = req.body;
+      
     const fields = {
       firstName,
       lastName,
