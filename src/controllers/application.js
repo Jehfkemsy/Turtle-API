@@ -14,7 +14,15 @@ const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID } = process.env;
 const create = async (req, res) => {
   fileService.extractResume(req, res, async err => {
     if (err) return httpResponse.failureResponse(res, err);
-    const { file } = req;
+    // const { file } = req;
+
+    const{firstName,lastName,email,password,schoolName,levelOfStudy,
+          graduationYear,major,gender,dob,race,phoneNumber,shirtSize,
+          avatarID,dietaryRestriction,firstTimeHack,howDidYouHear,
+          favoriteEvents,areaOfFocus,resume,linkedIn,portfolio,github,
+          reasonForAttending,haveBeenToShell,likeAMentor,
+          applicationStatus,needReimburesment,location,shellID,mlh,fiu
+          shellHacks}
 
     const fields = {
       firstName: req.body.firstName,
