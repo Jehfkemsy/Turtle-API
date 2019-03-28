@@ -25,7 +25,8 @@ apiRouter.get("/application", authMiddleware, application.read);
 apiRouter.put("/application", application.update);
 
 /* ------ Administrator Routes ------ */
-apiRouter.put("/admin/accept",authMiddleware,application.accept)
+apiRouter.put("/admin/acceptOne",authMiddleware,application.acceptOne)
+apiRouter.put("/admin/acceptSchool",authMiddleware,application.acceptSchool)
 
 /* ------- Day of Routes --------*/
 apiRouter.post("/walkin", authMiddleware, walkIn.create);

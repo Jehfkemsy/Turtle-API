@@ -165,14 +165,14 @@ const update = async (req, res) => {
 };
 
 
-//changes a users status from applied to accepted
-const accept = async (req,res) => {
+//accepts a single hacker from given email
+const acceptOne = async (req,res) => {
   const {email} = req.body;
 
   try{
     const user = await Applicant.findOneAndUpdate(
       {email},
-      {status:"accepted"}
+      {applicationStatus:"accepted"}
       ).exec();
       return httpResponse.successResponse(res,null)
   }
@@ -182,7 +182,23 @@ const accept = async (req,res) => {
   }
 }
 
-//changes a users status from accepted to confirmed
+//accepts all hackers from a specific school
+const acceptSchool = async (req,res) => {
+  const {school} = req.body;
+
+  try{
+    const users = await Applicant.updateMany(
+      {schoolName:school},
+      {applicationStatus:"accepted"}
+      ).exec();
+      return httpResponse.successResponse(res,null)
+  }
+  catch(e){
+    httpResponse.failureResponse(res, e);
+  }
+}
+
+//changes a single hacker's status from accepted to confirmed
 const confirm = async (req,res) => {
   const {email} = req.body;
 
@@ -199,4 +215,4 @@ const confirm = async (req,res) => {
   }
 }
 
-export default { create, read, update,confirm, accept };
+export default { create, read, update,confirm, acceptOne, acceptSchool};
