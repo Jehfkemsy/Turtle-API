@@ -95,8 +95,8 @@ Once you pass it through the inliner, you can now use it as a template.
 }
 ```
 
-### PUT `/admin/acceptOne`
--Accept's a hacker based on email(needs admin privilages)
+### PUT `/admin/acceptSchool`
+-Accept's a hacker based on school (needs admin privilages)
 
 - Example request
 
