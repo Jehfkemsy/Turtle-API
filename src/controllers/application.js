@@ -205,7 +205,7 @@ const confirm = async (req,res) => {
   try{
     const user = await Applicant.findOneAndUpdate(
       {email},
-      {status:"confirmed"}
+      {applicationStatus:"confirmed"}
       ).exec();
       return httpResponse.successResponse(res,null)
   }
