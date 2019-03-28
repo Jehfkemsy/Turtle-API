@@ -20,7 +20,7 @@ apiRouter.get("/", (req, res) => res.send("biensupernice."));
 
 /* ------ Application Routes ------ */
 apiRouter.post("/application", application.create);
-apiRouter.post("/application/confirm", application.confirm);
+apiRouter.put("/application/confirm", application.confirm);
 apiRouter.get("/application", authMiddleware, application.read);
 apiRouter.put("/application", application.update);
 

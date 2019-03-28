@@ -14,26 +14,49 @@ const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID } = process.env;
 const create = async (req, res) => {
   fileService.extractResume(req, res, async err => {
     if (err) return httpResponse.failureResponse(res, err);
-    // const { file } = req;
+    const { file } = req;
 
     const{firstName,lastName,email,password,schoolName,levelOfStudy,
           graduationYear,major,gender,dob,race,phoneNumber,shirtSize,
-          avatarID,dietaryRestriction,firstTimeHack,howDidYouHear,
+          dietaryRestriction,firstTimeHack,howDidYouHear,
           favoriteEvents,areaOfFocus,resume,linkedIn,portfolio,github,
           reasonForAttending,haveBeenToShell,likeAMentor,
-          applicationStatus,needReimburesment,location,shellID,mlh,fiu
-          shellHacks}
-
+          needReimburesment,location,mlh,fiu,shellHacks} = req.body;
+          
+    
+    //need to generate avatarID, ShellID, and Hash password
     const fields = {
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      school: req.body.school,
-      major: req.body.major,
-      levelOfStudy: req.body.levelOfStudy,
-      gender: req.body.gender,
-      shirtSize: req.body.shirtSize,
-      diet: req.body.diet || "N/A"
+      firstName,
+      lastName,
+      email,
+      password,
+      schoolName,
+      levelOfStudy,
+      graduationYear,
+      major,
+      gender,
+      dob,
+      race,
+      phoneNumber,
+      shirtSize,
+      avatarID:"Id1",
+      dietaryRestriction,
+      firstTimeHack,
+      howDidYouHear,
+      favoriteEvents,
+      areaOfFocus,
+      resume,
+      linkedIn,
+      portfolio,
+      github,
+      reasonForAttending,
+      haveBeenToShell,
+      likeAMentor,
+      applicationStatus: 'applied',
+      needReimburesment,
+      location,
+      shellID: 'wewe',
+      shirtSize,
     };
 
     try {
@@ -192,12 +215,12 @@ const acceptOne = async (req,res) => {
 
 //accepts all hackers from a specific school
 const acceptSchool = async (req,res) => {
-  const {school} = req.body;
+  const {schoolName} = req.body;
 
   try{
     const users = await Applicant.updateMany(
-      {schoolName:school},
-      {applicationStatus:"accepted"}
+      {schoolName},
+      {"$set":{applicationStatus:"accepted"}}
       ).exec();
       return httpResponse.successResponse(res,null)
   }
