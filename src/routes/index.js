@@ -20,8 +20,13 @@ apiRouter.get("/", (req, res) => res.send("biensupernice."));
 
 /* ------ Application Routes ------ */
 apiRouter.post("/application", application.create);
+apiRouter.put("/application/confirm", application.confirm);
 apiRouter.get("/application", authMiddleware, application.read);
 apiRouter.put("/application", application.update);
+
+/* ------ Administrator Routes ------ */
+apiRouter.put("/admin/acceptOne",authMiddleware,application.acceptOne)
+apiRouter.put("/admin/acceptSchool",authMiddleware,application.acceptSchool)
 
 /* ------- Day of Routes --------*/
 // apiRouter.post("/walkin", authMiddleware, walkIn.create);

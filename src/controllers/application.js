@@ -15,21 +15,49 @@ const create = async (req, res) => {
   
   fileService.extractResume(req, res, async err => {
     if (err) return httpResponse.failureResponse(res, err);
-    console.log('test')
-    // const { file } = req;
-    const{firstName,lastName,email,school,major,
-         levelOfStudy,gender,shirtSize,diet} = req.body;
-      
+    const { file } = req;
+
+    const{firstName,lastName,email,password,schoolName,levelOfStudy,
+          graduationYear,major,gender,dob,race,phoneNumber,shirtSize,
+          dietaryRestriction,firstTimeHack,howDidYouHear,
+          favoriteEvents,areaOfFocus,resume,linkedIn,portfolio,github,
+          reasonForAttending,haveBeenToShell,likeAMentor,
+          needReimburesment,location,mlh,fiu,shellHacks} = req.body;
+          
+    
+    //need to generate avatarID, ShellID, and Hash password
     const fields = {
       firstName,
       lastName,
       email,
-      school,
-      major,
+      password,
+      schoolName,
       levelOfStudy,
+      graduationYear,
+      major,
       gender,
+      dob,
+      race,
+      phoneNumber,
       shirtSize,
-      diet
+      avatarID:"Id1",
+      dietaryRestriction,
+      firstTimeHack,
+      howDidYouHear,
+      favoriteEvents,
+      areaOfFocus,
+      resume,
+      linkedIn,
+      portfolio,
+      github,
+      reasonForAttending,
+      haveBeenToShell,
+      likeAMentor,
+      applicationStatus: 'applied',
+      needReimburesment,
+      location,
+      shellID: 'wewe',
+      shirtSize,
     };
 
     try {
@@ -168,4 +196,55 @@ const update = async (req, res) => {
   }
 };
 
-export default { create, read, update };
+
+//accepts a single hacker from given email
+const acceptOne = async (req,res) => {
+  const {email} = req.body;
+
+  try{
+    const user = await Applicant.findOneAndUpdate(
+      {email},
+      {applicationStatus:"accepted"}
+      ).exec();
+      return httpResponse.successResponse(res,null)
+  }
+  
+  catch(e){
+    httpResponse.failureResponse(res, e);
+  }
+}
+
+//accepts all hackers from a specific school
+const acceptSchool = async (req,res) => {
+  const {schoolName} = req.body;
+
+  try{
+    const users = await Applicant.updateMany(
+      {schoolName},
+      {"$set":{applicationStatus:"accepted"}}
+      ).exec();
+      return httpResponse.successResponse(res,null)
+  }
+  catch(e){
+    httpResponse.failureResponse(res, e);
+  }
+}
+
+//changes a single hacker's status from accepted to confirmed
+const confirm = async (req,res) => {
+  const {email} = req.body;
+
+  try{
+    const user = await Applicant.findOneAndUpdate(
+      {email},
+      {applicationStatus:"confirmed"}
+      ).exec();
+      return httpResponse.successResponse(res,null)
+  }
+  
+  catch(e){
+    httpResponse.failureResponse(res, e);
+  }
+}
+
+export default { create, read, update,confirm, acceptOne, acceptSchool};
