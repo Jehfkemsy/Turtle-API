@@ -53,7 +53,7 @@ const create = async (req, res) => {
       reasonForAttending,
       haveBeenToShell,
       likeAMentor,
-      applicationStatus: 'applied',
+      applicationStatus: 'not applied',
       needReimburesment,
       location,
       shellID: 'wewe',
