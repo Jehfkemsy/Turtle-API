@@ -49,6 +49,17 @@ Once you pass it through the inliner, you can now use it as a template.
 	"lastName":"Doe",
 	"email":"John@gmail.com",
 	"password":"secretPassword",
+}
+```
+
+### POST `/application/apply`
+-To insert information from a hacker's application (based on email)
+
+- Example request
+
+```json
+{
+	"email":"John@gmail.com",
 	"schoolName":"Florida International Univeristy",
 	"levelOfStudy":"Freshman",
 	"graduationYear":"2022",
@@ -58,20 +69,18 @@ Once you pass it through the inliner, you can now use it as a template.
 	"race":"hispanic",
 	"phoneNumber":"111-111-1111",
 	"dietaryRestriction":"None",
-	"firstTimeHack":false,
+	"firstTimeHack":"false",
 	"howDidYouHear":"friends",
 	"favoriteEvents":["Cup Stacking","Soylent Pong"],
 	"areaOfFocus":"Web Development",
 	"resume":"URL",
 	"reasonForAttending":"Love Hackathons",
-	"haveBeenToShell":true,
-	"likeAMentor":false,
-	"needReimburesment":false,
+	"haveBeenToShell":"true",
+	"likeAMentor":"false",
+	"needReimburesment":"false",
 	"location":"Miami",
 	"shirtSize":"Medium"
-	
 }
-```
 
 ### PUT `/application/confirm`
 -Changes a hacker's status to confirmed based on email
