@@ -5,6 +5,7 @@ const storage = multer.memoryStorage();
 
 const extractResume = multer({
   fileFilter: (req, file, cb) => {
+    console.log('trying to get resume')
     const filetypes = /pdf/;
     const mimetype = filetypes.test(file.mimetype);
     const ext = filetypes.test(path.extname(file.originalname).toLowerCase());

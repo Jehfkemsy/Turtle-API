@@ -61,8 +61,12 @@ const create = async (req, res) => {
     };
 
     try {
-      // if (!file) throw "Resume is required.";
+      if (!file) throw "Resume is required.";
 
+      else
+        console.log('resume recieved');
+
+      console.log('folder id: '+ GOOGLE_FOLDER_ID);
       /**
        * Validate applicant fields
        */
@@ -71,14 +75,20 @@ const create = async (req, res) => {
       /**
        * Upload resume to google drive
        */
+      console.log('getting filename');
       // const filename = fields.email.match(/.*?(?=@|$)/i)[0];
+      const filename = 'resume';
+      
 
-      // fields.resume = "N/A";
+      fields.resume = "N/A";
 
-      // if (GOOGLE_FOLDER_ID) {
-      //   const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
-      //   fields.resume = resumeUrl;
-      // }
+      if (GOOGLE_FOLDER_ID) {
+        console.log('uploading resume')
+        const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
+        fields.resume = resumeUrl;
+        console.log(resumeUrl)
+        console.log('uploaded resume');
+      }
 
       /**
        * Insert applicant in the database
