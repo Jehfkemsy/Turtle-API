@@ -81,6 +81,7 @@ Once you pass it through the inliner, you can now use it as a template.
 	"location":"Miami",
 	"shirtSize":"Medium"
 }
+```
 
 ### PUT `/application/confirm`
 -Changes a hacker's status to confirmed based on email
