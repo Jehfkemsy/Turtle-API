@@ -25,6 +25,30 @@ const create = async (req, res) => {
       avatarID:"Id1",
       applicationStatus: 'not applied',
       shellID: 'wewe',
+      schoolName: null,
+      levelOfStudy: null,
+      graduationYear: null,
+      major: null,
+      gender: null,
+      dob: null,
+      race: null,
+      phoneNumber: null,
+      shirtSize: null,
+      dietaryRestriction: null,
+      firstTimeHack: null,
+      howDidYouHear: null,
+      favoriteEvents: null,
+      areaOfFocus: null,
+      resume: null,
+      linkedIn: null,
+      portfolio: null,
+      github: null,
+      reasonForAttending: null,
+      haveBeenToShell: null,
+      likeAMentor: null,
+      needReimburesment: null,
+      location: null,
+      shirtSize: null,
     };
 
     try {
@@ -255,23 +279,22 @@ const apply = async (req,res) => {
       /**
        * Upload resume to google drive
        */
-      // const filename = fields.email.match(/.*?(?=@|$)/i)[0];
+      const filename = fields.email.match(/.*?(?=@|$)/i)[0];
 
-      // fields.resume = "N/A";
+      fields.resume = "N/A";
 
-      // if (GOOGLE_FOLDER_ID) {
-      //   const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
-      //   fields.resume = resumeUrl;
-      // }
+      if (GOOGLE_FOLDER_ID) {
+        const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
+        fields.resume = resumeUrl;
+      }
 
       /**
        * update applicant in the database
        */
       const user = await Applicant.findOneAndUpdate(
         {email},
-        {fields}
+        fields
         ).exec();
-        return httpResponse.successResponse(res,null)
 
       /**
        * Send applicant email
@@ -291,4 +314,4 @@ const apply = async (req,res) => {
   });
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool};
+export default { create, read, update,confirm, acceptOne, acceptSchool, apply};

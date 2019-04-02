@@ -23,7 +23,7 @@ apiRouter.post("/application", application.create);
 apiRouter.put("/application/confirm", application.confirm);
 apiRouter.get("/application", authMiddleware, application.read);
 apiRouter.put("/application", application.update);
-apiRouter.put("/applicatoin/apply",application.apply);
+apiRouter.put("/application/apply",application.apply);
 
 /* ------ Administrator Routes ------ */
 apiRouter.put("/admin/acceptOne",authMiddleware,application.acceptOne)
