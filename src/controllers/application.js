@@ -2,26 +2,48 @@ import mailService from "../services/mail";
 import fileService from "../services/file";
 import drive from "../services/google/drive";
 import sheets from "../services/google/sheets";
+import idGenerator from '../utils/idGenerator'
 import applicationService from "../services/application";
+import bcrypt from 'brypt'
 
 import logger from "../utils/logger";
 import httpResponse from "../utils/httpResponses";
 
 import Applicant from "../models/applicant";
+import { rejects } from "assert";
 
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID } = process.env;
 
 const create = async (req, res) => {
 
-    const{firstName,lastName,email,password} = req.body;
+    /*
+      validate email is unique
+    */
+    await validateHacker(req.body.email)
+
+    /*
+      hash password
+    */
+    req.body.password = await bcrypt.hash(req.body.password,12)
+
+    /*
+      generate unique shell id
+    */
+    let unique = false
+    let id = idGenerator(5)
+
+    do{unique = Applicant.findOne({shellID: id})}while(!unique)
+
+    req.body.shellID = id
+
+    const{firstName,lastName,email,password,shellID} = req.body;
           
-    
-    //need to generate avatarID, ShellID, and Hash password
     const fields = {
       firstName,
       lastName,
       email,
       password,
+      shellID,
       avatarID:"Id1",
       applicationStatus: 'not applied',
       shellID: 'wewe',
