@@ -5,16 +5,16 @@ import sheets from "../services/google/sheets";
 import idGenerator from '../utils/idGenerator'
 import applicationService from "../services/application";
 import bcrypt from 'brypt'
-
 import logger from "../utils/logger";
 import httpResponse from "../utils/httpResponses";
-
 import Applicant from "../models/applicant";
-import { rejects } from "assert";
 
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID } = process.env;
 
 const create = async (req, res) => {
+
+
+  const{firstName,lastName,email} = req.body;
 
     /*
       validate email is unique
@@ -24,7 +24,7 @@ const create = async (req, res) => {
     /*
       hash password
     */
-    req.body.password = await bcrypt.hash(req.body.password,12)
+    const password = await bcrypt.hash(req.body.password,12)
 
     /*
       generate unique shell id
@@ -34,9 +34,7 @@ const create = async (req, res) => {
 
     do{unique = Applicant.findOne({shellID: id})}while(!unique)
 
-    req.body.shellID = id
-
-    const{firstName,lastName,email,password,shellID} = req.body;
+    const shellID = id
           
     const fields = {
       firstName,
