@@ -11,12 +11,13 @@ const auth = { auth: { api_key: MAILGUN_KEY, domain: MAILGUN_DOMAIN } };
 
 const gun = nodemailer.createTransport(mg(auth));
 
-const viewEngine = handlebars.create({});
+const viewEngine = handlebars.create({partialsDir:"src/templates"});
 const viewPath = "src/templates";
 
 gun.use("compile", nodemailerHandlebars({ viewEngine, viewPath }));
 
 const applied = applicant => {
+  
   const mail = {
     from: `MangoHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
@@ -24,6 +25,7 @@ const applied = applicant => {
     template: "applied",
     context: { firstName: applicant.firstName }
   };
+  console.log('starting to send mail');
   gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
 };
 

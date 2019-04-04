@@ -12,17 +12,8 @@ import Applicant from "../models/applicant";
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID } = process.env;
 
 const create = async (req, res) => {
-  
-  fileService.extractResume(req, res, async err => {
-    if (err) return httpResponse.failureResponse(res, err);
-    const { file } = req;
 
-    const{firstName,lastName,email,password,schoolName,levelOfStudy,
-          graduationYear,major,gender,dob,race,phoneNumber,shirtSize,
-          dietaryRestriction,firstTimeHack,howDidYouHear,
-          favoriteEvents,areaOfFocus,resume,linkedIn,portfolio,github,
-          reasonForAttending,haveBeenToShell,likeAMentor,
-          needReimburesment,location,mlh,fiu,shellHacks} = req.body;
+    const{firstName,lastName,email,password} = req.body;
           
     
     //need to generate avatarID, ShellID, and Hash password
@@ -31,74 +22,54 @@ const create = async (req, res) => {
       lastName,
       email,
       password,
-      schoolName,
-      levelOfStudy,
-      graduationYear,
-      major,
-      gender,
-      dob,
-      race,
-      phoneNumber,
-      shirtSize,
       avatarID:"Id1",
-      dietaryRestriction,
-      firstTimeHack,
-      howDidYouHear,
-      favoriteEvents,
-      areaOfFocus,
-      resume,
-      linkedIn,
-      portfolio,
-      github,
-      reasonForAttending,
-      haveBeenToShell,
-      likeAMentor,
       applicationStatus: 'not applied',
-      needReimburesment,
-      location,
       shellID: 'wewe',
-      shirtSize,
+      schoolName: null,
+      levelOfStudy: null,
+      graduationYear: null,
+      major: null,
+      gender: null,
+      dob: null,
+      race: null,
+      phoneNumber: null,
+      shirtSize: null,
+      dietaryRestriction: null,
+      firstTimeHack: null,
+      howDidYouHear: null,
+      favoriteEvents: null,
+      areaOfFocus: null,
+      resume: null,
+      linkedIn: null,
+      portfolio: null,
+      github: null,
+      reasonForAttending: null,
+      haveBeenToShell: null,
+      likeAMentor: null,
+      needReimburesment: null,
+      location: null,
+      shirtSize: null,
     };
 
     try {
-      if (!file) throw "Resume is required.";
-
-      else
-        console.log('resume recieved');
-
-      console.log('folder id: '+ GOOGLE_FOLDER_ID);
+       
       /**
        * Validate applicant fields
        */
       // await applicationService.validateHacker(fields);
 
-      /**
-       * Upload resume to google drive
-       */
-      console.log('getting filename');
-      // const filename = fields.email.match(/.*?(?=@|$)/i)[0];
-      const filename = 'resume';
-      
-
-      fields.resume = "N/A";
-
-      if (GOOGLE_FOLDER_ID) {
-        console.log('uploading resume')
-        const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
-        fields.resume = resumeUrl;
-        console.log(resumeUrl)
-        console.log('uploaded resume');
-      }
 
       /**
        * Insert applicant in the database
        */
       const applicant = await Applicant.create(fields);
+      console.log('put in db')
 
       /**
        * Send applicant email
        */
-      // mailService.applied(fields);
+      mailService.applied(fields);
+      console.log('sent email');
 
       /**
        * Insert applicant in google sheets
@@ -108,9 +79,10 @@ const create = async (req, res) => {
       httpResponse.successResponse(res, applicant);
     } catch (e) {
       logger.info({ e, application: "Hacker", email: fields.email });
+      console.log(e);
       httpResponse.failureResponse(res, e);
     }
-  });
+  
 };
 
 const read = async (req, res) => {
@@ -257,4 +229,92 @@ const confirm = async (req,res) => {
   }
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool};
+const apply = async (req,res) => {
+  fileService.extractResume(req, res, async err => {
+    if (err) return httpResponse.failureResponse(res, err);
+    const { file } = req;
+
+    const{email,schoolName,levelOfStudy,
+          graduationYear,major,gender,dob,race,phoneNumber,shirtSize,
+          dietaryRestriction,firstTimeHack,howDidYouHear,
+          favoriteEvents,areaOfFocus,resume,linkedIn,portfolio,github,
+          reasonForAttending,haveBeenToShell,likeAMentor,
+          needReimburesment,location} = req.body;
+          
+    
+    //need to generate avatarID, ShellID, and Hash password
+    const fields = {
+      schoolName,
+      levelOfStudy,
+      graduationYear,
+      major,
+      gender,
+      dob,
+      race,
+      phoneNumber,
+      shirtSize,
+      dietaryRestriction,
+      firstTimeHack,
+      howDidYouHear,
+      favoriteEvents,
+      areaOfFocus,
+      resume,
+      linkedIn,
+      portfolio,
+      github,
+      reasonForAttending,
+      haveBeenToShell,
+      likeAMentor,
+      applicationStatus: 'applied',
+      needReimburesment,
+      location,
+      shirtSize,
+    };
+
+    try {
+      if (!file) throw "Resume is required.";
+
+      /**
+       * Validate applicant fields
+       */
+      // await applicationService.validateHacker(fields);
+
+      /**
+       * Upload resume to google drive
+       */
+      const filename = fields.email.match(/.*?(?=@|$)/i)[0];
+
+      fields.resume = "N/A";
+
+      if (GOOGLE_FOLDER_ID) {
+        const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
+        fields.resume = resumeUrl;
+      }
+
+      /**
+       * update applicant in the database
+       */
+      const user = await Applicant.findOneAndUpdate(
+        {email},
+        fields
+        ).exec();
+
+      /**
+       * Send applicant email
+       */
+      mailService.applied(fields);
+
+      /**
+       * Insert applicant in google sheets
+       */
+      sheets.write("Applicants", fields);
+
+      httpResponse.successResponse(res, applicant);
+    } catch (e) {
+      logger.info({ e, application: "Hacker", email: fields.email });
+      httpResponse.failureResponse(res, e);
+    }
+  });
+}
+
+export default { create, read, update,confirm, acceptOne, acceptSchool, apply};
