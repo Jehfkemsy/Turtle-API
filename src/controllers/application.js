@@ -4,10 +4,11 @@ import drive from "../services/google/drive";
 import sheets from "../services/google/sheets";
 import idGenerator from '../utils/idGenerator'
 import applicationService from "../services/application";
-import bcrypt from 'brypt'
+import bcrypt from 'bcrypt-nodejs'
 import logger from "../utils/logger";
 import httpResponse from "../utils/httpResponses";
 import Applicant from "../models/applicant";
+import jwt from 'jsonwebtoken';
 
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID } = process.env;
 
@@ -334,4 +335,33 @@ const apply = async (req,res) => {
   });
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply};
+const login = async (req, res) => {
+  try{
+    const user = await Applicant.findOne({
+      email
+    })
+  
+
+    const correctPass = bcrypt.compareSync(password, user.password)
+    if (!user || !correctPass)
+      throw new Error('Wrong login info');
+
+    const today = new Date();
+    const expDate = new Date(today);
+    expDate.setDate(today.getDate() + 60);
+
+    let {shellID} = user;
+
+    let JWT = await jwt.sign({
+      shellID,
+      exp:parseInt(expDate.getTime/1000,10),
+    },'secret');
+
+    httpResponse.successResponse(res, JWT);
+    
+  } catch(e){
+    httpResponse.failureResponse(res, e);
+  }
+}
+
+export default { create, read, update,confirm, acceptOne, acceptSchool, apply, login};

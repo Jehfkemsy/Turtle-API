@@ -19,9 +19,10 @@ const apiRouter = Router();
 apiRouter.get("/", (req, res) => res.send("biensupernice."));
 
 /* ------ Application Routes ------ */
-apiRouter.post("/application", application.create);
-apiRouter.put("/application/confirm", application.confirm);
 apiRouter.get("/application", authMiddleware, application.read);
+apiRouter.post("/application", application.create);
+apiRouter.post("/application/login", application.login);
+apiRouter.put("/application/confirm", application.confirm);
 apiRouter.put("/application", application.update);
 apiRouter.put("/application/apply",application.apply);
 
