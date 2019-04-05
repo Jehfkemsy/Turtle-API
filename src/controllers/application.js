@@ -1,10 +1,10 @@
-import mailService from "../services/mail";
+//import mailService from "../services/mail";
 import fileService from "../services/file";
 import drive from "../services/google/drive";
 import sheets from "../services/google/sheets";
 import idGenerator from '../utils/idGenerator'
 import applicationService from "../services/application";
-import bcrypt from 'brypt'
+import bcrypt from 'bcrypt'
 import logger from "../utils/logger";
 import httpResponse from "../utils/httpResponses";
 import Applicant from "../models/applicant";
@@ -19,18 +19,18 @@ const create = async (req, res) => {
     /*
       validate email is unique
     */
-    await validateHacker(req.body.email)
+    //await validateHacker(req.body.email)
 
     /*
       hash password
     */
-    const password = await bcrypt.hash(req.body.password,12)
-
+    //const password = await bcrypt.hash(req.body.password,12)
+    const password = "12345"
     /*
       generate unique shell id
     */
     let unique = false
-    let id = idGenerator(5)
+    let id = idGenerator.createId(5);
 
     do{unique = Applicant.findOne({shellID: id})}while(!unique)
 
@@ -334,4 +334,23 @@ const apply = async (req,res) => {
   });
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply};
+const unconfirm = async (req, res) =>
+{
+  try{
+    const email = req.body.email;
+
+    const unconfirmation = await Applicant.findOneAndUpdate(
+      email,
+      {applicationStatus : "Accepted"}
+    ).exec();
+    httpResponse.successResponse(res, applicant);
+  }catch(e)
+  {
+    logger.info({ e, application: "Hacker", email: email });
+    httpResponse.failureResponse(res, e)
+  }
+
+  
+}
+
+export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm};

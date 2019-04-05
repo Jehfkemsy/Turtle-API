@@ -3,18 +3,16 @@ import mongoose from "mongoose";
 const { MONGO_USER, MONGO_PASSWORD, MONGO_URI } = process.env;
 
 const options = {
-  user: MONGO_USER,
-  pass: MONGO_PASSWORD,
   useNewUrlParser: true,
   useCreateIndex: true,
-  dbName: "mango2019",
+  dbName: "shellhacks",
   useFindAndModify: false
 };
 
 const db = () =>
   Promise.resolve(
     mongoose.connect(
-      MONGO_URI,
+      "mongodb://localhost:27017/shellhacks",
       options
     )
   );
