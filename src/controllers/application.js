@@ -14,7 +14,7 @@ const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID } = process.env;
 const create = async (req, res) => {
 
 
-  const{firstName,lastName,email} = req.body;
+  const{firstName,lastName,email,password} = req.body;
 
     /*
       validate email is unique
@@ -24,8 +24,15 @@ const create = async (req, res) => {
     /*
       hash password
     */
-    //const password = await bcrypt.hash(req.body.password,12)
-    const password = "12345"
+    /*const hpassword = await bcrypt.hash(password ,12, (err,hash) => {
+      
+        return hash;
+      
+    })*/
+    //const password = "12345"
+
+    var salt = bcrypt.genSaltSync(12);
+    var hash = bcrypt.hashSync(password, salt);
     /*
       generate unique shell id
     */
@@ -40,7 +47,7 @@ const create = async (req, res) => {
       firstName,
       lastName,
       email,
-      password,
+      password : hash,
       shellID,
       avatarID:"Id1",
       applicationStatus: 'not applied',
