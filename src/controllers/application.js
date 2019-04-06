@@ -13,27 +13,35 @@ import jwt from 'jsonwebtoken';
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID } = process.env;
 
 const create = async (req, res) => {
-
-
   const{firstName,lastName,email} = req.body;
+  try {
 
     /*
       validate email is unique
     */
-    await validateHacker(req.body.email)
+    // await applicationService.validateHacker(req.body.email)
+    let applicantExist = await Applicant.findOne({email : email})
+
+    if(applicantExist)
+      throw new Error('email already exists')
+
+      
 
     /*
       hash password
     */
-    const password = await bcrypt.hash(req.body.password,12)
-
+    const password = bcrypt.hashSync(req.body.password,12)
+    console.log('hashed password')
     /*
       generate unique shell id
     */
     let unique = false
-    let id = idGenerator(5)
+    let id;
 
-    do{unique = Applicant.findOne({shellID: id})}while(!unique)
+    do{
+      id = idGenerator(5);
+      unique = Applicant.findOne({shellID: id})
+    }while(!unique)
 
     const shellID = id
           
@@ -72,7 +80,7 @@ const create = async (req, res) => {
       shirtSize: null,
     };
 
-    try {
+    
 
       /**
        * Validate applicant fields

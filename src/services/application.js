@@ -40,7 +40,7 @@ const validateWalkin = applicant => {
 const validateHacker = email =>{
   new Promise(async (resolve,reject)=>{
     
-    const applicantExist = Applicant.find({email : email})
+    const applicantExist = await Applicant.findOne({email : email})
 
     if(applicantExist) reject("Email already exists")
 
