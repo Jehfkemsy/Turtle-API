@@ -2,7 +2,7 @@ import mailService from "../services/mail";
 import fileService from "../services/file";
 import drive from "../services/google/drive";
 import sheets from "../services/google/sheets";
-import idGenerator from '../utils/idGenerator'
+import createID from '../utils/idGenerator'
 import applicationService from "../services/application";
 import bcrypt from 'bcrypt-nodejs'
 import logger from "../utils/logger";
@@ -19,29 +19,25 @@ const create = async (req, res) => {
     /*
       validate email is unique
     */
-    // await applicationService.validateHacker(req.body.email)
-    let applicantExist = await Applicant.findOne({email : email})
-
-    if(applicantExist)
-      throw new Error('email already exists')
-
-      
+    await applicationService.validateHacker(req.body.email)
+    console.log('unique email')
 
     /*
       hash password
     */
-    const password = bcrypt.hashSync(req.body.password,12)
+    const password = bcrypt.hashSync(req.body.password)
     console.log('hashed password')
     /*
       generate unique shell id
     */
-    let unique = false
-    let id;
+    
+    let id = createID(5);
+    console.log(id);
+      
+      const unique = await Applicant.findOne({shellID: id})
+      console.log(unique);
 
-    do{
-      id = idGenerator(5);
-      unique = Applicant.findOne({shellID: id})
-    }while(!unique)
+    console.log('id is unique')
 
     const shellID = id
           
@@ -105,6 +101,7 @@ const create = async (req, res) => {
 
       httpResponse.successResponse(res, applicant);
     } catch (e) {
+      console.log(e);
       logger.info({ e, application: "Hacker", email: fields.email });
       httpResponse.failureResponse(res, e);
     }
