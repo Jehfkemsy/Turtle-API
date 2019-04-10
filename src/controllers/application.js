@@ -30,12 +30,15 @@ const create = async (req, res) => {
     /*
       generate unique shell id
     */
-    
-    let id = createID(5);
+   let unique;
+   let id;
+    do{
+    id = createID.createId(5);
     console.log(id);
       
-      const unique = await Applicant.findOne({shellID: id})
+      unique = await Applicant.findOne({shellID: id})
       console.log(unique);
+    }while(unique != null)
 
     console.log('id is unique')
 
@@ -49,7 +52,6 @@ const create = async (req, res) => {
       shellID,
       avatarID:"Id1",
       applicationStatus: 'not applied',
-      shellID: 'wewe',
       schoolName: null,
       levelOfStudy: null,
       graduationYear: null,
@@ -341,15 +343,19 @@ const apply = async (req,res) => {
 }
 
 const login = async (req, res) => {
+   const {email,password} = req.body;
   try{
     const user = await Applicant.findOne({
       email
     })
+
+    if(!user)
+      throw 'wrong login info'
   
 
     const correctPass = bcrypt.compareSync(password, user.password)
-    if (!user || !correctPass)
-      throw new Error('Wrong login info');
+    if (!correctPass)
+      throw 'Wrong login info';
 
     const today = new Date();
     const expDate = new Date(today);
@@ -366,6 +372,7 @@ const login = async (req, res) => {
     
   } catch(e){
     httpResponse.failureResponse(res, e);
+    console.log(e);
   }
 }
 

@@ -37,15 +37,15 @@ const validateWalkin = applicant => {
 //     resolve();
 //   });
 
-const validateHacker = email =>{
-  new Promise(async (resolve,reject)=>{
+const validateHacker = async email =>{
+  
     
     const applicantExist = await Applicant.findOne({email : email})
 
-    if(applicantExist) reject("Email already exists")
+    if(applicantExist) throw("Email already exists")
 
-    resolve()
-  })
+  
+  
 }
 
 const validateWorkshop = applicant =>
