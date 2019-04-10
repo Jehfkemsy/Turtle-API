@@ -2,37 +2,45 @@ import mailService from "../services/mail";
 import fileService from "../services/file";
 import drive from "../services/google/drive";
 import sheets from "../services/google/sheets";
-import idGenerator from '../utils/idGenerator'
+import createID from '../utils/idGenerator'
 import applicationService from "../services/application";
-import bcrypt from 'brypt'
+import bcrypt from 'bcrypt-nodejs'
 import logger from "../utils/logger";
 import httpResponse from "../utils/httpResponses";
 import Applicant from "../models/applicant";
+import jwt from 'jsonwebtoken';
 
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID } = process.env;
 
 const create = async (req, res) => {
-
-
   const{firstName,lastName,email} = req.body;
+  try {
 
     /*
       validate email is unique
     */
-    await validateHacker(req.body.email)
+    await applicationService.validateHacker(req.body.email)
+    console.log('unique email')
 
     /*
       hash password
     */
-    const password = await bcrypt.hash(req.body.password,12)
-
+    const password = bcrypt.hashSync(req.body.password)
+    console.log('hashed password')
     /*
       generate unique shell id
     */
-    let unique = false
-    let id = idGenerator(5)
+   let unique;
+   let id;
+    do{
+    id = createID.createId(5);
+    console.log(id);
+      
+      unique = await Applicant.findOne({shellID: id})
+      console.log(unique);
+    }while(unique != null)
 
-    do{unique = Applicant.findOne({shellID: id})}while(!unique)
+    console.log('id is unique')
 
     const shellID = id
           
@@ -44,7 +52,6 @@ const create = async (req, res) => {
       shellID,
       avatarID:"Id1",
       applicationStatus: 'not applied',
-      shellID: 'wewe',
       schoolName: null,
       levelOfStudy: null,
       graduationYear: null,
@@ -71,7 +78,7 @@ const create = async (req, res) => {
       shirtSize: null,
     };
 
-    try {
+    
 
       /**
        * Validate applicant fields
@@ -96,6 +103,7 @@ const create = async (req, res) => {
 
       httpResponse.successResponse(res, applicant);
     } catch (e) {
+      console.log(e);
       logger.info({ e, application: "Hacker", email: fields.email });
       httpResponse.failureResponse(res, e);
     }
@@ -334,6 +342,41 @@ const apply = async (req,res) => {
   });
 }
 
+
+const login = async (req, res) => {
+   const {email,password} = req.body;
+  try{
+    const user = await Applicant.findOne({
+      email
+    })
+
+    if(!user)
+      throw 'wrong login info'
+  
+
+    const correctPass = bcrypt.compareSync(password, user.password)
+    if (!correctPass)
+      throw 'Wrong login info';
+
+    const today = new Date();
+    const expDate = new Date(today);
+    expDate.setDate(today.getDate() + 60);
+
+    let {shellID} = user;
+
+    let JWT = await jwt.sign({
+      shellID,
+      exp:parseInt(expDate.getTime/1000,10),
+    },'secret');
+
+    httpResponse.successResponse(res, JWT);
+    
+  } catch(e){
+    httpResponse.failureResponse(res, e);
+    console.log(e);
+  }
+}
+
 const unconfirm = async (req, res) =>
 {
   try{
@@ -353,4 +396,5 @@ const unconfirm = async (req, res) =>
   
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm};
+export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login};
+
