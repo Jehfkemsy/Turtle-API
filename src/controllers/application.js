@@ -334,4 +334,23 @@ const apply = async (req,res) => {
   });
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply};
+const unconfirm = async (req, res) =>
+{
+  try{
+    const email = req.body.email;
+
+    const unconfirmation = await Applicant.findOneAndUpdate(
+      email,
+      {applicationStatus : "Accepted"}
+    ).exec();
+    httpResponse.successResponse(res, applicant);
+  }catch(e)
+  {
+    logger.info({ e, application: "Hacker", email: email });
+    httpResponse.failureResponse(res, e)
+  }
+
+  
+}
+
+export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm};

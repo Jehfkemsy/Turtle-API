@@ -24,6 +24,7 @@ apiRouter.put("/application/confirm", application.confirm);
 apiRouter.get("/application", authMiddleware, application.read);
 apiRouter.put("/application", application.update);
 apiRouter.put("/application/apply",application.apply);
+apiRouter.put("/application/unconfirm", application.unconfirm);
 
 /* ------ Administrator Routes ------ */
 apiRouter.put("/admin/acceptOne",authMiddleware,application.acceptOne)
