@@ -39,21 +39,80 @@ Once you pass it through the inliner, you can now use it as a template.
 ## routes
 
 ### POST `/application`
+-To create a new hacker object into the database
 
 - Example request
 
 ```json
 {
-  "firstName": "Mike",
-  "lastName": "Swift",
-  "email": "foo@bar.com",
-  "school": "MLH Academy",
-  "major": "Computer Science",
-  "levelOfStudy": "JUNIOR",
-  "gender": "MALE",
-  "shirtSize": "MEDIUM",
-  "diet": "Peanuts",
-  "resume": <Buffer />
+	"firstName":"John",
+	"lastName":"Doe",
+	"email":"John@gmail.com",
+	"password":"secretPassword",
+}
+```
+
+### POST `/application/apply`
+-To insert information from a hacker's application (based on email)
+
+- Example request
+
+```json
+{
+	"email":"John@gmail.com",
+	"schoolName":"Florida International Univeristy",
+	"levelOfStudy":"Freshman",
+	"graduationYear":"2022",
+	"major":"Computer Science",
+	"gender":"Male",
+	"dob":"10/29/1997",
+	"race":"hispanic",
+	"phoneNumber":"111-111-1111",
+	"dietaryRestriction":"None",
+	"firstTimeHack":"false",
+	"howDidYouHear":"friends",
+	"favoriteEvents":["Cup Stacking","Soylent Pong"],
+	"areaOfFocus":"Web Development",
+	"resume":"URL",
+	"reasonForAttending":"Love Hackathons",
+	"haveBeenToShell":"true",
+	"likeAMentor":"false",
+	"needReimburesment":"false",
+	"location":"Miami",
+	"shirtSize":"Medium"
+}
+```
+
+### PUT `/application/confirm`
+-Changes a hacker's status to confirmed based on email
+
+- Example request
+
+```json
+{
+  "email": "john@gmail.com"
+}
+```
+
+### PUT `/admin/acceptOne`
+-Accept's a hacker based on email (needs admin privilages)
+
+- Example request
+
+```json
+{
+  "email":"john@gmail.com"
+}
+```
+
+### PUT `/admin/acceptSchool`
+-Accept's a hacker based on school (needs admin privilages)
+
+- Example request
+
+```json
+{
+  "schoolName":"Florida International University"
 }
 ```
 
