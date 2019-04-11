@@ -23,6 +23,6 @@ passport.use(
   })
 );
 
-const authMiddleware = passport.authenticate("bearer", { session: false });
+const adminAuthMiddleware = passport.authenticate("bearer", { session: false });
 
-export default authMiddleware;
+export default adminAuthMiddleware;

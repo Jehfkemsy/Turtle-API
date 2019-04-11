@@ -12,28 +12,29 @@ import live from "../controllers/live";
 import walkIn from "../controllers/walkIn";
 import checkin from "../controllers/checkin";
 
-import authMiddleware from "../middleware/auth";
+import adminAuthMiddleware from "../middleware/adminAuth";
+import hackerAuthMiddleware from '../middleware/hackerAuth';
 
 const apiRouter = Router();
 
 apiRouter.get("/", (req, res) => res.send("biensupernice."));
 
 /* ------ Application Routes ------ */
-apiRouter.get("/application", authMiddleware, application.read);
+apiRouter.get("/application", adminAuthMiddleware, application.read);
 apiRouter.post("/application", application.create);
 apiRouter.post("/application/login", application.login);
 apiRouter.put("/application/confirm", application.confirm);
 apiRouter.put("/application", application.update);
 apiRouter.put("/application/apply",application.apply);
-apiRouter.put("/application/unconfirm", application.unconfirm);
+apiRouter.put("/application/unconfirm", hackerAuthMiddleware, application.unconfirm);
 
 /* ------ Administrator Routes ------ */
-apiRouter.put("/admin/acceptOne",authMiddleware,application.acceptOne)
-apiRouter.put("/admin/acceptSchool",authMiddleware,application.acceptSchool)
+apiRouter.put("/admin/acceptOne",adminAuthMiddleware,application.acceptOne)
+apiRouter.put("/admin/acceptSchool",adminAuthMiddleware,application.acceptSchool)
 
 /* ------- Day of Routes --------*/
-apiRouter.post("/walkin", authMiddleware, walkIn.create);
-apiRouter.post("/checkin", authMiddleware, checkin.create);
+apiRouter.post("/walkin", adminAuthMiddleware, walkIn.create);
+apiRouter.post("/checkin", adminAuthMiddleware, checkin.create);
 
 /* ------ Workshop Routes ------ */
 apiRouter.post("/workshop", workshop.create);
@@ -49,10 +50,10 @@ apiRouter.post("/candidate", candidate.create);
 apiRouter.get("/candidate", candidate.read);
 
 /* ------Cabinet Routes ------ */
-apiRouter.get("/cabinet/males", authMiddleware, cabinet.males);
-apiRouter.get("/cabinet/females", authMiddleware, cabinet.females);
-apiRouter.get("/cabinet/confirmed", authMiddleware, cabinet.confirmed);
-apiRouter.get("/cabinet/unconfirmed", authMiddleware, cabinet.unconfirmed);
+apiRouter.get("/cabinet/males", adminAuthMiddleware, cabinet.males);
+apiRouter.get("/cabinet/females", adminAuthMiddleware, cabinet.females);
+apiRouter.get("/cabinet/confirmed", adminAuthMiddleware, cabinet.confirmed);
+apiRouter.get("/cabinet/unconfirmed", adminAuthMiddleware, cabinet.unconfirmed);
 apiRouter.get("/cabinet/download", cabinet.download);
 apiRouter.get("/cabinet/checkin", cabinet.checkedIn);
 
