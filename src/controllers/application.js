@@ -10,7 +10,7 @@ import httpResponse from "../utils/httpResponses";
 import Applicant from "../models/applicant";
 import jwt from 'jsonwebtoken';
 
-const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID } = process.env;
+const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID, SECRET_KEY} = process.env;
 
 const create = async (req, res) => {
   const{firstName,lastName,email} = req.body;
@@ -358,16 +358,15 @@ const login = async (req, res) => {
     if (!correctPass)
       throw 'Wrong login info';
 
-    const today = new Date();
-    const expDate = new Date(today);
-    expDate.setDate(today.getDate() + 60);
+    const expDate =  60 * 60 * 144
 
     let {shellID} = user;
 
-    let JWT = await jwt.sign({
-      shellID,
-      exp:parseInt(expDate.getTime/1000,10),
-    },'secret');
+    let JWT = await jwt.sign(
+      {key:shellID},
+      SECRET_KEY,
+      {expiresIn:expDate}
+    );
 
     httpResponse.successResponse(res, JWT);
     
@@ -386,10 +385,11 @@ const unconfirm = async (req, res) =>
       email,
       {applicationStatus : "Accepted"}
     ).exec();
-    httpResponse.successResponse(res, applicant);
+    httpResponse.successResponse(res, unconfirmation);
   }catch(e)
   {
     logger.info({ e, application: "Hacker", email: email });
+    console.log(e);
     httpResponse.failureResponse(res, e)
   }
 
