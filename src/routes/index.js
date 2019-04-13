@@ -12,24 +12,25 @@ import token from "../controllers/token";
 // import walkIn from "../controllers/walkin";
 // import checkin from "../controllers/checkin";
 
-import authMiddleware from "../middleware/auth";
+import adminAuthMiddleware from "../middleware/adminAuth";
+import hackerAuthMiddleware from '../middleware/hackerAuth';
 
 const apiRouter = Router();
 
 apiRouter.get("/", (req, res) => res.send("biensupernice."));
 
 /* ------ Application Routes ------ */
-apiRouter.get("/application", authMiddleware, application.read);
+apiRouter.get("/application", adminAuthMiddleware, application.read);
 apiRouter.post("/application", application.create);
 apiRouter.post("/application/login", application.login);
 apiRouter.put("/application/confirm", application.confirm);
 apiRouter.put("/application", application.update);
 apiRouter.put("/application/apply",application.apply);
-apiRouter.put("/application/unconfirm", application.unconfirm);
+apiRouter.put("/application/unconfirm", hackerAuthMiddleware, application.unconfirm);
 
 /* ------ Administrator Routes ------ */
-apiRouter.put("/admin/acceptOne",authMiddleware,application.acceptOne)
-apiRouter.put("/admin/acceptSchool",authMiddleware,application.acceptSchool)
+apiRouter.put("/admin/acceptOne",adminAuthMiddleware,application.acceptOne)
+apiRouter.put("/admin/acceptSchool",adminAuthMiddleware,application.acceptSchool)
 
 /* ------- Day of Routes --------*/
 // apiRouter.post("/walkin", authMiddleware, walkIn.create);

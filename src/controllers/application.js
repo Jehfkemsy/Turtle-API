@@ -10,7 +10,7 @@ import httpResponse from "../utils/httpResponses";
 import Applicant from "../models/applicant";
 import jwt from 'jsonwebtoken';
 
-const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID } = process.env;
+const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID, SECRET_KEY} = process.env;
 
 const create = async (req, res) => {
   const{firstName,lastName,email} = req.body;
@@ -300,7 +300,7 @@ const apply = async (req,res) => {
     };
 
     try {
-      if (!file) throw "Resume is required.";
+      // if (!file) throw "Resume is required.";
 
       /**
        * Validate applicant fields
@@ -310,14 +310,14 @@ const apply = async (req,res) => {
       /**
        * Upload resume to google drive
        */
-      const filename = fields.email.match(/.*?(?=@|$)/i)[0];
+      // const filename = fields.email.match(/.*?(?=@|$)/i)[0];
 
-      fields.resume = "N/A";
+      // fields.resume = "N/A";
 
-      if (GOOGLE_FOLDER_ID) {
-        const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
-        fields.resume = resumeUrl;
-      }
+      // if (GOOGLE_FOLDER_ID) {
+      //   const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
+      //   fields.resume = resumeUrl;
+      // }
 
       /**
        * update applicant in the database
@@ -330,15 +330,16 @@ const apply = async (req,res) => {
       /**
        * Send applicant email
        */
-      mailService.applied(fields);
+      // mailService.applied(fields);
 
       /**
        * Insert applicant in google sheets
        */
-      sheets.write("Applicants", fields);
+      // sheets.write("Applicants", fields);
 
-      httpResponse.successResponse(res, applicant);
+      httpResponse.successResponse(res, user);
     } catch (e) {
+      console.log(e);
       logger.info({ e, application: "Hacker", email: fields.email });
       httpResponse.failureResponse(res, e);
     }
@@ -361,16 +362,15 @@ const login = async (req, res) => {
     if (!correctPass)
       throw 'Wrong login info';
 
-    const today = new Date();
-    const expDate = new Date(today);
-    expDate.setDate(today.getDate() + 60);
+    const expDate =  60 * 60 * 144
 
     let {shellID} = user;
 
-    let JWT = await jwt.sign({
-      shellID,
-      exp:parseInt(expDate.getTime/1000,10),
-    },'secret');
+    let JWT = await jwt.sign(
+      {key:shellID},
+      SECRET_KEY,
+      {expiresIn:expDate}
+    );
 
     httpResponse.successResponse(res, JWT);
     
@@ -389,10 +389,11 @@ const unconfirm = async (req, res) =>
       email,
       {applicationStatus : "Accepted"}
     ).exec();
-    httpResponse.successResponse(res, applicant);
+    httpResponse.successResponse(res, unconfirmation);
   }catch(e)
   {
     logger.info({ e, application: "Hacker", email: email });
+    console.log(e);
     httpResponse.failureResponse(res, e)
   }
 
