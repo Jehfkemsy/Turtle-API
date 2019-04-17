@@ -9,6 +9,10 @@ import logger from "../utils/logger";
 import httpResponse from "../utils/httpResponses";
 import Applicant from "../models/applicant";
 import jwt from 'jsonwebtoken';
+import { runInNewContext } from "vm";
+import { http } from "winston";
+import crypto from 'crypto'
+import mailerService from '../services/nodemailer-temp'
 
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID, SECRET_KEY} = process.env;
 
@@ -52,6 +56,8 @@ const create = async (req, res) => {
       shellID,
       avatarID:"Id1",
       applicationStatus: 'not applied',
+      resetPasswordToken: null,
+      resetPasswordExpiration: null,
       schoolName: null,
       levelOfStudy: null,
       graduationYear: null,
@@ -89,7 +95,7 @@ const create = async (req, res) => {
       /**
        * Insert applicant in the database
        */
-      const applicant = await Applicant.create(fields);
+      // const applicant = await Applicant.create(fields);
 
       /**
        * Send applicant email
@@ -412,4 +418,63 @@ const checkIn = async (req,res) => {
 }
 
 export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, checkIn};
+const forgotPassword = async (req,res) => {  
+
+  try{
+    const {email} = req.body;
+
+    const emailFound = await Applicant.findOne({email: email});
+
+    if(!emailFound){
+      throw 'User email does not exist';
+    }
+
+    const token = await crypto.randomBytes(6).toString('hex');
+
+    const date = new Date();
+    const tomorrow = await date.setTime(date.getTime() + (24 * 60 * 60 * 1000))
+
+    const applicant = await Applicant.findOneAndUpdate({email: email},{
+      resetPasswordToken: token,
+      resetPasswordExpiration: tomorrow
+    })
+
+    mailerService.forgotPassword(email,token);
+
+    httpResponse.successResponse(res,"Reset password email sent");
+  }
+  catch(err){
+    console.log(err)
+    httpResponse.failureResponse(res,err);
+  }
+}
+
+const resetPassword = async (req,res) => {
+    try{
+      const {email, newPassword, token} = req.body;
+
+      await applicationService.resetPasswordValidation(email, newPassword, token);
+
+      const password = bcrypt.hashSync(newPassword)
+
+      const updatedApplicant = await Applicant.findOneAndUpdate({email: email},
+        {
+          resetPasswordToken: null,
+          resetPasswordExpiration: null,
+          password: password,
+        });
+
+        if(!updatedApplicant) throw "Error, try again later"
+
+      
+      httpResponse.successResponse(res,"Email succesfully reset");
+
+    }
+    catch(err){
+      console.log(err)
+      httpResponse.failureResponse(res,err);
+    }
+}
+
+export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword};
 
