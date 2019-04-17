@@ -410,7 +410,7 @@ const forgotPassword = async (req,res) => {
     const emailFound = await Applicant.findOne({email: email});
 
     if(!emailFound){
-      res.send('User email does not exist');
+      throw 'User email does not exist';
     }
 
     const token = await crypto.randomBytes(6).toString('hex');
