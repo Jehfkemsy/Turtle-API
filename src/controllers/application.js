@@ -402,6 +402,22 @@ const unconfirm = async (req, res) =>
   
 }
 
+const checkIn = async (req,res) => {
+  const {shellID} = req.body
+
+  try{
+    const checkedIn = await Applicant.findOneAndUpdate(
+      shellID,
+      {checkIn: true}
+    ).exec()
+
+    httpResponse.successResponse(res,checkedIn);
+  }catch(e){
+    httpResponse.failureResponse(res,e)
+  }
+}
+
+export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, checkIn};
 const forgotPassword = async (req,res) => {  
 
   try{
