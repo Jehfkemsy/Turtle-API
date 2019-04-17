@@ -9,6 +9,10 @@ import logger from "../utils/logger";
 import httpResponse from "../utils/httpResponses";
 import Applicant from "../models/applicant";
 import jwt from 'jsonwebtoken';
+import { runInNewContext } from "vm";
+import { http } from "winston";
+import crypto from 'crypto'
+import mailerService from '../services/nodemailer-temp'
 
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID, SECRET_KEY} = process.env;
 
@@ -52,6 +56,8 @@ const create = async (req, res) => {
       shellID,
       avatarID:"Id1",
       applicationStatus: 'not applied',
+      resetPasswordToken: null,
+      resetPasswordExpiration: null,
       schoolName: null,
       levelOfStudy: null,
       graduationYear: null,
@@ -83,7 +89,7 @@ const create = async (req, res) => {
       /**
        * Validate applicant fields
        */
-      // await applicationService.validateHacker(fields);
+      await applicationService.validateHacker(fields);
 
 
       /**
@@ -94,12 +100,12 @@ const create = async (req, res) => {
       /**
        * Send applicant email
        */
-      // mailService.applied(fields);
+      mailService.applied(fields);
 
       /**
        * Insert applicant in google sheets
        */
-      // sheets.write("Applicants", fields);
+      sheets.write("Applicants", fields);
 
       httpResponse.successResponse(res, applicant);
     } catch (e) {
@@ -297,7 +303,7 @@ const apply = async (req,res) => {
     };
 
     try {
-      if (!file) throw "Resume is required.";
+      //if (!file) throw "Resume is required.";
 
       /**
        * Validate applicant fields
@@ -307,14 +313,14 @@ const apply = async (req,res) => {
       /**
        * Upload resume to google drive
        */
-      const filename = fields.email.match(/.*?(?=@|$)/i)[0];
+      //const filename = fields.email.match(/.*?(?=@|$)/i)[0];
 
-      fields.resume = "N/A";
+      //fields.resume = "N/A";
 
-      if (GOOGLE_FOLDER_ID) {
-        const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
-        fields.resume = resumeUrl;
-      }
+      // if (GOOGLE_FOLDER_ID) {
+      //   const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
+      //   fields.resume = resumeUrl;
+      // }
 
       /**
        * update applicant in the database
@@ -327,12 +333,12 @@ const apply = async (req,res) => {
       /**
        * Send applicant email
        */
-      mailService.applied(fields);
+      //mailService.applied(fields);
 
       /**
        * Insert applicant in google sheets
        */
-      sheets.write("Applicants", fields);
+      //sheets.write("Applicants", fields);
 
       httpResponse.successResponse(res, applicant);
     } catch (e) {
@@ -396,5 +402,63 @@ const unconfirm = async (req, res) =>
   
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login};
+const forgotPassword = async (req,res) => {  
+
+  try{
+    const {email} = req.body;
+
+    const emailFound = await Applicant.findOne({email: email});
+
+    if(!emailFound){
+      res.send('User email does not exist');
+    }
+
+    const token = await crypto.randomBytes(6).toString('hex');
+
+    const date = new Date();
+    const tomorrow = await date.setTime(date.getTime() + (24 * 60 * 60 * 1000))
+
+    const applicant = await Applicant.findOneAndUpdate({email: email},{
+      resetPasswordToken: token,
+      resetPasswordExpiration: tomorrow
+    })
+
+    mailerService.forgotPassword(email,token);
+
+    httpResponse.successResponse(res,"Reset password email sent");
+  }
+  catch(err){
+    console.log(err)
+    httpResponse.failureResponse(res,err);
+  }
+}
+
+const resetPassword = async (req,res) => {
+    try{
+      const {email, newPassword, token} = req.body;
+
+      await applicationService.resetPasswordValidation(email, newPassword, token);
+
+      const password = bcrypt.hashSync(newPassword)
+
+      const updatedApplicant = await Applicant.findOneAndUpdate({email: email},
+        {
+          resetPasswordToken: null,
+          resetPasswordExpiration: null,
+          password: password,
+        });
+
+        if(!updatedApplicant) throw "Error, try again later"
+
+      
+      httpResponse.successResponse(res,"Email succesfully reset");
+
+    }
+    catch(err){
+      console.log(err)
+      httpResponse.failureResponse(res,err);
+    }
+}
+
+export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword};
 

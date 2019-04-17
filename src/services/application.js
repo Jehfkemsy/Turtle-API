@@ -91,11 +91,39 @@ const validateVolunteer = applicant =>
   });
 
 const validateCandidate = applicant =>
-  new Promise(async (resolve, reject) => {
+  new Promise(async (reject, resolve) => {
     if (!applicant.email) reject("Email was not defined");
 
     resolve();
   });
+
+  const resetPasswordValidation = async(email, newPassword, token)=>{
+
+    const applicant = await Applicant.findOne({email: email});
+
+    if(!applicant){throw "Email does not exist";}
+
+    if(!applicant.resetPasswordToken){
+      throw "User has not requested to change password";
+    }
+
+    if(applicant.resetPasswordExpiration < Date.now()){
+      throw "Token provided is expired";
+    }
+
+    if(!token){
+      throw "Reset password token must be provided";
+    }
+
+    if(token != applicant.resetPasswordToken.trim()){
+      console.log("token " + token + " provided token: " +  applicant.resetPasswordToken);
+      throw "Token is invalid";
+    }
+
+      if(!newPassword){
+        throw "new password must be provided";
+      }
+  }
 
 export default {
   validateHacker,
@@ -103,5 +131,6 @@ export default {
   validateWorkshop,
   validateMentor,
   validateVolunteer,
-  validateCandidate
+  validateCandidate,
+  resetPasswordValidation
 };
