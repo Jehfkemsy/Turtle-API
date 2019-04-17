@@ -89,23 +89,23 @@ const create = async (req, res) => {
       /**
        * Validate applicant fields
        */
-      await applicationService.validateHacker(fields);
+      // await applicationService.validateHacker(fields);
 
 
       /**
        * Insert applicant in the database
        */
-      const applicant = await Applicant.create(fields);
+      // const applicant = await Applicant.create(fields);
 
       /**
        * Send applicant email
        */
-      mailService.applied(fields);
+      // mailService.applied(fields);
 
       /**
        * Insert applicant in google sheets
        */
-      sheets.write("Applicants", fields);
+      // sheets.write("Applicants", fields);
 
       httpResponse.successResponse(res, applicant);
     } catch (e) {
@@ -303,7 +303,7 @@ const apply = async (req,res) => {
     };
 
     try {
-      //if (!file) throw "Resume is required.";
+      if (!file) throw "Resume is required.";
 
       /**
        * Validate applicant fields
@@ -313,14 +313,14 @@ const apply = async (req,res) => {
       /**
        * Upload resume to google drive
        */
-      //const filename = fields.email.match(/.*?(?=@|$)/i)[0];
+      const filename = fields.email.match(/.*?(?=@|$)/i)[0];
 
-      //fields.resume = "N/A";
+      fields.resume = "N/A";
 
-      // if (GOOGLE_FOLDER_ID) {
-      //   const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
-      //   fields.resume = resumeUrl;
-      // }
+      if (GOOGLE_FOLDER_ID) {
+        const resumeUrl = await drive.upload(file, filename, GOOGLE_FOLDER_ID);
+        fields.resume = resumeUrl;
+      }
 
       /**
        * update applicant in the database
@@ -333,12 +333,12 @@ const apply = async (req,res) => {
       /**
        * Send applicant email
        */
-      //mailService.applied(fields);
+      mailService.applied(fields);
 
       /**
        * Insert applicant in google sheets
        */
-      //sheets.write("Applicants", fields);
+      sheets.write("Applicants", fields);
 
       httpResponse.successResponse(res, applicant);
     } catch (e) {
