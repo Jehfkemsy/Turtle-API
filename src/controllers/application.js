@@ -417,7 +417,6 @@ const checkIn = async (req,res) => {
   }
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, checkIn};
 const forgotPassword = async (req,res) => {  
 
   try{
