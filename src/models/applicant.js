@@ -6,6 +6,7 @@ const applicantSchema = new mongoose.Schema({
   email: {type: String, required: true},
   password: {type:String, required: true},
   schoolName: {type:String},
+  checkIn: {type: Boolean,default: false},
   levelOfStudy: { type: String, default: "N/A" },
   graduationYear: { type: String },
   major: { type: String},
