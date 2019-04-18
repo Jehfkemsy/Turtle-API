@@ -6,7 +6,6 @@ const { SECRET_KEY, DASHBOARD_PASSWORD } = process.env;
 
 const create = (req, res) => {
   const { password } = req.body;
-  console.log(password);
   let expiresIn = 60 * 60 * 144; // 144 hours
 
   if (password == DASHBOARD_PASSWORD) {
