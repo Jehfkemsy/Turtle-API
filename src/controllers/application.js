@@ -9,6 +9,7 @@ import logger from "../utils/logger";
 import httpResponse from "../utils/httpResponses";
 import Applicant from "../models/applicant";
 import jwt from 'jsonwebtoken';
+import mail from '../services/mail';
 
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID } = process.env;
 
@@ -21,18 +22,38 @@ const create = async (req, res) => {
     /*
       validate email is unique
     */
-    await applicationService.validateHacker(req.body.email)
-    console.log('unique email')
+
+    //await applicationService.validateHacker(req.body.email)
+    //console.log('unique email')
+
 
     /*
       hash password
     */
-    const password = bcrypt.hashSync(req.body.password)
-    console.log('hashed password')
+
+    /*const hpassword = await bcrypt.hash(password ,12, (err,hash) => {
+      
+        return hash;
+      
+    })*/
+    const password = "12345"
+
+    //var salt = bcrypt.genSaltSync(12);
+    //var hash = bcrypt.hashSync(req.body.password, salt);
     /*
       generate unique shell id
     */
-   let unique;
+    //let unique = false
+    //let id = idGenerator.createId(5);
+
+    //do{unique = Applicant.findOne({shellID: id})}while(!unique)
+
+    //const hash = bcrypt.hashSync(req.body.password)
+    //console.log('hashed password')
+    /*
+      generate unique shell id
+    */
+   /*let unique;
    let id;
     do{
     id = createID.createId(5);
@@ -40,17 +61,19 @@ const create = async (req, res) => {
       
       unique = await Applicant.findOne({shellID: id})
       console.log(unique);
-    }while(unique != null)
+    }while(unique != null)*/
 
     console.log('id is unique')
 
-    const shellID = id
+
+    //const shellID = id
+    const shellID = "292929"
           
     const fields = {
       firstName,
       lastName,
       email,
-      password : hash,
+      password : password,
       shellID,
       avatarID:"Id1",
       applicationStatus: 'not applied',
@@ -398,5 +421,40 @@ const unconfirm = async (req, res) =>
   
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login};
+const remindConfirm = async (req, res) =>
+{
+  try{
+
+        const remind = await Applicant.find({applicationStatus : "accepted"})
+
+        for(let i = 0;i < remind.length;i++)
+        {
+          mail.applied(remind[i]);
+        }
+}catch(e)
+{
+  logger.info({ e, application: "Hacker", email: email });
+  httpResponse.failureResponse(res, e)
+}
+}
+
+const remindApply = async (req,res) =>
+{
+  try{
+    const remind = await Applicant.find({applicationStatus : "not applied"})
+
+        for(let i = 0;i < remind.length;i++)
+        {
+          mail.applied(remind[i]);
+        }
+
+  httpResponse.successResponse(res);
+  }catch(e)
+  {
+    logger.info({ e, application: "Hacker", email: email });
+    httpResponse.failureResponse(res, e)
+  }
+}
+
+export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, remindConfirm, remindApply};
 

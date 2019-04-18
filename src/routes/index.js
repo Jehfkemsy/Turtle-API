@@ -27,9 +27,11 @@ apiRouter.put("/application", application.update);
 apiRouter.put("/application/apply",application.apply);
 apiRouter.put("/application/unconfirm", application.unconfirm);
 
+
 /* ------ Administrator Routes ------ */
 apiRouter.put("/admin/acceptOne",authMiddleware,application.acceptOne)
 apiRouter.put("/admin/acceptSchool",authMiddleware,application.acceptSchool)
+apiRouter.get("/admin/remindConfirm", application.remindConfirm);
 
 /* ------- Day of Routes --------*/
 //apiRouter.post("/walkin", authMiddleware, walkIn.create);
