@@ -23,14 +23,17 @@ apiRouter.get("/", (req, res) => res.send("biensupernice."));
 apiRouter.get("/application", adminAuthMiddleware, application.read);
 apiRouter.post("/application", application.create);
 apiRouter.post("/application/login", application.login);
-apiRouter.put("/application/confirm", application.confirm);
-apiRouter.put("/application", application.update);
-apiRouter.put("/application/apply",application.apply);
+apiRouter.put("/application/confirm",hackerAuthMiddleware, application.confirm);
+apiRouter.put("/application", hackerAuthMiddleware, application.update);
+apiRouter.put("/application/apply",hackerAuthMiddleware, application.apply);
 apiRouter.put("/application/unconfirm", hackerAuthMiddleware, application.unconfirm);
+apiRouter.put("/application/forgot_password",application.forgotPassword);
+apiRouter.put("/application/reset_password",application.resetPassword);
 
 /* ------ Administrator Routes ------ */
-apiRouter.put("/admin/acceptOne",adminAuthMiddleware,application.acceptOne)
-apiRouter.put("/admin/acceptSchool",adminAuthMiddleware,application.acceptSchool)
+apiRouter.put("/admin/acceptOne",adminAuthMiddleware,application.acceptOne);
+apiRouter.put("/admin/acceptSchool",adminAuthMiddleware,application.acceptSchool);
+apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
 
 /* ------- Day of Routes --------*/
 // apiRouter.post("/walkin", authMiddleware, walkIn.create);

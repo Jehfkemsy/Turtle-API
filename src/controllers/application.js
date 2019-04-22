@@ -9,6 +9,10 @@ import logger from "../utils/logger";
 import httpResponse from "../utils/httpResponses";
 import Applicant from "../models/applicant";
 import jwt from 'jsonwebtoken';
+import { runInNewContext } from "vm";
+import { http } from "winston";
+import crypto from 'crypto'
+import mailerService from '../services/nodemailer-temp'
 
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID, SECRET_KEY} = process.env;
 
@@ -50,8 +54,11 @@ const create = async (req, res) => {
       email,
       password,
       shellID,
+      checkIn: false,
       avatarID:"Id1",
       applicationStatus: 'not applied',
+      resetPasswordToken: null,
+      resetPasswordExpiration: null,
       schoolName: null,
       levelOfStudy: null,
       graduationYear: null,
@@ -89,8 +96,7 @@ const create = async (req, res) => {
       /**
        * Insert applicant in the database
        */
-      const applicant = await Applicant.create(fields);
-      console.log('put in db')
+       const applicant = await Applicant.create(fields);
 
       /**
        * Send applicant email
@@ -113,8 +119,12 @@ const create = async (req, res) => {
   
 };
 
+//changed
 const read = async (req, res) => {
+  console.log('hit');
   const { page = 0, limit = 30, q } = req.query;
+  console.log('query:' +q);
+  console.log('page: '+page)
 
   const queryLimit = parseInt(Math.abs(limit));
   const pageQuery = parseInt(Math.abs(page)) * queryLimit;
@@ -128,7 +138,8 @@ const read = async (req, res) => {
         $or: [
           { firstName: new RegExp(".*" + q + ".*", "i") },
           { lastName: new RegExp(".*" + q + ".*", "i") },
-          { email: new RegExp(".*" + q + ".*", "i") }
+          { email: new RegExp(".*" + q + ".*", "i") },
+          { schoolName: new RegExp(".*" + q + ".*", "i") }
         ]
       };
     }
@@ -145,9 +156,9 @@ const read = async (req, res) => {
       throw new Error("No Applicants found.");
     }
 
-    const count = await Applicant.countDocuments({});
+    const count = await Applicant.countDocuments(searchCriteria);
     const checkedInCount = await Applicant.countDocuments({ checkIn: true });
-    const overallPages = Math.floor(count / queryLimit);
+    const overallPages = Math.ceil(count / queryLimit);
     const currentQuery = applicants.length;
 
     if (currentPage > overallPages) {
@@ -163,6 +174,7 @@ const read = async (req, res) => {
       checkedInCount
     });
   } catch (e) {
+    console.log(e);
     return httpResponse.failureResponse(res, e);
   }
 };
@@ -380,13 +392,14 @@ const login = async (req, res) => {
   }
 }
 
+//changed
 const unconfirm = async (req, res) =>
 {
   try{
     const email = req.body.email;
 
     const unconfirmation = await Applicant.findOneAndUpdate(
-      email,
+      {email},
       {applicationStatus : "Accepted"}
     ).exec();
     httpResponse.successResponse(res, unconfirmation);
@@ -400,5 +413,80 @@ const unconfirm = async (req, res) =>
   
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login};
+//changed
+const checkIn = async (req,res) => {
+  const {shellID} = req.body
+
+  try{
+    const checkedIn = await Applicant.findOneAndUpdate(
+      {shellID},
+      {checkIn: true}
+    ).exec()
+    console.log('checked in');
+
+    httpResponse.successResponse(res,checkedIn);
+  }catch(e){
+    httpResponse.failureResponse(res,e)
+  }
+}
+
+const forgotPassword = async (req,res) => {  
+
+  try{
+    const {email} = req.body;
+
+    const emailFound = await Applicant.findOne({email: email});
+
+    if(!emailFound){
+      throw 'User email does not exist';
+    }
+
+    const token = await crypto.randomBytes(6).toString('hex');
+
+    const date = new Date();
+    const tomorrow = await date.setTime(date.getTime() + (24 * 60 * 60 * 1000))
+
+    const applicant = await Applicant.findOneAndUpdate({email: email},{
+      resetPasswordToken: token,
+      resetPasswordExpiration: tomorrow
+    })
+
+    mailerService.forgotPassword(email,token);
+
+    httpResponse.successResponse(res,"Reset password email sent");
+  }
+  catch(err){
+    console.log(err)
+    httpResponse.failureResponse(res,err);
+  }
+}
+
+const resetPassword = async (req,res) => {
+    try{
+      const {email, newPassword, token} = req.body;
+
+      await applicationService.resetPasswordValidation(email, newPassword, token);
+
+      const password = bcrypt.hashSync(newPassword)
+
+      const updatedApplicant = await Applicant.findOneAndUpdate({email: email},
+        {
+          resetPasswordToken: null,
+          resetPasswordExpiration: null,
+          password: password,
+        });
+
+        if(!updatedApplicant) throw "Error, try again later"
+
+      
+      httpResponse.successResponse(res,"Email succesfully reset");
+
+    }
+    catch(err){
+      console.log(err)
+      httpResponse.failureResponse(res,err);
+    }
+}
+
+export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn};
 
