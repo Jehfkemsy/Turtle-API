@@ -117,7 +117,10 @@ const create = async (req, res) => {
 };
 
 const read = async (req, res) => {
+  console.log('hit');
   const { page = 0, limit = 30, q } = req.query;
+  console.log('query:' +q);
+  console.log('page: '+page)
 
   const queryLimit = parseInt(Math.abs(limit));
   const pageQuery = parseInt(Math.abs(page)) * queryLimit;
@@ -131,7 +134,8 @@ const read = async (req, res) => {
         $or: [
           { firstName: new RegExp(".*" + q + ".*", "i") },
           { lastName: new RegExp(".*" + q + ".*", "i") },
-          { email: new RegExp(".*" + q + ".*", "i") }
+          { email: new RegExp(".*" + q + ".*", "i") },
+          { schoolName: new RegExp(".*" + q + ".*", "i") }
         ]
       };
     }
@@ -148,9 +152,9 @@ const read = async (req, res) => {
       throw new Error("No Applicants found.");
     }
 
-    const count = await Applicant.countDocuments({});
+    const count = await Applicant.countDocuments(searchCriteria);
     const checkedInCount = await Applicant.countDocuments({ checkIn: true });
-    const overallPages = Math.floor(count / queryLimit);
+    const overallPages = Math.ceil(count / queryLimit);
     const currentQuery = applicants.length;
 
     if (currentPage > overallPages) {
@@ -166,9 +170,11 @@ const read = async (req, res) => {
       checkedInCount
     });
   } catch (e) {
+    console.log(e);
     return httpResponse.failureResponse(res, e);
   }
 };
+
 
 const update = async (req, res) => {
   const { email } = req.query;
@@ -388,7 +394,7 @@ const unconfirm = async (req, res) =>
     const email = req.body.email;
 
     const unconfirmation = await Applicant.findOneAndUpdate(
-      email,
+      {email},
       {applicationStatus : "Accepted"}
     ).exec();
     httpResponse.successResponse(res, unconfirmation);
@@ -407,7 +413,7 @@ const checkIn = async (req,res) => {
 
   try{
     const checkedIn = await Applicant.findOneAndUpdate(
-      shellID,
+      {shellID},
       {checkIn: true}
     ).exec()
 
