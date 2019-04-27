@@ -12,7 +12,7 @@ const options = {
 const db = () =>
   Promise.resolve(
     mongoose.connect(
-      "mongodb://localhost:27017/shellhacks",
+      MONGO_URI,
       options
     )
   );

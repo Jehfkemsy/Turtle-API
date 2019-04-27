@@ -456,5 +456,5 @@ const remindApply = async (req,res) =>
   }
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, remindConfirm, remindApply};
+export default { create, read, update ,confirm, acceptOne, acceptSchool, apply, unconfirm, login, remindConfirm, remindApply};
 

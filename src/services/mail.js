@@ -7,18 +7,18 @@ import logger from "../utils/logger";
 
 const { POC_EMAIL, MAILGUN_KEY, MAILGUN_DOMAIN, MAILGUN_EMAIL } = process.env;
 
-const auth = { auth: { api_key: MAILGUN_KEY, domain: MAILGUN_DOMAIN } };
+const auth = { auth: { api_key:MAILGUN_KEY, domain:MAILGUN_DOMAIN } };
 
 const gun = nodemailer.createTransport(mg(auth));
 
 const viewEngine = handlebars.create({});
 const viewPath = "src/templates";
 
-gun.use("compile", nodemailerHandlebars({ viewEngine, viewPath }));
+gun.use("compile", nodemailerHandlebars({ viewEngine : { partialsDir: 'src/templates' }, viewPath }));
 
 const applied = applicant => {
   const mail = {
-    from: `MangoHacks <${MAILGUN_EMAIL}>`,
+    from: POC_EMAIL,
     to: applicant.email,
     subject: `Sweet! You are now registered for MangoHacks!`,
     template: "applied",
