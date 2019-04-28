@@ -37,10 +37,10 @@ const validateWalkin = applicant => {
 //     resolve();
 //   });
 
-const validateHacker = async email =>{
+const validateHacker = async fields =>{
   
     
-    const applicantExist = await Applicant.findOne({email : email})
+    const applicantExist = await Applicant.findOne({email : fields.email})
 
     if(applicantExist) throw("Email already exists")
 
