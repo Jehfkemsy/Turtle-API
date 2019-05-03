@@ -55,12 +55,13 @@ apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
 // apiRouter.get("/candidate", candidate.read);
 
 /* ------Cabinet Routes ------ */
-// apiRouter.get("/cabinet/males", authMiddleware, cabinet.males);
-// apiRouter.get("/cabinet/females", authMiddleware, cabinet.females);
-// apiRouter.get("/cabinet/confirmed", authMiddleware, cabinet.confirmed);
-// apiRouter.get("/cabinet/unconfirmed", authMiddleware, cabinet.unconfirmed);
-// apiRouter.get("/cabinet/download", cabinet.download);
-// apiRouter.get("/cabinet/checkin", cabinet.checkedIn);
+apiRouter.get("/cabinet/statistics", adminAuthMiddleware, cabinet.statistics);
+apiRouter.get("/cabinet/males", adminAuthMiddleware, cabinet.males);
+apiRouter.get("/cabinet/females", adminAuthMiddleware, cabinet.females);
+apiRouter.get("/cabinet/confirmed", adminAuthMiddleware, cabinet.confirmed);
+apiRouter.get("/cabinet/unconfirmed", adminAuthMiddleware, cabinet.unconfirmed);
+apiRouter.get("/cabinet/download", cabinet.download);
+apiRouter.get("/cabinet/checkin", cabinet.checkedIn);
 
 /* ------ Live-Site Announcements ------ */
 apiRouter.post("/announcement", announcement.create);

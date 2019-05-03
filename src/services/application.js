@@ -125,7 +125,6 @@ const validateCandidate = applicant =>
       }
   }
 
-
   const applicationStatistics = async () => {
     const numApplicants = await Applicant.countDocuments({});
     const numConfirmed = await Applicant.countDocuments({applicationStatus: 'confirmed'});
