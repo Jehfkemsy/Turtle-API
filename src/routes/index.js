@@ -30,7 +30,9 @@ apiRouter.put("/application/unconfirm", hackerAuthMiddleware, application.unconf
 apiRouter.put("/application/forgot_password",application.forgotPassword);
 apiRouter.put("/application/reset_password",application.resetPassword);
 
+//CHANGED
 /* ------ Administrator Routes ------ */
+apiRouter.get("/admin/statistics",adminAuthMiddleware, application.statistics);
 apiRouter.put("/admin/acceptOne",adminAuthMiddleware,application.acceptOne);
 apiRouter.put("/admin/acceptSchool",adminAuthMiddleware,application.acceptSchool);
 apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);

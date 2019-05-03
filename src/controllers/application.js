@@ -121,10 +121,9 @@ const create = async (req, res) => {
 
 //changed
 const read = async (req, res) => {
-  console.log('hit');
-  const { page = 0, limit = 30, q } = req.query;
-  console.log('query:' +q);
-  console.log('page: '+page)
+  const { page = 0, limit = 30, q, acceptedFilter } = req.query;
+
+  const acceptedBool = JSON.parse(acceptedFilter);
 
   const queryLimit = parseInt(Math.abs(limit));
   const pageQuery = parseInt(Math.abs(page)) * queryLimit;
@@ -141,8 +140,10 @@ const read = async (req, res) => {
           { email: new RegExp(".*" + q + ".*", "i") },
           { schoolName: new RegExp(".*" + q + ".*", "i") }
         ]
-      };
+      }
     }
+
+    acceptedBool ? searchCriteria['$and'] = [{ applicationStatus: new RegExp(".*" + "accepted" + ".*", "i") }] : null
 
     const applicants = await Applicant.find(searchCriteria, {
       _id: 0,
@@ -224,6 +225,12 @@ const acceptOne = async (req,res) => {
   const {email} = req.body;
 
   try{
+
+    const test = await Applicant.findOne({email}).exec();
+
+    if(test.applicationStatus === 'accepted')
+      throw new Error('Applicant already accepted')
+
     const user = await Applicant.findOneAndUpdate(
       {email},
       {applicationStatus:"accepted"}
@@ -257,6 +264,11 @@ const confirm = async (req,res) => {
   const {email} = req.body;
 
   try{
+    const test = await Applicant.findOne({email}).exec();
+
+    if(test.applicationStatus === 'confirmed')
+      throw 'Applicant already accepted'
+
     const user = await Applicant.findOneAndUpdate(
       {email},
       {applicationStatus:"confirmed"}
@@ -392,7 +404,6 @@ const login = async (req, res) => {
   }
 }
 
-//changed
 const unconfirm = async (req, res) =>
 {
   try{
@@ -488,5 +499,19 @@ const resetPassword = async (req,res) => {
     }
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn};
+//NEW
+const statistics = async (req,res) => {
+    try{
+
+      const statistics = await applicationService.applicationStatistics();
+
+      httpResponse.successResponse(res,statistics);
+
+    }catch(e){
+      httpResponse.failureResponse(res,err);
+    }
+}
+
+//CHANGED
+export default { statistics, create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn};
 
