@@ -53,6 +53,7 @@ apiRouter.post("/candidate", candidate.create);
 apiRouter.get("/candidate", candidate.read);
 
 /* ------Cabinet Routes ------ */
+apiRouter.get("/cabinet/statistics", adminAuthMiddleware, cabinet.statistics);
 apiRouter.get("/cabinet/males", adminAuthMiddleware, cabinet.males);
 apiRouter.get("/cabinet/females", adminAuthMiddleware, cabinet.females);
 apiRouter.get("/cabinet/confirmed", adminAuthMiddleware, cabinet.confirmed);

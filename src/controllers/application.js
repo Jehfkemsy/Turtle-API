@@ -117,10 +117,9 @@ const create = async (req, res) => {
 };
 
 const read = async (req, res) => {
-  console.log('hit');
-  const { page = 0, limit = 30, q } = req.query;
-  console.log('query:' +q);
-  console.log('page: '+page)
+  const { page = 0, limit = 30, q, acceptedFilter } = req.query;
+
+  const acceptedBool = JSON.parse(acceptedFilter);
 
   const queryLimit = parseInt(Math.abs(limit));
   const pageQuery = parseInt(Math.abs(page)) * queryLimit;
@@ -137,8 +136,10 @@ const read = async (req, res) => {
           { email: new RegExp(".*" + q + ".*", "i") },
           { schoolName: new RegExp(".*" + q + ".*", "i") }
         ]
-      };
+      }
     }
+
+    acceptedBool ? searchCriteria['$and'] = [{ applicationStatus: new RegExp(".*" + "accepted" + ".*", "i") }] : null
 
     const applicants = await Applicant.find(searchCriteria, {
       _id: 0,
@@ -174,7 +175,6 @@ const read = async (req, res) => {
     return httpResponse.failureResponse(res, e);
   }
 };
-
 
 const update = async (req, res) => {
   const { email } = req.query;

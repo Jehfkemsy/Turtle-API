@@ -125,6 +125,27 @@ const validateCandidate = applicant =>
       }
   }
 
+  const applicationStatistics = async () => {
+    const numApplicants = await Applicant.countDocuments({});
+    const numConfirmed = await Applicant.countDocuments({applicationStatus: 'confirmed'});
+    const numApplied = await Applicant.countDocuments({applicationStatus: 'applied'});
+    const numNotApplied = await Applicant.countDocuments({applicationStatus:'not applied'});
+    const numAccepted = await Applicant.countDocuments({applicationStatus: 'accepted'});
+    const numMales = await Applicant.countDocuments({gender: 'male'});
+    const numFemales = await Applicant.countDocuments({gender: 'female'});
+
+    return {
+      numApplicants,
+      numConfirmed,
+      numApplied,
+      numNotApplied,
+      numFemales,
+      numMales,
+      numAccepted
+    }
+
+  }
+
 export default {
   validateHacker,
   validateWalkin,
@@ -132,5 +153,6 @@ export default {
   validateMentor,
   validateVolunteer,
   validateCandidate,
-  resetPasswordValidation
+  resetPasswordValidation,
+  applicationStatistics
 };
