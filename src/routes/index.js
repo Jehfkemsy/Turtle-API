@@ -5,7 +5,7 @@ import application from "../controllers/application";
 // import volunteer from "../controllers/volunteer";
 // import candidate from "../controllers/candidate";
 // import workshop from "../controllers/workshop";
-// import cabinet from "../controllers/cabinet";
+import cabinet from "../controllers/cabinet";
 // import mentor from "../controllers/mentor";
 import token from "../controllers/token";
 // import live from "../controllers/live";
