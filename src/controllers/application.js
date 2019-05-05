@@ -480,6 +480,40 @@ const resetPassword = async (req,res) => {
       httpResponse.failureResponse(res,err);
     }
 }
+const remindConfirm = async (req, res) =>
+{
+  try{
 
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn};
+        const remind = await Applicant.find({applicationStatus : "accepted"})
+
+        for(let i = 0;i < remind.length;i++)
+        {
+          mail.applied(remind[i]);
+        }
+}catch(e)
+{
+  logger.info({ e, application: "Hacker", email: email });
+  httpResponse.failureResponse(res, e)
+}
+}
+
+const remindApply = async (req,res) =>
+{
+  try{
+    const remind = await Applicant.find({applicationStatus : "not applied"})
+
+        for(let i = 0;i < remind.length;i++)
+        {
+          mail.applied(remind[i]);
+        }
+
+  httpResponse.successResponse(res);
+  }catch(e)
+  {
+    logger.info({ e, application: "Hacker", email: email });
+    httpResponse.failureResponse(res, e)
+  }
+}
+
+export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, remindConfirm, remindApply};
 
