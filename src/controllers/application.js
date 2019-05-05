@@ -409,9 +409,9 @@ const unconfirm = async (req, res) =>
 
     const unconfirmation = await Applicant.findOneAndUpdate(
       email,
-      {applicationStatus : "Accepted"}
+      {applicationStatus : "accepted"}
     ).exec();
-    httpResponse.successResponse(res, applicant);
+    httpResponse.successResponse(res, unconfirmation);
   }catch(e)
   {
     logger.info({ e, application: "Hacker", email: email });
