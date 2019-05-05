@@ -1,0 +1,32 @@
+import nodemailer from 'nodemailer'
+
+const {EMAIL, EMAIL_PASSWORD} = process.env
+
+
+const forgotPassword = (email,token)=>{
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: EMAIL,
+          pass: EMAIL_PASSWORD
+        }
+      });
+      
+      const mailOptions = {
+        from: EMAIL,
+        to: email,
+        subject: 'Sending Email using Node.js',
+        text: 'Yo, I heard you like tokens, so I got you a token for your token ' + token
+      };
+      
+      transporter.sendMail(mailOptions, (error, info)=>{
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+}
+
+
+export default {forgotPassword}
