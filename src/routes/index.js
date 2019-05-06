@@ -32,9 +32,7 @@ apiRouter.put("/application/reset_password",application.resetPassword);
 
 //CHANGED
 /* ------ Administrator Routes ------ */
-apiRouter.get("/admin/statistics",adminAuthMiddleware, application.statistics);
-apiRouter.put("/admin/acceptOne",adminAuthMiddleware,application.acceptOne);
-apiRouter.put("/admin/acceptSchool",adminAuthMiddleware,application.acceptSchool);
+apiRouter.put("/admin/accept",adminAuthMiddleware,application.accept);
 apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
 
 /* ------- Day of Routes --------*/

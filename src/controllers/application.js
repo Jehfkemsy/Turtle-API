@@ -13,6 +13,7 @@ import { runInNewContext } from "vm";
 import { http } from "winston";
 import crypto from 'crypto'
 import mailerService from '../services/nodemailer-temp'
+import { reject } from "async";
 
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID, SECRET_KEY} = process.env;
 
@@ -37,14 +38,10 @@ const create = async (req, res) => {
    let unique;
    let id;
     do{
-    id = createID.createId(5);
-    console.log(id);
+      id = createID.createId(5);
       
       unique = await Applicant.findOne({shellID: id})
-      console.log(unique);
     }while(unique != null)
-
-    console.log('id is unique')
 
     const shellID = id
           
@@ -111,9 +108,7 @@ const create = async (req, res) => {
 
       httpResponse.successResponse(res, applicant);
     } catch (e) {
-      console.log(e);
       logger.info({ e, application: "Hacker", email: fields.email });
-      console.log(e);
       httpResponse.failureResponse(res, e);
     }
   
@@ -121,9 +116,7 @@ const create = async (req, res) => {
 
 //changed
 const read = async (req, res) => {
-  const { page = 0, limit = 30, q, acceptedFilter } = req.query;
-
-  const acceptedBool = JSON.parse(acceptedFilter);
+  const { page = 0, limit = 30, q, filter} = req.query;
 
   const queryLimit = parseInt(Math.abs(limit));
   const pageQuery = parseInt(Math.abs(page)) * queryLimit;
@@ -142,8 +135,11 @@ const read = async (req, res) => {
         ]
       }
     }
+    console.log(filter);
 
-    acceptedBool ? searchCriteria['$and'] = [{ applicationStatus: new RegExp(".*" + "accepted" + ".*", "i") }] : null
+    filter ? searchCriteria['$and'] = [{ applicationStatus: filter }] : null
+
+    const allApplicants = await Applicant.find(searchCriteria)
 
     const applicants = await Applicant.find(searchCriteria, {
       _id: 0,
@@ -172,10 +168,10 @@ const read = async (req, res) => {
       count,
       currentPage,
       applicants,
+      allApplicants,
       checkedInCount
     });
-  } catch (e) {
-    console.log(e);
+  }catch(e) {
     return httpResponse.failureResponse(res, e);
   }
 };
@@ -219,42 +215,25 @@ const update = async (req, res) => {
   }
 };
 
-
-//accepts a single hacker from given email
-const acceptOne = async (req,res) => {
-  const {email} = req.body;
+const accept = async (req,res) => {
+  const{shellIDs} = req.body;
 
   try{
+    shellIDs.forEach(async shellID => {
+      let accepted = await Applicant.findOne({shellID});
 
-    const test = await Applicant.findOne({email}).exec();
+      if(accepted.applicationStatus =! 'applied')
+        return;
 
-    if(test.applicationStatus === 'accepted')
-      throw new Error('Applicant already accepted')
+      accepted = await Applicant.findOneAndUpdate(
+        {shellID},
+        {applicationStatus:"accepted"}
+        ).exec();
+    });
+    
+    return httpResponse.successResponse(res,null);
 
-    const user = await Applicant.findOneAndUpdate(
-      {email},
-      {applicationStatus:"accepted"}
-      ).exec();
-      return httpResponse.successResponse(res,null)
-  }
-  
-  catch(e){
-    httpResponse.failureResponse(res, e);
-  }
-}
-
-//accepts all hackers from a specific school
-const acceptSchool = async (req,res) => {
-  const {schoolName} = req.body;
-
-  try{
-    const users = await Applicant.updateMany(
-      {schoolName},
-      {"$set":{applicationStatus:"accepted"}}
-      ).exec();
-      return httpResponse.successResponse(res,null)
-  }
-  catch(e){
+  }catch(e){
     httpResponse.failureResponse(res, e);
   }
 }
@@ -293,8 +272,6 @@ const apply = async (req,res) => {
           reasonForAttending,haveBeenToShell,likeAMentor,
           needReimburesment,location} = req.body;
           
-    
-    //need to generate avatarID, ShellID, and Hash password
     const fields = {
       schoolName,
       levelOfStudy,
@@ -363,7 +340,6 @@ const apply = async (req,res) => {
 
       httpResponse.successResponse(res, user);
     } catch (e) {
-      console.log(e);
       logger.info({ e, application: "Hacker", email: fields.email });
       httpResponse.failureResponse(res, e);
     }
@@ -404,6 +380,7 @@ const login = async (req, res) => {
   }
 }
 
+//changed accepted to lower
 const unconfirm = async (req, res) =>
 {
   try{
@@ -411,7 +388,7 @@ const unconfirm = async (req, res) =>
 
     const unconfirmation = await Applicant.findOneAndUpdate(
       {email},
-      {applicationStatus : "Accepted"}
+      {applicationStatus : "accepted"}
     ).exec();
     httpResponse.successResponse(res, unconfirmation);
   }catch(e)
@@ -420,11 +397,8 @@ const unconfirm = async (req, res) =>
     console.log(e);
     httpResponse.failureResponse(res, e)
   }
-
-  
 }
 
-//changed
 const checkIn = async (req,res) => {
   const {shellID} = req.body
 
@@ -499,19 +473,5 @@ const resetPassword = async (req,res) => {
     }
 }
 
-//NEW
-const statistics = async (req,res) => {
-    try{
-
-      const statistics = await applicationService.applicationStatistics();
-
-      httpResponse.successResponse(res,statistics);
-
-    }catch(e){
-      httpResponse.failureResponse(res,err);
-    }
-}
-
-//CHANGED
-export default { statistics, create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn};
+export default {create, read, update, confirm, apply, unconfirm, login, forgotPassword, resetPassword, checkIn, accept};
 
