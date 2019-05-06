@@ -29,6 +29,7 @@ apiRouter.put("/application/apply",hackerAuthMiddleware, application.apply);
 apiRouter.put("/application/unconfirm", hackerAuthMiddleware, application.unconfirm);
 apiRouter.put("/application/forgot_password",application.forgotPassword);
 apiRouter.put("/application/reset_password",application.resetPassword);
+apiRouter.post("/application/:email/:token",application.confirmEmail);
 
 /* ------ Administrator Routes ------ */
 apiRouter.put("/admin/acceptOne",adminAuthMiddleware,application.acceptOne);

@@ -13,11 +13,13 @@ import { runInNewContext } from "vm";
 import { http } from "winston";
 import crypto from 'crypto'
 import mailerService from '../services/nodemailer-temp'
+import mail from "../services/mail";
 
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID, SECRET_KEY} = process.env;
 
 const create = async (req, res) => {
   const{firstName,lastName,email} = req.body;
+  console.log(firstName,lastName,email)
   try {
 
     /*
@@ -47,6 +49,7 @@ const create = async (req, res) => {
     console.log('id is unique')
 
     const shellID = id
+    const emailConfirmationToken = await crypto.randomBytes(20).toString('hex');
           
     const fields = {
       firstName,
@@ -54,6 +57,7 @@ const create = async (req, res) => {
       email,
       password,
       shellID,
+      emailConfirmationToken,
       avatarID:"Id1",
       applicationStatus: 'not applied',
       resetPasswordToken: null,
@@ -83,29 +87,29 @@ const create = async (req, res) => {
       location: null,
       shirtSize: null,
     };
-
     
 
       /**
        * Validate applicant fields
        */
-      // await applicationService.validateHacker(fields);
+      //await applicationService.validateHacker(fields);
 
 
       /**
        * Insert applicant in the database
        */
-      // const applicant = await Applicant.create(fields);
+      const applicant = await Applicant.create(fields);
 
       /**
        * Send applicant email
        */
-      // mailService.applied(fields);
+      //mailerService.confirmationEmail(email, emailConfirmationToken);
 
       /**
        * Insert applicant in google sheets
        */
       // sheets.write("Applicants", fields);
+
 
       httpResponse.successResponse(res, applicant);
     } catch (e) {
@@ -481,5 +485,45 @@ const resetPassword = async (req,res) => {
     }
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn};
+const confirmEmail = async (req,res)=>{
+   try{
+
+    const email = req.params.email;
+    const token = req.params.token;
+    console.log(email,token);
+
+    const applicant = await Applicant.findOne({email})
+
+    if(!email){ throw "Email not found"}
+
+    if(applicant.emailConfirmed){
+      httpResponse.successResponse(res,"Email already confirmed");
+    }
+
+    if(applicant.emailConfirmationToken != token){
+      throw "Email confirmation link is invalid"
+    }
+
+    await Applicant.findOneAndUpdate({email},{emailConfirmed: true});
+    const confirmedApplicant = await Applicant.findOne({email});
+
+    console.log(confirmedApplicant)
+
+    if(!confirmedApplicant){
+      throw "Email not confirmed, please try again later"
+    }
+
+    if(!confirmedApplicant.emailConfirmed){
+      throw "Email not confirmed, please try again later 2"
+    }
+
+    httpResponse.successResponse(res,"Email succesfully confirmed");
+  }
+  catch(err){
+    console.log(err);
+    httpResponse.failureResponse(res,err);
+  }
+}
+
+export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, confirmEmail};
 
