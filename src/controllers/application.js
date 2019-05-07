@@ -117,9 +117,7 @@ const create = async (req, res) => {
 };
 
 const read = async (req, res) => {
-  const { page = 0, limit = 30, q, acceptedFilter } = req.query;
-
-  const acceptedBool = JSON.parse(acceptedFilter);
+  const { page = 0, limit = 30, q, filter} = req.query;
 
   const queryLimit = parseInt(Math.abs(limit));
   const pageQuery = parseInt(Math.abs(page)) * queryLimit;
@@ -138,8 +136,11 @@ const read = async (req, res) => {
         ]
       }
     }
+    console.log(filter);
 
-    acceptedBool ? searchCriteria['$and'] = [{ applicationStatus: new RegExp(".*" + "accepted" + ".*", "i") }] : null
+    filter ? searchCriteria['$and'] = [{ applicationStatus: filter }] : null
+
+    const allApplicants = await Applicant.find(searchCriteria)
 
     const applicants = await Applicant.find(searchCriteria, {
       _id: 0,
@@ -168,10 +169,10 @@ const read = async (req, res) => {
       count,
       currentPage,
       applicants,
+      allApplicants,
       checkedInCount
     });
-  } catch (e) {
-    console.log(e);
+  }catch(e) {
     return httpResponse.failureResponse(res, e);
   }
 };
@@ -215,36 +216,25 @@ const update = async (req, res) => {
   }
 };
 
-
-//accepts a single hacker from given email
-const acceptOne = async (req,res) => {
-  const {email} = req.body;
+const accept = async (req,res) => {
+  const{shellIDs} = req.body;
 
   try{
-    const user = await Applicant.findOneAndUpdate(
-      {email},
-      {applicationStatus:"accepted"}
-      ).exec();
-      return httpResponse.successResponse(res,null)
-  }
-  
-  catch(e){
-    httpResponse.failureResponse(res, e);
-  }
-}
+    shellIDs.forEach(async shellID => {
+      let accepted = await Applicant.findOne({shellID});
 
-//accepts all hackers from a specific school
-const acceptSchool = async (req,res) => {
-  const {schoolName} = req.body;
+      if(accepted.applicationStatus =! 'applied')
+        return;
 
-  try{
-    const users = await Applicant.updateMany(
-      {schoolName},
-      {"$set":{applicationStatus:"accepted"}}
-      ).exec();
-      return httpResponse.successResponse(res,null)
-  }
-  catch(e){
+      accepted = await Applicant.findOneAndUpdate(
+        {shellID},
+        {applicationStatus:"accepted"}
+        ).exec();
+    });
+    
+    return httpResponse.successResponse(res,null);
+
+  }catch(e){
     httpResponse.failureResponse(res, e);
   }
 }
@@ -395,7 +385,7 @@ const unconfirm = async (req, res) =>
 
     const unconfirmation = await Applicant.findOneAndUpdate(
       {email},
-      {applicationStatus : "Accepted"}
+      {applicationStatus : "accepted"}
     ).exec();
     httpResponse.successResponse(res, unconfirmation);
   }catch(e)
@@ -509,5 +499,5 @@ const remindApply = async (req,res) =>
   }
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, remindConfirm, remindApply};
+export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, remindConfirm, remindApply, accept};
 
