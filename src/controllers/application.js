@@ -486,7 +486,7 @@ const remindConfirm = async (req, res) =>
 
         const remind = await Applicant.find({applicationStatus : "accepted"})
 
-        remind.map(mail.applied)
+        remind.map(mailService.applied)
 }catch(e)
 {
   logger.info({ e, application: "Hacker", email: email });
@@ -499,12 +499,12 @@ const remindApply = async (req,res) =>
   try{
     const remind = await Applicant.find({applicationStatus : "not applied"})
 
-        remind.map(mail.applied)
+        remind.map(mailService.applied)
 
   httpResponse.successResponse(res);
   }catch(e)
   {
-    logger.info({ e, application: "Hacker", email: email });
+    logger.info({ e});
     httpResponse.failureResponse(res, e)
   }
 }
