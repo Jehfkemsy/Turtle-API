@@ -95,7 +95,7 @@ const create = async (req, res) => {
       /**
        * Insert applicant in the database
        */
-      // const applicant = await Applicant.create(fields);
+      const applicant = await Applicant.create(fields);
 
       /**
        * Send applicant email
@@ -488,7 +488,6 @@ const remindApply = async (req,res) =>
 {
   try{
     const remind = await Applicant.find({applicationStatus : "not applied"})
-
         remind.map(applicant => {mailService.applied(applicant)})
 
   httpResponse.successResponse(res);
