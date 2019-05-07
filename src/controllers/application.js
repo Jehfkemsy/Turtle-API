@@ -489,7 +489,7 @@ const remindApply = async (req,res) =>
   try{
     const remind = await Applicant.find({applicationStatus : "not applied"})
 
-        remind.map(mailService.applied)
+        remind.map(applicant => {mailService.applied(applicant)})
 
   httpResponse.successResponse(res);
   }catch(e)
@@ -499,5 +499,5 @@ const remindApply = async (req,res) =>
   }
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, remindConfirm, remindApply, accept};
+export default { create, read, update,confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, remindConfirm, remindApply, accept};
 
