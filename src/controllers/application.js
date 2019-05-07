@@ -486,10 +486,7 @@ const remindConfirm = async (req, res) =>
 
         const remind = await Applicant.find({applicationStatus : "accepted"})
 
-        for(let i = 0;i < remind.length;i++)
-        {
-          mail.applied(remind[i]);
-        }
+        remind.map(mail.applied)
 }catch(e)
 {
   logger.info({ e, application: "Hacker", email: email });
@@ -502,10 +499,7 @@ const remindApply = async (req,res) =>
   try{
     const remind = await Applicant.find({applicationStatus : "not applied"})
 
-        for(let i = 0;i < remind.length;i++)
-        {
-          mail.applied(remind[i]);
-        }
+        remind.map(mail.applied)
 
   httpResponse.successResponse(res);
   }catch(e)
