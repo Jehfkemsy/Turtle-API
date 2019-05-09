@@ -4,6 +4,8 @@ import httpResponse from "../utils/httpResponses";
 
 import googleService from "../services/google/drive";
 
+import applicationService from '../services/application';
+
 const confirmed = async (req, res) => {
   try {
     const confirmed = await Applicant.find({ confirmation: true }).exec();
@@ -66,4 +68,16 @@ const download = async (req, res) => {
   }
 };
 
-export default { confirmed, unconfirmed, females, males, download, checkedIn };
+const statistics = async (req,res) => {
+  try{
+
+    const statistics = await applicationService.applicationStatistics();
+
+    httpResponse.successResponse(res,statistics);
+
+  }catch(e){
+    httpResponse.failureResponse(res,err);
+  }
+}
+
+export default { confirmed, unconfirmed, females, males, download, checkedIn, statistics };

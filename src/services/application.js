@@ -91,11 +91,60 @@ const validateVolunteer = applicant =>
   });
 
 const validateCandidate = applicant =>
-  new Promise(async (resolve, reject) => {
+  new Promise(async (reject, resolve) => {
     if (!applicant.email) reject("Email was not defined");
 
     resolve();
   });
+
+  const resetPasswordValidation = async(email, newPassword, token)=>{
+
+    const applicant = await Applicant.findOne({email: email});
+
+    if(!applicant){throw "Email does not exist";}
+
+    if(!applicant.resetPasswordToken){
+      throw "User has not requested to change password";
+    }
+
+    if(applicant.resetPasswordExpiration < Date.now()){
+      throw "Token provided is expired";
+    }
+
+    if(!token){
+      throw "Reset password token must be provided";
+    }
+
+    if(token != applicant.resetPasswordToken.trim()){
+      console.log("token " + token + " provided token: " +  applicant.resetPasswordToken);
+      throw "Token is invalid";
+    }
+
+      if(!newPassword){
+        throw "new password must be provided";
+      }
+  }
+
+  const applicationStatistics = async () => {
+    const numApplicants = await Applicant.countDocuments({});
+    const numConfirmed = await Applicant.countDocuments({applicationStatus: 'confirmed'});
+    const numApplied = await Applicant.countDocuments({applicationStatus: 'applied'});
+    const numNotApplied = await Applicant.countDocuments({applicationStatus:'not applied'});
+    const numAccepted = await Applicant.countDocuments({applicationStatus: 'accepted'});
+    const numMales = await Applicant.countDocuments({gender: 'male'});
+    const numFemales = await Applicant.countDocuments({gender: 'female'});
+
+    return {
+      numApplicants,
+      numConfirmed,
+      numApplied,
+      numNotApplied,
+      numFemales,
+      numMales,
+      numAccepted
+    }
+
+  }
 
 export default {
   validateHacker,
@@ -103,5 +152,7 @@ export default {
   validateWorkshop,
   validateMentor,
   validateVolunteer,
-  validateCandidate
+  validateCandidate,
+  resetPasswordValidation,
+  applicationStatistics
 };
