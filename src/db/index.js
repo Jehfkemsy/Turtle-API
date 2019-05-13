@@ -17,20 +17,11 @@ const database = 'passport-tutorial'
 const db = () =>
   Promise.resolve(
     mongoose.connect(
-      `mongodb://${server}/${database}`
+      MONGO_URI
     )
   );
 
 db()
   .then(() => console.log("> 🗄  Mongo connected"))
   .catch(e => console.log("> Mongo error ", e.message));
-
-
-
-
-
-
-
-
-
-
+  

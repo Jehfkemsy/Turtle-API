@@ -25,13 +25,11 @@ const create = async (req, res) => {
       validate email is unique
     */
     await applicationService.validateHacker(req.body.email)
-    console.log('unique email')
 
     /*
       hash password
     */
     const password = bcrypt.hashSync(req.body.password)
-    console.log('hashed password')
     /*
       generate unique shell id
     */
@@ -98,8 +96,7 @@ const create = async (req, res) => {
       /**
        * Send applicant email
        */
-      mailService.applied(fields);
-      console.log('sent email');
+      // mailService.applied(fields);
 
       /**
        * Insert applicant in google sheets
@@ -135,7 +132,6 @@ const read = async (req, res) => {
         ]
       }
     }
-    console.log(filter);
 
     filter ? searchCriteria['$and'] = [{ applicationStatus: filter }] : null
 
