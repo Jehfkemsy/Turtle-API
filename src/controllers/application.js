@@ -495,5 +495,5 @@ const resetPassword = async (req,res) => {
     }
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept};
+export default { create, read, update,confirm,apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept};
 

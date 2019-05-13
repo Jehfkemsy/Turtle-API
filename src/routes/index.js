@@ -32,12 +32,12 @@ apiRouter.put("/application/reset_password",application.resetPassword);
 
 
 /* ------ Administrator Routes ------ */
-apiRouter.put("/admin/accept",adminAuthMiddleware,application.accept);
-apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
+//apiRouter.put("/admin/accept",adminAuthMiddleware,application.accept);
+//apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
 
 /* ------- Day of Routes --------*/
-apiRouter.post("/walkin", adminAuthMiddleware, walkIn.create);
-apiRouter.post("/checkin", adminAuthMiddleware, checkin.create);
+//apiRouter.post("/walkin", adminAuthMiddleware, walkIn.create);
+//apiRouter.post("/checkin", adminAuthMiddleware, checkin.create);
 
 /* ------ Workshop Routes ------ */
 //apiRouter.post("/workshop", workshop.create);
@@ -53,17 +53,17 @@ apiRouter.post("/checkin", adminAuthMiddleware, checkin.create);
 //apiRouter.get("/candidate", candidate.read);
 
 /* ------Cabinet Routes ------ */
-apiRouter.get("/cabinet/statistics", adminAuthMiddleware, cabinet.statistics);
-apiRouter.get("/cabinet/males", adminAuthMiddleware, cabinet.males);
-apiRouter.get("/cabinet/females", adminAuthMiddleware, cabinet.females);
-apiRouter.get("/cabinet/confirmed", adminAuthMiddleware, cabinet.confirmed);
-apiRouter.get("/cabinet/unconfirmed", adminAuthMiddleware, cabinet.unconfirmed);
-apiRouter.get("/cabinet/download", cabinet.download);
-apiRouter.get("/cabinet/checkin", cabinet.checkedIn);
+// apiRouter.get("/cabinet/statistics", adminAuthMiddleware, cabinet.statistics);
+// apiRouter.get("/cabinet/males", adminAuthMiddleware, cabinet.males);
+// apiRouter.get("/cabinet/females", adminAuthMiddleware, cabinet.females);
+// apiRouter.get("/cabinet/confirmed", adminAuthMiddleware, cabinet.confirmed);
+// apiRouter.get("/cabinet/unconfirmed", adminAuthMiddleware, cabinet.unconfirmed);
+// apiRouter.get("/cabinet/download", cabinet.download);
+// apiRouter.get("/cabinet/checkin", cabinet.checkedIn);
 
 /* ------ Live-Site Announcements ------ */
-apiRouter.post("/announcement", announcement.create);
-apiRouter.get("/announcement", announcement.read);
+// apiRouter.post("/announcement", announcement.create);
+// apiRouter.get("/announcement", announcement.read);
 
 /* ------ Prereg signup Route ------ */
 // Deprecating this route, this alert is no longer needed
