@@ -53,7 +53,7 @@ Once you pass it through the inliner, you can now use it as a template.
 ```
 
 ### POST `/application/apply`
--To insert information from a hacker's application (based on email)
+-To insert information from a hacker's application based on email (needs login token in header)
 
 - Example request
 
@@ -95,7 +95,7 @@ Once you pass it through the inliner, you can now use it as a template.
 ```
 
 ### PUT `/application/confirm`
--Changes a hacker's status to confirmed based on email
+-Changes a hacker's status to confirmed based on email (needs login token in header)
 
 - Example request
 
