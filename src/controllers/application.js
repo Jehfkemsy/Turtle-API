@@ -476,7 +476,7 @@ const remindConfirm = async (req, res) =>
 
         const remind = await Applicant.find({applicationStatus : "accepted"})
 
-        remind.map(mailService.applied)
+        remind.map(applicant => {mailService.applied(applicant)})
 }catch(e)
 {
   logger.info({ e, application: "Hacker", email: email });
