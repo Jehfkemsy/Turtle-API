@@ -31,9 +31,12 @@ apiRouter.put("/application/unconfirm", hackerAuthMiddleware, application.unconf
 apiRouter.put("/application/forgot_password",application.forgotPassword);
 apiRouter.put("/application/reset_password",application.resetPassword);
 
+
 /* ------ Administrator Routes ------ */
 apiRouter.put("/admin/accept",adminAuthMiddleware,application.accept);
 apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
+apiRouter.get("/admin/remind_confirm",adminAuthMiddleware,application.remindConfirm);
+apiRouter.get("/admin/remind_apply",adminAuthMiddleware, application.remindApply);
 
 /* ------- Day of Routes --------*/
 apiRouter.post("/walkin", adminAuthMiddleware, walkIn.create);
