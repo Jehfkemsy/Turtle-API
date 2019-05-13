@@ -14,6 +14,7 @@ import { http } from "winston";
 import crypto from 'crypto'
 import mailerService from '../services/nodemailer-temp'
 import { reject } from "async";
+import httpResponses from "../utils/httpResponses";
 
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID, SECRET_KEY} = process.env;
 
@@ -171,6 +172,20 @@ const read = async (req, res) => {
     return httpResponse.failureResponse(res, e);
   }
 };
+
+//NEW 
+const readOne = async (req,res) => {
+  const {shellID} = req.body;
+
+  try{
+    const user = await Applicant.findOne({shellID});
+
+    httpResponses.successResponse(res,user);
+
+  }catch(e){
+    httpResponses.failureResponse(res,e);
+  }
+}
 
 const update = async (req, res) => {
   const { email } = req.query;
@@ -469,5 +484,5 @@ const resetPassword = async (req,res) => {
     }
 }
 
-export default {create, read, update, confirm, apply, unconfirm, login, forgotPassword, resetPassword, checkIn, accept};
+export default {create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword, resetPassword, checkIn, accept};
 
