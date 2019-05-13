@@ -65,7 +65,7 @@ Once you pass it through the inliner, you can now use it as a template.
 ```
 
 ### POST `/application/apply`
--To insert information from a hacker's application (based on email)
+-To insert information from a hacker's application based on email (needs login token in header)
 
 - Example request
 
@@ -95,8 +95,19 @@ Once you pass it through the inliner, you can now use it as a template.
 }
 ```
 
+### POST `/application/readOne`
+-Gives back an individual hackers information based on given ShellID (needs login token in header)
+
+- Example request
+
+```json
+{
+  "shellID":"Id1"
+}
+```
+
 ### PUT `/application/confirm`
--Changes a hacker's status to confirmed based on email
+-Changes a hacker's status to confirmed based on email (needs login token in header)
 
 - Example request
 
@@ -106,25 +117,25 @@ Once you pass it through the inliner, you can now use it as a template.
 }
 ```
 
-### PUT `/admin/acceptOne`
--Accept's a hacker based on email (needs admin privilages)
+### PUT `/admin/accept`
+-Accepts hackers based on given array of shellIDs (needs admin privilages)
 
 - Example request
 
 ```json
 {
-  "email":"john@gmail.com"
+  "shellIDs":["Id1","Id2"...]
 }
 ```
 
-### PUT `/admin/acceptSchool`
--Accept's a hacker based on school (needs admin privilages)
+### PUT `/admin/checkIn`
+-Checks in indicidual hacker based on shellID (needs admin privilages)
 
 - Example request
 
 ```json
 {
-  "schoolName":"Florida International University"
+  "shellID": "Id1"
 }
 ```
 

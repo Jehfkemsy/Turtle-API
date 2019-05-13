@@ -121,9 +121,7 @@ const create = async (req, res) => {
 };
 
 const read = async (req, res) => {
-  const { page = 0, limit = 30, q, acceptedFilter } = req.query;
-
-  const acceptedBool = JSON.parse(acceptedFilter);
+  const { page = 0, limit = 30, q, filter} = req.query;
 
   const queryLimit = parseInt(Math.abs(limit));
   const pageQuery = parseInt(Math.abs(page)) * queryLimit;
@@ -143,7 +141,9 @@ const read = async (req, res) => {
       }
     }
 
-    acceptedBool ? searchCriteria['$and'] = [{ applicationStatus: new RegExp(".*" + "accepted" + ".*", "i") }] : null
+    filter ? searchCriteria['$and'] = [{ applicationStatus: filter }] : null
+
+    const allApplicants = await Applicant.find(searchCriteria)
 
     const applicants = await Applicant.find(searchCriteria, {
       _id: 0,
@@ -172,13 +172,26 @@ const read = async (req, res) => {
       count,
       currentPage,
       applicants,
+      allApplicants,
       checkedInCount
     });
-  } catch (e) {
-    console.log(e);
+  }catch(e) {
     return httpResponse.failureResponse(res, e);
   }
 };
+
+const readOne = async (req,res) => {
+  const {shellID} = req.body;
+
+  try{
+    const user = await Applicant.findOne({shellID});
+
+    httpResponses.successResponse(res,user);
+
+  }catch(e){
+    httpResponses.failureResponse(res,e);
+  }
+}
 
 const update = async (req, res) => {
   const { email } = req.query;
@@ -219,36 +232,25 @@ const update = async (req, res) => {
   }
 };
 
-
-//accepts a single hacker from given email
-const acceptOne = async (req,res) => {
-  const {email} = req.body;
+const accept = async (req,res) => {
+  const{shellIDs} = req.body;
 
   try{
-    const user = await Applicant.findOneAndUpdate(
-      {email},
-      {applicationStatus:"accepted"}
-      ).exec();
-      return httpResponse.successResponse(res,null)
-  }
-  
-  catch(e){
-    httpResponse.failureResponse(res, e);
-  }
-}
+    shellIDs.forEach(async shellID => {
+      let accepted = await Applicant.findOne({shellID});
 
-//accepts all hackers from a specific school
-const acceptSchool = async (req,res) => {
-  const {schoolName} = req.body;
+      if(accepted.applicationStatus =! 'applied')
+        return;
 
-  try{
-    const users = await Applicant.updateMany(
-      {schoolName},
-      {"$set":{applicationStatus:"accepted"}}
-      ).exec();
-      return httpResponse.successResponse(res,null)
-  }
-  catch(e){
+      accepted = await Applicant.findOneAndUpdate(
+        {shellID},
+        {applicationStatus:"accepted"}
+        ).exec();
+    });
+    
+    return httpResponse.successResponse(res,null);
+
+  }catch(e){
     httpResponse.failureResponse(res, e);
   }
 }
@@ -399,7 +401,7 @@ const unconfirm = async (req, res) =>
 
     const unconfirmation = await Applicant.findOneAndUpdate(
       {email},
-      {applicationStatus : "Accepted"}
+      {applicationStatus : "accepted"}
     ).exec();
     httpResponse.successResponse(res, unconfirmation);
   }catch(e)
@@ -485,45 +487,5 @@ const resetPassword = async (req,res) => {
     }
 }
 
-const confirmEmail = async (req,res)=>{
-   try{
-
-    const email = req.params.email;
-    const token = req.params.token;
-    console.log(email,token);
-
-    const applicant = await Applicant.findOne({email})
-
-    if(!email){ throw "Email not found"}
-
-    if(applicant.emailConfirmed){
-      httpResponse.successResponse(res,"Email already confirmed");
-    }
-
-    if(applicant.emailConfirmationToken != token){
-      throw "Email confirmation link is invalid"
-    }
-
-    await Applicant.findOneAndUpdate({email},{emailConfirmed: true});
-    const confirmedApplicant = await Applicant.findOne({email});
-
-    console.log(confirmedApplicant)
-
-    if(!confirmedApplicant){
-      throw "Email not confirmed, please try again later"
-    }
-
-    if(!confirmedApplicant.emailConfirmed){
-      throw "Email not confirmed, please try again later 2"
-    }
-
-    httpResponse.successResponse(res,"Email succesfully confirmed");
-  }
-  catch(err){
-    console.log(err);
-    httpResponse.failureResponse(res,err);
-  }
-}
-
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, confirmEmail};
+export default { create, read, readOne, update, confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept};
 
