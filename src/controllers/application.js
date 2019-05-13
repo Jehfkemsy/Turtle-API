@@ -136,7 +136,6 @@ const read = async (req, res) => {
         ]
       }
     }
-    console.log(filter);
 
     filter ? searchCriteria['$and'] = [{ applicationStatus: filter }] : null
 
@@ -176,6 +175,19 @@ const read = async (req, res) => {
     return httpResponse.failureResponse(res, e);
   }
 };
+
+const readOne = async (req,res) => {
+  const {shellID} = req.body;
+
+  try{
+    const user = await Applicant.findOne({shellID});
+
+    httpResponses.successResponse(res,user);
+
+  }catch(e){
+    httpResponses.failureResponse(res,e);
+  }
+}
 
 const update = async (req, res) => {
   const { email } = req.query;
@@ -471,5 +483,5 @@ const resetPassword = async (req,res) => {
     }
 }
 
-export default { create, read, update,confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept};
+export default { create, read, readOne, update, confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept};
 

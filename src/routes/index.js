@@ -22,6 +22,7 @@ apiRouter.get("/", (req, res) => res.send("biensupernice."));
 /* ------ Application Routes ------ */
 apiRouter.get("/application", adminAuthMiddleware, application.read);
 apiRouter.post("/application", application.create);
+apiRouter.post("/application/readOne",hackerAuthMiddleware, application.readOne);
 apiRouter.post("/application/login", application.login);
 apiRouter.put("/application/confirm",hackerAuthMiddleware, application.confirm);
 apiRouter.put("/application", hackerAuthMiddleware, application.update);
