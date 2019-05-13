@@ -92,6 +92,7 @@ Once you pass it through the inliner, you can now use it as a template.
 {
   "shellID":"Id1"
 }
+```
 
 ### PUT `/application/confirm`
 -Changes a hacker's status to confirmed based on email
@@ -112,6 +113,17 @@ Once you pass it through the inliner, you can now use it as a template.
 ```json
 {
   "shellIDs":["Id1","Id2"...]
+}
+```
+
+### PUT `/admin/checkIn`
+-Checks in indicidual hacker based on shellID (needs admin privilages)
+
+- Example request
+
+```json
+{
+  "shellID": "Id1"
 }
 ```
 
