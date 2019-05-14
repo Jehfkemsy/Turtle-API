@@ -22,6 +22,7 @@ apiRouter.get("/", (req, res) => res.send("biensupernice."));
 /* ------ Application Routes ------ */
 apiRouter.get("/application", adminAuthMiddleware, application.read);
 apiRouter.post("/application", application.create);
+apiRouter.post("/application/readOne",hackerAuthMiddleware, application.readOne);
 apiRouter.post("/application/login", application.login);
 apiRouter.put("/application/confirm",hackerAuthMiddleware, application.confirm);
 apiRouter.put("/application", hackerAuthMiddleware, application.update);
@@ -32,8 +33,11 @@ apiRouter.put("/application/reset_password",application.resetPassword);
 
 
 /* ------ Administrator Routes ------ */
-//apiRouter.put("/admin/accept",adminAuthMiddleware,application.accept);
-//apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
+apiRouter.put("/admin/accept",adminAuthMiddleware,application.accept);
+apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
+apiRouter.get("/admin/remind_confirm",adminAuthMiddleware,application.remindConfirm);
+apiRouter.get("/admin/remind_apply",adminAuthMiddleware, application.remindApply);
+
 
 /* ------- Day of Routes --------*/
 //apiRouter.post("/walkin", adminAuthMiddleware, walkIn.create);

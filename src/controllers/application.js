@@ -119,7 +119,7 @@ const create = async (req, res) => {
       /**
        * Insert applicant in the database
        */
-      // const applicant = await Applicant.create(fields);
+      const applicant = await Applicant.create(fields);
 
       /**
        * Send applicant email
@@ -160,7 +160,6 @@ const read = async (req, res) => {
         ]
       }
     }
-    console.log(filter);
 
     filter ? searchCriteria['$and'] = [{ applicationStatus: filter }] : null
 
@@ -200,6 +199,19 @@ const read = async (req, res) => {
     return httpResponse.failureResponse(res, e);
   }
 };
+
+const readOne = async (req,res) => {
+  const {shellID} = req.body;
+
+  try{
+    const user = await Applicant.findOne({shellID});
+
+    httpResponses.successResponse(res,user);
+
+  }catch(e){
+    httpResponses.failureResponse(res,e);
+  }
+}
 
 const update = async (req, res) => {
   const { email } = req.query;
@@ -494,6 +506,32 @@ const resetPassword = async (req,res) => {
       httpResponse.failureResponse(res,err);
     }
 }
+const remindConfirm = async (req, res) =>
+{
+  try{
 
-export default { create, read, update,confirm,apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept};
+        const remind = await Applicant.find({applicationStatus : "accepted"})
 
+        remind.map(applicant => {mailService.applied(applicant)})
+}catch(e)
+{
+  logger.info({ e, application: "Hacker", email: email });
+  httpResponse.failureResponse(res, e)
+}
+}
+
+const remindApply = async (req,res) =>
+{
+  try{
+    const remind = await Applicant.find({applicationStatus : "not applied"})
+        remind.map(applicant => {mailService.applied(applicant)})
+
+  httpResponse.successResponse(res);
+  }catch(e)
+  {
+    logger.info({ e});
+    httpResponse.failureResponse(res, e)
+  }
+}
+
+export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept};
