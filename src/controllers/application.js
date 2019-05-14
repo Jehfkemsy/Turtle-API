@@ -112,7 +112,6 @@ const create = async (req, res) => {
   
 };
 
-//changed
 const read = async (req, res) => {
   const { page = 0, limit = 30, q, filter} = req.query;
 
@@ -173,7 +172,6 @@ const read = async (req, res) => {
   }
 };
 
-//NEW 
 const readOne = async (req,res) => {
   const {shellID} = req.body;
 
@@ -391,7 +389,6 @@ const login = async (req, res) => {
   }
 }
 
-//changed accepted to lower
 const unconfirm = async (req, res) =>
 {
   try{

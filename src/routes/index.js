@@ -19,7 +19,6 @@ const apiRouter = Router();
 
 apiRouter.get("/", (req, res) => res.send("biensupernice."));
 
-//CHANGED
 /* ------ Application Routes ------ */
 apiRouter.get("/application", adminAuthMiddleware, application.read);
 apiRouter.post("/application", application.create);
@@ -32,7 +31,6 @@ apiRouter.put("/application/unconfirm", hackerAuthMiddleware, application.unconf
 apiRouter.put("/application/forgot_password",application.forgotPassword);
 apiRouter.put("/application/reset_password",application.resetPassword);
 
-//CHANGED
 /* ------ Administrator Routes ------ */
 apiRouter.put("/admin/accept",adminAuthMiddleware,application.accept);
 apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
