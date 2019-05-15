@@ -11,9 +11,6 @@ const { MONGO_USER, MONGO_PASSWORD, MONGO_URI } = process.env;
 //   useFindAndModify: false
 // };
 
-const server = 'localhost:27017';
-const database = 'passport-tutorial'
-
 const db = () =>
   Promise.resolve(
     mongoose.connect(

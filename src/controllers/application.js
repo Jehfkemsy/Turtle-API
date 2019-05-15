@@ -4,14 +4,14 @@ import drive from "../services/google/drive";
 import sheets from "../services/google/sheets";
 import createID from '../utils/idGenerator'
 import applicationService from "../services/application";
-import bcrypt from 'bcrypt-nodejs'
+import bcrypt from 'bcrypt-nodejs';
 import logger from "../utils/logger";
 import httpResponse from "../utils/httpResponses";
 import Applicant from "../models/applicant";
 import jwt from 'jsonwebtoken';
 import { runInNewContext } from "vm";
 import { http } from "winston";
-import crypto from 'crypto'
+import crypto from 'crypto';
 import mailerService from '../services/nodemailer-temp'
 import { reject } from "async";
 import httpResponses from "../utils/httpResponses";
