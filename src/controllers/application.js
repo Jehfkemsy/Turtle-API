@@ -89,7 +89,7 @@ const create = async (req, res) => {
       /**
        * Validate applicant fields
        */
-      // await applicationService.validateHacker(fields);
+      await applicationService.validateHacker(fields);
 
 
       /**
