@@ -14,7 +14,7 @@ const gun = nodemailer.createTransport(mg(auth));
 const viewEngine = handlebars.create({partialsDir:"src/templates"});
 const viewPath = "src/templates";
 
-gun.use("compile", nodemailerHandlebars({ viewEngine, viewPath }));
+gun.use("compile", nodemailerHandlebars({ viewEngine : { partialsDir: 'src/templates' }, viewPath }));
 
 const applied = applicant => {
   
