@@ -86,7 +86,7 @@ const create = async (req, res) => {
       /**
        * Validate applicant fields
        */
-      // await applicationService.validateHacker(fields);
+      await applicationService.validateHacker(fields);
 
 
       /**
@@ -508,4 +508,9 @@ const remindApply = async (req,res) =>
   }
 }
 
+<<<<<<< HEAD
 export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindApply, remindConfirm};
+=======
+
+export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindConfirm, remindApply};
+>>>>>>> development
