@@ -511,4 +511,4 @@ const remindApply = async (req,res) =>
 }
 
 
-export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept};
+export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindConfirm, remindApply};
