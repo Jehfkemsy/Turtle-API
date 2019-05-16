@@ -34,7 +34,7 @@ apiRouter.put("/application/reset_password",application.resetPassword);
 
 
 /* ------ Administrator Routes ------ */
-apiRouter.post('/admin/notification',expoToken.sendMsgTokens);
+apiRouter.post('/admin/notification',adminAuthMiddleware, expoToken.sendMsgTokens);
 apiRouter.put("/admin/accept",adminAuthMiddleware,application.accept);
 apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
 apiRouter.get("/admin/remind_confirm",adminAuthMiddleware,application.remindConfirm);

@@ -26,7 +26,8 @@ const addToken = async (req,res) => {
 }
 
 const sendMsgTokens = async (req,res) => {
-    const {title,body} = req.body
+    const {title,body,data} = req.body
+    const {tag} = data;
 
     try{
         let expo = new Expo();
@@ -48,7 +49,7 @@ const sendMsgTokens = async (req,res) => {
                 sound: 'default',
                 title,
                 body,
-                data: { withSome: 'data' },
+                data: { withSome: 'data',tag },
               })
             })
 
