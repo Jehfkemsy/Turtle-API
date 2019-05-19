@@ -86,7 +86,7 @@ const create = async (req, res) => {
       /**
        * Validate applicant fields
        */
-      await applicationService.validateHacker(fields);
+      await applicationService.validateHacker(email);
 
 
       /**
@@ -106,6 +106,7 @@ const create = async (req, res) => {
 
       httpResponse.successResponse(res, applicant);
     } catch (e) {
+      console.log(e);
       logger.info({ e, application: "Hacker", email: fields.email });
       httpResponse.failureResponse(res, e);
     }
