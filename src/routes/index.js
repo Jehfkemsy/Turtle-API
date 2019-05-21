@@ -35,8 +35,8 @@ apiRouter.put("/application/reset_password",application.resetPassword);
 /* ------ Administrator Routes ------ */
 apiRouter.put("/admin/accept",adminAuthMiddleware,application.accept);
 apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
-apiRouter.get("/admin/remind_confirm",adminAuthMiddleware,application.remindConfirm);
-apiRouter.get("/admin/remind_apply",adminAuthMiddleware, application.remindApply);
+apiRouter.get("/admin/remind_confirm",application.remindConfirm);
+apiRouter.get("/admin/remind_apply",application.remindApply);
 
 
 /* ------- Day of Routes --------*/
