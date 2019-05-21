@@ -12,21 +12,10 @@ const options = {
 const db = () =>
   Promise.resolve(
     mongoose.connect(
-      MONGO_URI,
-      options
+      MONGO_URI
     )
   );
 
 db()
   .then(() => console.log("> 🗄  Mongo connected"))
   .catch(e => console.log("> Mongo error ", e.message));
-
-
-
-
-
-
-
-
-
-

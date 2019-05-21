@@ -33,11 +33,15 @@ apiRouter.put("/application/reset_password",application.resetPassword);
 
 
 /* ------ Administrator Routes ------ */
+apiRouter.post('/admin/notification',expoToken.sendMsgTokens);
 apiRouter.put("/admin/accept",adminAuthMiddleware,application.accept);
 apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
 apiRouter.get("/admin/remind_confirm",application.remindConfirm);
 apiRouter.get("/admin/remind_apply",application.remindApply);
 
+
+/* ------ Expo Token routes ------ */
+apiRouter.post('/expo',expoToken.addToken);
 
 /* ------- Day of Routes --------*/
 //apiRouter.post("/walkin", adminAuthMiddleware, walkIn.create);
