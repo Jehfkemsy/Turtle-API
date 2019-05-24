@@ -4,7 +4,7 @@ import announcement from "../controllers/announcement";
 import application from "../controllers/application";
 // import volunteer from "../controllers/volunteer";
 // import candidate from "../controllers/candidate";
-// import workshop from "../controllers/workshop";
+import workshop from "../controllers/workshop";
 // import cabinet from "../controllers/cabinet";
 // import mentor from "../controllers/mentor";
 import token from "../controllers/token";
@@ -33,7 +33,7 @@ apiRouter.put("/application/reset_password",application.resetPassword);
 
 
 /* ------ Administrator Routes ------ */
-apiRouter.post('/admin/notification',expoToken.sendMsgTokens);
+//apiRouter.post('/admin/notification',expoToken.sendMsgTokens);
 apiRouter.put("/admin/accept",adminAuthMiddleware,application.accept);
 apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
 apiRouter.get("/admin/remind_confirm",application.remindConfirm);
@@ -41,15 +41,15 @@ apiRouter.get("/admin/remind_apply",application.remindApply);
 
 
 /* ------ Expo Token routes ------ */
-apiRouter.post('/expo',expoToken.addToken);
+//apiRouter.post('/expo',expoToken.addToken);
 
 /* ------- Day of Routes --------*/
 //apiRouter.post("/walkin", adminAuthMiddleware, walkIn.create);
 //apiRouter.post("/checkin", adminAuthMiddleware, checkin.create);
 
 /* ------ Workshop Routes ------ */
-//apiRouter.post("/workshop", workshop.create);
-
+apiRouter.post("/workshop", workshop.create);
+apiRouter.get("/workshop/read", workshop.read);
 /* ------ Mentor Routes ------ */
 //apiRouter.post("/mentor", mentor.create);
 

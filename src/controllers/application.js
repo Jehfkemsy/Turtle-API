@@ -1,4 +1,4 @@
-//import mailService from "../services/mail";
+import mailService from "../services/mail";
 import fileService from "../services/file";
 import drive from "../services/google/drive";
 import sheets from "../services/google/sheets";
@@ -26,8 +26,7 @@ const create = async (req, res) => {
       validate email is unique
     */
 
-    //await applicationService.validateHacker(req.body.email)
-    //console.log('unique email')
+    await applicationService.validateHacker(req.body.email)
 
 
     /*
@@ -39,38 +38,34 @@ const create = async (req, res) => {
         return hash;
       
     })*/
-    //const password = "12345"
+ 
 
-    var salt = bcrypt.genSaltSync(12);
-    var hash = bcrypt.hashSync(password, salt);
+    //var salt = bcrypt.genSaltSync(12);
+    //var hash = bcrypt.hashSync(password, salt);
     /*
       generate unique shell id
     */
-    // let unique = false
-    // let id = idGenerator.createId(5);
+    let unique = false
+    let id = createID.createId(5);
 
-    // do{unique = Applicant.findOne({shellID: id})}while(!unique)
+    do{unique = Applicant.findOne({shellID: id})}while(!unique)
 
-    //const hash = bcrypt.hashSync(req.body.password)
+    const hash = bcrypt.hashSync(req.body.password)
     //console.log('hashed password')
     /*
       generate unique shell id
     */
-   let unique;
-   let id;
     do{
-    id = createID.createId(5);
-    //console.log(id);
+      
+      id = createID.createId(5);
       
       unique = await Applicant.findOne({shellID: id})
-      console.log(unique);
+
     }while(unique != null)
 
-    //console.log('id is unique')
 
 
     const shellID = id
-    //const shellID = "292929"
           
     const fields = {
       firstName,
@@ -124,7 +119,7 @@ const create = async (req, res) => {
       /**
        * Send applicant email
        */
-      // mailService.applied(fields);
+      mailService.applied(fields);
 
       /**
        * Insert applicant in google sheets

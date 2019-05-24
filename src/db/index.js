@@ -12,7 +12,8 @@ const options = {
 const db = () =>
   Promise.resolve(
     mongoose.connect(
-      MONGO_URI
+      MONGO_URI,
+      options
     )
   );
 

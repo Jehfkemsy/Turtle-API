@@ -2,37 +2,29 @@ import nodemailer from "nodemailer";
 import handlebars from "express-handlebars";
 import mg from "nodemailer-mailgun-transport";
 import nodemailerHandlebars from "nodemailer-express-handlebars";
-import MailChimp from "mailchimp-api-v3";
 
 import logger from "../utils/logger";
 
+const { POC_EMAIL, MAILGUN_KEY, MAILGUN_DOMAIN, MAILGUN_EMAIL } = process.env;
 
-const { POC_EMAIL, MAILGUN_KEY, MAILGUN_DOMAIN, MAILGUN_EMAIL,} = process.env;
-
-const auth = { auth: { api_key:MAILGUN_KEY, domain:MAILGUN_DOMAIN } };
+const auth = { auth: { api_key: MAILGUN_KEY, domain: MAILGUN_DOMAIN } };
 
 const gun = nodemailer.createTransport(mg(auth));
 
 const viewEngine = handlebars.create({});
 const viewPath = "src/templates";
 
-const mailchimp = MailChimp(API_KEY);
-const list_id = "0d499e3724"
-//gun.use("compile", nodemailerHandlebars({ viewEngine : { partialsDir: 'src/templates' }, viewPath }));
-//mailchimp.post({path: '/lists', name: "TestList"})
+gun.use("compile", nodemailerHandlebars({ viewEngine : { partialsDir: 'src/templates' }, viewPath }));
+
 const applied = applicant => {
   const mail = {
-    from: POC_EMAIL,
+    from: `MangoHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
     subject: `Sweet! You are now registered for MangoHacks!`,
     template: "applied",
     context: { firstName: applicant.firstName }
   };
-  //gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
-
-    mailchimp.post(`https://us20.api.mailchimp.com/3.0/lists/${list_id}`,  {members: [{
-    email_address:applicant.email,
-    status: "subscribed"}]})
+  gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
 };
 
 const workshop = applicant => {
