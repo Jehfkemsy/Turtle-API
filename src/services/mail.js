@@ -21,7 +21,7 @@ const applied = applicant => {
     from: `MangoHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
     subject: `Sweet! You are now registered for MangoHacks!`,
-    template: "applied",
+    template: "applied_new",
     context: { firstName: applicant.firstName }
   };
   gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
