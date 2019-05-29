@@ -28,5 +28,30 @@ const forgotPassword = (email,token)=>{
       });
 }
 
+const confirmationEmail = (email, confirmationToken)=>{
+  const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: EMAIL,
+        pass: EMAIL_PASSWORD
+      }
+    });
+    
+    const mailOptions = {
+      from: EMAIL,
+      to: email,
+      subject: 'Sending Email using Node.js',
+      text: `Click the link to confirm your email localhost:3000/${email}/${confirmationToken}`
+    };
+    
+    transporter.sendMail(mailOptions, (error, info)=>{
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+}
 
-export default {forgotPassword}
+
+export default {forgotPassword,confirmationEmail}

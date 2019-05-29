@@ -5,6 +5,8 @@ const applicantSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   email: {type: String, required: true},
   password: {type:String, required: true},
+  emailConfirmed: {type: Boolean, default: false},
+  emailConfirmationToken: {type: String, required: true},
   resetPasswordToken: {type: String},
   resetPasswordExpiration: {type: Date},
   schoolName: {type:String},
