@@ -13,7 +13,6 @@
     "do:delete": "pm2 delete pear",
     "logs": "tail -n 50 ./logs/pear.log",
     "hydrate": "node ./src/utils/hydrate.js",
-    "appstart": "yarn build && yarn start"
   },
   "dependencies": {
     "axios": "^0.18.0",
