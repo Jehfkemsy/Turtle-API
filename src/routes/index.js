@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import announcement from "../controllers/announcement";
 import application from "../controllers/application";
+import expoToken from '../controllers/expoToken';
 import volunteer from "../controllers/volunteer";
 import candidate from "../controllers/candidate";
 import workshop from "../controllers/workshop";
@@ -32,9 +33,16 @@ apiRouter.put("/application/forgot_password",application.forgotPassword);
 apiRouter.put("/application/reset_password",application.resetPassword);
 apiRouter.post("/application/:email/:token",application.confirmEmail);
 
+
 /* ------ Administrator Routes ------ */
+apiRouter.post('/admin/notification',expoToken.sendMsgTokens);
 apiRouter.put("/admin/accept",adminAuthMiddleware,application.accept);
 apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
+apiRouter.get("/admin/remind_confirm",adminAuthMiddleware,application.remindConfirm);
+apiRouter.get("/admin/remind_apply",adminAuthMiddleware, application.remindApply);
+
+/* ------ Expo Token routes ------ */
+apiRouter.post('/expo',expoToken.addToken);
 
 /* ------- Day of Routes --------*/
 apiRouter.post("/walkin", adminAuthMiddleware, walkIn.create);
