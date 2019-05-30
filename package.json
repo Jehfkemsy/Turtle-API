@@ -12,7 +12,7 @@
     "do:stop": "pm2 stop pear",
     "do:delete": "pm2 delete pear",
     "logs": "tail -n 50 ./logs/pear.log",
-    "hydrate": "node ./src/utils/hydrate.js",
+    "hydrate": "node ./src/utils/hydrate.js"
   },
   "dependencies": {
     "axios": "^0.18.0",
