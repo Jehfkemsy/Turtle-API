@@ -52,6 +52,18 @@ Once you pass it through the inliner, you can now use it as a template.
 }
 ```
 
+### POST `/application/login`
+-To login a user based on email/password. Returns a JWT on success
+
+- Example request
+
+```json
+{
+	"email":"John@gmail.com",
+	"password":"secretPassword",
+}
+```
+
 ### POST `/application/apply`
 -To insert information from a hacker's application based on email (needs login token in header)
 

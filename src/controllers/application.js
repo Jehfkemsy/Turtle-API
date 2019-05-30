@@ -13,11 +13,13 @@ import { runInNewContext } from "vm";
 import { http } from "winston";
 import crypto from 'crypto'
 import mailerService from '../services/nodemailer-temp'
+import mail from "../services/mail";
 
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID, SECRET_KEY} = process.env;
 
 const create = async (req, res) => {
   const{firstName,lastName,email} = req.body;
+  console.log(firstName,lastName,email)
   try {
 
     /*
@@ -47,6 +49,7 @@ const create = async (req, res) => {
     console.log('id is unique')
 
     const shellID = id
+    const emailConfirmationToken = await crypto.randomBytes(20).toString('hex');
           
     const fields = {
       firstName,
@@ -54,6 +57,7 @@ const create = async (req, res) => {
       email,
       password,
       shellID,
+      emailConfirmationToken,
       avatarID:"Id1",
       applicationStatus: 'not applied',
       resetPasswordToken: null,
@@ -83,14 +87,13 @@ const create = async (req, res) => {
       location: null,
       shirtSize: null,
     };
-
     
 
       /**
        * Validate applicant fields
        */
+    
       await applicationService.validateHacker(email);
-
 
       /**
        * Insert applicant in the database
@@ -100,12 +103,13 @@ const create = async (req, res) => {
       /**
        * Send applicant email
        */
-      // mailService.applied(fields);
+      //mailerService.confirmationEmail(email, emailConfirmationToken);
 
       /**
        * Insert applicant in google sheets
        */
       // sheets.write("Applicants", fields);
+
 
       httpResponse.successResponse(res, applicant);
     } catch (e) {
