@@ -39,6 +39,8 @@ const applicantSchema = new mongoose.Schema({
   mlh: { type: String, default: "AGREE" },
   fiu: { type: String, default: "AGREE" },
   shellHacks: { type: String, default: "AGREE" },
+  timeCreated: { type: Date},
+  timeApplied: {type: Date}
 });
 
 const Applicant = mongoose.model("Applicant", applicantSchema);

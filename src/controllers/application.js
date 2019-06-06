@@ -31,7 +31,7 @@ const create = async (req, res) => {
 
     await applicationService.validateHacker(req.body.email)
 
-
+    const date = new Date();
     /*
       hash password
     */
@@ -106,6 +106,8 @@ const create = async (req, res) => {
       needReimburesment: null,
       location: null,
       shirtSize: null,
+      timeCreated: time,
+      timeApplied: null
     };
     
 
@@ -308,7 +310,7 @@ const apply = async (req,res) => {
           reasonForAttending,haveBeenToShell,likeAMentor,
           needReimburesment,location} = req.body;
           
-    
+    const date = new Date();
     //need to generate avatarID, ShellID, and Hash password
     const fields = {
       schoolName,
@@ -336,6 +338,8 @@ const apply = async (req,res) => {
       needReimburesment,
       location,
       shirtSize,
+      timeCreated,
+      timeApplied: date
     };
 
     try {

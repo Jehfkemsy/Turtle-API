@@ -18,9 +18,9 @@ gun.use("compile", nodemailerHandlebars({ viewEngine : { partialsDir: 'src/templ
 
 const applied = applicant => {
   const mail = {
-    from: `MangoHacks <${MAILGUN_EMAIL}>`,
+    from: `ShellHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
-    subject: `Sweet! You are now registered for MangoHacks!`,
+    subject: `You are now registered for Shell Hacks`,
     template: "applied_new",
     context: { firstName: applicant.firstName }
   };
@@ -29,9 +29,9 @@ const applied = applicant => {
 
 const workshop = applicant => {
   const mail = {
-    from: `MangoHacks <${MAILGUN_EMAIL}>`,
+    from: `ShellHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
-    subject: `Super sweet! A MangoHacks Workshop.`,
+    subject: `ShellHacks Workshop`,
     template: "workshop",
     context: {
       firstName: applicant.firstName,
@@ -45,9 +45,9 @@ const workshop = applicant => {
 
 const mentor = applicant => {
   const mail = {
-    from: `MangoHacks <${MAILGUN_EMAIL}>`,
+    from: `ShellHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
-    subject: `Yay! A MangoHacks Mentor.`,
+    subject: `Mentor for ShellHacks`,
     template: "mentor",
     context: {
       firstName: applicant.firstName,
@@ -60,9 +60,9 @@ const mentor = applicant => {
 
 const volunteer = applicant => {
   const mail = {
-    from: `MangoHacks <${MAILGUN_EMAIL}>`,
+    from: `ShellHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
-    subject: `Wow! A MangoHacks Volunteer.`,
+    subject: `Volunteer for ShellHacks.`,
     template: "volunteer",
     context: {
       firstName: applicant.firstName,
@@ -77,9 +77,9 @@ const live = hackers => {
   return Promise.all(
     hackers.map(hacker => {
       const mail = {
-        from: `MangoHacks <${MAILGUN_EMAIL}>`,
+        from: `ShellHacks <${MAILGUN_EMAIL}>`,
         to: hacker.email,
-        subject: `MangoHacks registration is live!`,
+        subject: `ShellHacks registration is live!`,
         template: "live"
       };
 
@@ -92,7 +92,7 @@ const live = hackers => {
 
 const error = e => {
   const mail = {
-    from: "MangoHacks",
+    from: "ShellHacks",
     to: POC_EMAIL,
     subject: `Oops! Something went wrong`,
     html: e
