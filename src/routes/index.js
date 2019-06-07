@@ -25,7 +25,7 @@ apiRouter.post("/application", application.create);
 apiRouter.post("/application/readOne",hackerAuthMiddleware, application.readOne);
 apiRouter.post("/application/login", application.login);
 apiRouter.put("/application/confirm",hackerAuthMiddleware, application.confirm);
-apiRouter.put("/application", hackerAuthMiddleware, application.update);
+apiRouter.put("/application/update", hackerAuthMiddleware, application.update);
 apiRouter.put("/application/apply",hackerAuthMiddleware, application.apply);
 apiRouter.put("/application/unconfirm", hackerAuthMiddleware, application.unconfirm);
 apiRouter.put("/application/forgot_password",application.forgotPassword);
@@ -37,8 +37,8 @@ apiRouter.put("/application/reset_password",application.resetPassword);
 //apiRouter.post('/admin/notification',expoToken.sendMsgTokens);
 apiRouter.put("/admin/accept",adminAuthMiddleware,application.accept);
 apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
-apiRouter.get("/admin/remind_confirm",application.remindConfirm);
-apiRouter.get("/admin/remind_apply",application.remindApply);
+apiRouter.get("/admin/remind_confirm",adminAuthMiddleware,application.remindConfirm);
+apiRouter.get("/admin/remind_apply",adminAuthMiddleware,application.remindApply);
 
 
 /* ------ Expo Token routes ------ */
@@ -71,8 +71,8 @@ apiRouter.get("/workshop/read", workshop.read);
 // apiRouter.get("/cabinet/checkin", cabinet.checkedIn);
 
 /* ------ Live-Site Announcements ------ */
-// apiRouter.post("/announcement", announcement.create);
-// apiRouter.get("/announcement", announcement.read);
+ apiRouter.post("/announcement", announcement.create);
+ apiRouter.get("/announcement", announcement.read);
 
 /* ------ Prereg signup Route ------ */
 // Deprecating this route, this alert is no longer needed
