@@ -71,6 +71,8 @@ const create = async (req, res) => {
 
     const shellID = id
     const emailConfirmationToken = await crypto.randomBytes(20).toString('hex');
+    email = email.toLowerCase();
+
           
     const fields = {
       firstName,
@@ -381,7 +383,7 @@ const apply = async (req,res) => {
        */
       sheets.write("Applicants", fields);
 
-      httpResponse.successResponse(res, applicant);
+      httpResponse.successResponse(res);
     } catch (e) {
       logger.info({ e, application: "Hacker", email: fields.email });
       httpResponse.failureResponse(res, e);

@@ -20,6 +20,7 @@ const create = async (req, res) =>
             };
 
         const schedule = await Schedule.create(fields);
+        httpResponse.successResponse(res, schedule);
     }catch(e)
     {
         console.log(e)
@@ -56,7 +57,7 @@ const update = async (req, res) =>
                 host: host,
                 logo: logo,
                 category: category
-            });
+            }).exec();
         httpResponse.successResponse(res, schedule);
     }catch(e)
     {
@@ -72,7 +73,7 @@ const remove = async (req, res) =>
     {
         const title = req.body;
 
-        const schedule = await Schedule.findOneAndDelete({title: title});
+        const schedule = await Schedule.deleteOne({title: title}).exec();
 
         httpResponse.successResponse(res,schedule);
     }catch(e)
