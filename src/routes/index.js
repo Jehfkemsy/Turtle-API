@@ -11,6 +11,7 @@ import token from "../controllers/token";
 // import live from "../controllers/live";
 // import walkIn from "../controllers/walkin";
 // import checkin from "../controllers/checkin";
+import schedule from "../controllers/schedule";
 
 import adminAuthMiddleware from "../middleware/adminAuth";
 import hackerAuthMiddleware from '../middleware/hackerAuth';
@@ -39,6 +40,10 @@ apiRouter.put("/admin/accept",adminAuthMiddleware,application.accept);
 apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
 apiRouter.get("/admin/remind_confirm",adminAuthMiddleware,application.remindConfirm);
 apiRouter.get("/admin/remind_apply",adminAuthMiddleware,application.remindApply);
+apiRouter.post("/admin/schedule/create",schedule.create);
+apiRouter.get("/admin/schedule/read", schedule.read);
+apiRouter.put("/admin/schedule/update" , schedule.update)
+apiRouter.delete("/admin/schedule/delete", schedule.remove);
 
 
 /* ------ Expo Token routes ------ */

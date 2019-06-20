@@ -32,6 +32,7 @@ const create = async (req, res) => {
     await applicationService.validateHacker(req.body.email)
 
     const date = new Date();
+
     /*
       hash password
     */
@@ -106,7 +107,7 @@ const create = async (req, res) => {
       needReimburesment: null,
       location: null,
       shirtSize: null,
-      timeCreated: time,
+      timeCreated: date,
       timeApplied: null
     };
     
@@ -293,7 +294,7 @@ const confirm = async (req,res) => {
       return httpResponse.successResponse(res,null)
   }
   
-  catch(e){
+  catch(e){   
     httpResponse.failureResponse(res, e);
   }
 }
