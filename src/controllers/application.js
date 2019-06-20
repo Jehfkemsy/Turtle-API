@@ -70,7 +70,7 @@ const create = async (req, res) => {
 
 
     const shellID = id
-    const emailConfirmationToken = await crypto.randomBytes(20).toString('hex');
+    const emailConfirmationToken = await crypto.randomBytes(6).toString('hex');
     email = email.toLowerCase();
 
           
