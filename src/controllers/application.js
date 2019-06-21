@@ -20,7 +20,8 @@ const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID, SECRET_KEY} = process.env;
 const create = async (req, res) => {
 
 
-  const{firstName,lastName,email,password} = req.body;
+const {firstName,lastName,password,email} = req.body;
+ 
 
   try {
 
@@ -71,13 +72,14 @@ const create = async (req, res) => {
 
     const shellID = id
     const emailConfirmationToken = await crypto.randomBytes(20).toString('hex');
-    email = email.toLowerCase();
+
+    const lowercaseemail = email.toLowerCase();
 
           
     const fields = {
       firstName,
       lastName,
-      email,
+      email: lowercaseemail,
       password : hash,
       shellID,
       emailConfirmationToken,
