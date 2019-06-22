@@ -10,11 +10,11 @@ const { POC_EMAIL, MAILGUN_KEY, MAILGUN_DOMAIN, MAILGUN_EMAIL } = process.env;
 const auth = { auth: { api_key: MAILGUN_KEY, domain: MAILGUN_DOMAIN } };
 
 const gun = nodemailer.createTransport(mg(auth));
-
-const viewEngine = handlebars.create({});
+// Default layout has to be set to null and a path has to be defined even if you aren't using layouts
+const viewEngine = handlebars.create({partialsDir: 'src/templates', layoutsDir: "src/templates", defaultLayout: null});
 const viewPath = "src/templates";
 
-gun.use("compile", nodemailerHandlebars({ viewEngine : { partialsDir: 'src/templates' }, viewPath }));
+gun.use("compile", nodemailerHandlebars({ viewEngine, viewPath }));
 
 const applied = applicant => {
   const mail = {
