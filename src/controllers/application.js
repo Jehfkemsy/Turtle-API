@@ -142,7 +142,7 @@ const {firstName,lastName,password,email} = req.body;
       // sheets.write("Applicants", fields);
 
 
-      httpResponse.successResponse(res,"success");
+      httpResponse.successResponse(res,applicant);
     } catch (e) {
       console.log(e);
       logger.info({ e, application: "Hacker", email: fields.email });
@@ -217,10 +217,10 @@ const readOne = async (req,res) => {
   try{
     const user = await Applicant.findOne({shellID});
 
-    httpResponses.successResponse(res,user);
+    httpResponse.successResponse(res,user);
 
   }catch(e){
-    httpResponses.failureResponse(res,e);
+    httpResponse.failureResponse(res,e);
   }
 }
 
@@ -397,9 +397,7 @@ const apply = async (req,res) => {
 const login = async (req, res) => {
    const {email,password} = req.body;
   try{
-    const user = await Applicant.findOne({
-      email
-    })
+    const user = await Applicant.findOne({email})
 
     if(!user)
       throw 'wrong login info'
@@ -548,5 +546,29 @@ const remindApply = async (req,res) =>
   }
 }
 
+const emailConfirmation = async (req, res) =>
+{
+  try
+  {
+    const {emailConfirmationToken, email} = req.body;
 
-export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindConfirm, remindApply};
+    const confirm = await Applicant.findOneAndUpdate({email: email, emailConfirmationToken: emailConfirmationToken}, 
+      {
+        emailConfirmationToken: null
+      })
+
+      if(!confirm)
+      {
+        return httpResponse.failureResponse(res, "User not found")
+      }
+
+      httpResponse.successResponse(res, confirm)
+  }catch(e)
+  {
+    logger.info({e})
+    httpResponse.failureResponse(res, e);
+  }
+}
+
+
+export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindConfirm, remindApply, emailConfirmation};
