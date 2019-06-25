@@ -492,6 +492,7 @@ const forgotPassword = async (req,res) => {
 }
 
 const resetPassword = async (req,res) => {
+  
     try{
       const {email, newPassword, token} = req.body;
 
@@ -554,7 +555,7 @@ const emailConfirmation = async (req, res) =>
 
     const confirm = await Applicant.findOneAndUpdate({email: email, emailConfirmationToken: emailConfirmationToken}, 
       {
-        emailConfirmationToken: null
+        emailConfirmed: true
       })
 
       if(!confirm)
@@ -570,5 +571,23 @@ const emailConfirmation = async (req, res) =>
   }
 }
 
+const readOneUser = async (req, res) =>
+{
+  try
+  {
+    const shellID = req.body
 
-export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindConfirm, remindApply, emailConfirmation};
+    User = await Applicant.findOne({shellID: shellID});
+
+    httpResponse.successResponse(res, User);
+  }catch(e)
+  {
+    logger.info({e})
+    httpResponse.failureResponse(res, e)
+  }
+}
+
+
+
+
+export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindConfirm, remindApply, emailConfirmation, readOneUser};

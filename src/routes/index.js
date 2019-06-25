@@ -29,9 +29,10 @@ apiRouter.put("/application/confirm",hackerAuthMiddleware, application.confirm);
 apiRouter.put("/application/update", hackerAuthMiddleware, application.update);
 apiRouter.put("/application/apply",hackerAuthMiddleware, application.apply);
 apiRouter.put("/application/unconfirm", hackerAuthMiddleware, application.unconfirm);
-apiRouter.put("/application/forgot_password",application.forgotPassword);
-apiRouter.put("/application/reset_password",application.resetPassword);
-apiRouter.put("/application/confirmation", application.emailConfirmation);
+apiRouter.put("/application/forgot_password",hackerAuthMiddleware,application.forgotPassword);
+apiRouter.put("/application/reset_password",hackerAuthMiddleware,application.resetPassword);
+apiRouter.put("/application/confirmation",hackerAuthMiddleware ,application.emailConfirmation);
+apiRouter.get("/application/readOneUser", hackerAuthMiddleware, application.readOneUser);
 //apiRouter.post("/application/:email/:token",application.confirmEmail);
 
 
@@ -41,10 +42,10 @@ apiRouter.put("/admin/accept",adminAuthMiddleware,application.accept);
 apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
 apiRouter.get("/admin/remind_confirm",adminAuthMiddleware,application.remindConfirm);
 apiRouter.get("/admin/remind_apply",adminAuthMiddleware,application.remindApply);
-apiRouter.post("/admin/schedule/create",schedule.create);
-apiRouter.get("/admin/schedule/read", schedule.read);
-apiRouter.put("/admin/schedule/update" , schedule.update)
-apiRouter.delete("/admin/schedule/delete", schedule.remove);
+apiRouter.post("/admin/schedule/create",adminAuthMiddleware,schedule.create);
+apiRouter.get("/admin/schedule/read", adminAuthMiddleware,schedule.read);
+apiRouter.put("/admin/schedule/update" , adminAuthMiddleware,schedule.update)
+apiRouter.delete("/admin/schedule/delete", adminAuthMiddleware,schedule.remove);
 
 
 /* ------ Expo Token routes ------ */

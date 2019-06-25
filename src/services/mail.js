@@ -32,7 +32,7 @@ const workshop = applicant => {
     from: `ShellHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
     subject: `ShellHacks Workshop`,
-    template: "workshop",
+    template: "applied_new",
     context: {
       firstName: applicant.firstName,
       lastName: applicant.lastName,
@@ -48,7 +48,7 @@ const mentor = applicant => {
     from: `ShellHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
     subject: `Mentor for ShellHacks`,
-    template: "mentor",
+    template: "applied_new",
     context: {
       firstName: applicant.firstName,
       lastName: applicant.lastName,
@@ -63,7 +63,7 @@ const volunteer = applicant => {
     from: `ShellHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
     subject: `Volunteer for ShellHacks.`,
-    template: "volunteer",
+    template: "applied_new",
     context: {
       firstName: applicant.firstName,
       lastName: applicant.lastName,
@@ -80,7 +80,7 @@ const live = hackers => {
         from: `ShellHacks <${MAILGUN_EMAIL}>`,
         to: hacker.email,
         subject: `ShellHacks registration is live!`,
-        template: "live"
+        template: "applied_new"
       };
 
       logger.info({ message: `Live email sent to: ${hacker.email}` });
