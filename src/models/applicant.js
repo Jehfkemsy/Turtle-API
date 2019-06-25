@@ -36,9 +36,11 @@ const applicantSchema = new mongoose.Schema({
   needReimburesment: {type: Boolean},
   location: {type: String},
   shellID: {type: String},
-  mlh: { type: String, default: "AGREE" },
-  fiu: { type: String, default: "AGREE" },
-  shellHacks: { type: String, default: "AGREE" },
+  mlh: { type: String, default: "DISAGREE" },
+  fiu: { type: String, default: "DISAGREE" },
+  shellHacks: { type: String, default: "DISAGREE" },
+  timeCreated: { type: Date},
+  timeApplied: {type: Date}
 });
 
 const Applicant = mongoose.model("Applicant", applicantSchema);

@@ -10,18 +10,18 @@ const { POC_EMAIL, MAILGUN_KEY, MAILGUN_DOMAIN, MAILGUN_EMAIL } = process.env;
 const auth = { auth: { api_key: MAILGUN_KEY, domain: MAILGUN_DOMAIN } };
 
 const gun = nodemailer.createTransport(mg(auth));
-
-const viewEngine = handlebars.create({});
+// Default layout has to be set to null and a path has to be defined even if you aren't using layouts
+const viewEngine = handlebars.create({partialsDir: 'src/templates', layoutsDir: "src/templates", defaultLayout: null});
 const viewPath = "src/templates";
 
-gun.use("compile", nodemailerHandlebars({ viewEngine : { partialsDir: 'src/templates' }, viewPath }));
+gun.use("compile", nodemailerHandlebars({ viewEngine, viewPath }));
 
 const applied = applicant => {
   const mail = {
-    from: `MangoHacks <${MAILGUN_EMAIL}>`,
+    from: `ShellHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
-    subject: `Sweet! You are now registered for MangoHacks!`,
-    template: "applied",
+    subject: `You are now registered for Shell Hacks`,
+    template: "applied_new",
     context: { firstName: applicant.firstName }
   };
   gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
@@ -29,9 +29,9 @@ const applied = applicant => {
 
 const workshop = applicant => {
   const mail = {
-    from: `MangoHacks <${MAILGUN_EMAIL}>`,
+    from: `ShellHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
-    subject: `Super sweet! A MangoHacks Workshop.`,
+    subject: `ShellHacks Workshop`,
     template: "workshop",
     context: {
       firstName: applicant.firstName,
@@ -45,9 +45,9 @@ const workshop = applicant => {
 
 const mentor = applicant => {
   const mail = {
-    from: `MangoHacks <${MAILGUN_EMAIL}>`,
+    from: `ShellHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
-    subject: `Yay! A MangoHacks Mentor.`,
+    subject: `Mentor for ShellHacks`,
     template: "mentor",
     context: {
       firstName: applicant.firstName,
@@ -60,9 +60,9 @@ const mentor = applicant => {
 
 const volunteer = applicant => {
   const mail = {
-    from: `MangoHacks <${MAILGUN_EMAIL}>`,
+    from: `ShellHacks <${MAILGUN_EMAIL}>`,
     to: applicant.email,
-    subject: `Wow! A MangoHacks Volunteer.`,
+    subject: `Volunteer for ShellHacks.`,
     template: "volunteer",
     context: {
       firstName: applicant.firstName,
@@ -77,9 +77,9 @@ const live = hackers => {
   return Promise.all(
     hackers.map(hacker => {
       const mail = {
-        from: `MangoHacks <${MAILGUN_EMAIL}>`,
+        from: `ShellHacks <${MAILGUN_EMAIL}>`,
         to: hacker.email,
-        subject: `MangoHacks registration is live!`,
+        subject: `ShellHacks registration is live!`,
         template: "live"
       };
 
@@ -92,7 +92,7 @@ const live = hackers => {
 
 const error = e => {
   const mail = {
-    from: "MangoHacks",
+    from: "ShellHacks",
     to: POC_EMAIL,
     subject: `Oops! Something went wrong`,
     html: e

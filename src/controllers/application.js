@@ -18,44 +18,69 @@ import mail from "../services/mail";
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID, SECRET_KEY} = process.env;
 
 const create = async (req, res) => {
-  const{firstName,lastName,email} = req.body;
-  console.log(firstName,lastName,email)
+
+
+const {firstName,lastName,password,email} = req.body;
+ 
+
   try {
+
 
     /*
       validate email is unique
     */
+
     await applicationService.validateHacker(req.body.email)
-    console.log('unique email')
+
+    const date = new Date();
 
     /*
       hash password
     */
-    const password = bcrypt.hashSync(req.body.password)
-    console.log('hashed password')
+
+    /*const hpassword = await bcrypt.hash(password ,12, (err,hash) => {
+      
+        return hash;
+      
+    })*/
+ 
+
+    //var salt = bcrypt.genSaltSync(12);
+    //var hash = bcrypt.hashSync(password, salt);
     /*
       generate unique shell id
     */
-   let unique;
-   let id;
+    let unique = false
+    let id = createID.createId(5);
+
+    do{unique = Applicant.findOne({shellID: id})}while(!unique)
+
+    const hash = bcrypt.hashSync(req.body.password)
+    //console.log('hashed password')
+    /*
+      generate unique shell id
+    */
     do{
-    id = createID.createId(5);
-    console.log(id);
+      
+      id = createID.createId(5);
       
       unique = await Applicant.findOne({shellID: id})
-      console.log(unique);
+
     }while(unique != null)
 
-    console.log('id is unique')
+
 
     const shellID = id
     const emailConfirmationToken = await crypto.randomBytes(20).toString('hex');
+
+    const lowercaseemail = email.toLowerCase();
+
           
     const fields = {
       firstName,
       lastName,
-      email,
-      password,
+      email: lowercaseemail,
+      password : hash,
       shellID,
       emailConfirmationToken,
       avatarID:"Id1",
@@ -86,13 +111,17 @@ const create = async (req, res) => {
       needReimburesment: null,
       location: null,
       shirtSize: null,
+      timeCreated: date,
+      timeApplied: null
     };
     
 
       /**
        * Validate applicant fields
        */
-      //await applicationService.validateHacker(fields);
+
+
+      await applicationService.validateHacker(email);
 
 
       /**
@@ -103,7 +132,9 @@ const create = async (req, res) => {
       /**
        * Send applicant email
        */
-      //mailerService.confirmationEmail(email, emailConfirmationToken);
+
+      mailService.applied(fields);
+
 
       /**
        * Insert applicant in google sheets
@@ -111,7 +142,7 @@ const create = async (req, res) => {
       // sheets.write("Applicants", fields);
 
 
-      httpResponse.successResponse(res, applicant);
+      httpResponse.successResponse(res,"success");
     } catch (e) {
       console.log(e);
       logger.info({ e, application: "Hacker", email: fields.email });
@@ -267,7 +298,7 @@ const confirm = async (req,res) => {
       return httpResponse.successResponse(res,null)
   }
   
-  catch(e){
+  catch(e){   
     httpResponse.failureResponse(res, e);
   }
 }
@@ -284,7 +315,7 @@ const apply = async (req,res) => {
           reasonForAttending,haveBeenToShell,likeAMentor,
           needReimburesment,location} = req.body;
           
-    
+    const date = new Date();
     //need to generate avatarID, ShellID, and Hash password
     const fields = {
       schoolName,
@@ -312,6 +343,8 @@ const apply = async (req,res) => {
       needReimburesment,
       location,
       shirtSize,
+      timeCreated,
+      timeApplied: date
     };
 
     try {
@@ -352,7 +385,7 @@ const apply = async (req,res) => {
        */
       sheets.write("Applicants", fields);
 
-      httpResponse.successResponse(res, applicant);
+      httpResponse.successResponse(res, null);
     } catch (e) {
       logger.info({ e, application: "Hacker", email: fields.email });
       httpResponse.failureResponse(res, e);
@@ -497,6 +530,7 @@ const confirmEmail = (req,res) => {
 
     if(!email){ throw "Email not found"}
 
+
     if(applicant.emailConfirmed){
       httpResponse.successResponse(res,"Email already confirmed");
     }
@@ -517,6 +551,20 @@ const confirmEmail = (req,res) => {
     }
 
     httpResponse.successResponse(res,"Email succesfully confirmed");
+
+const remindApply = async (req,res) =>
+{
+  try{
+    const remind = await Applicant.find({applicationStatus : "not applied"})
+
+    remind.map(applicant => {mailService.applied(applicant)})
+
+  httpResponse.successResponse(res, null);
+  }catch(e)
+  {
+    logger.info({ e});
+    httpResponse.failureResponse(res, e)
+
   }
   catch(err){
     console.log(err);
