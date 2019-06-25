@@ -142,7 +142,7 @@ const {firstName,lastName,password,email} = req.body;
       // sheets.write("Applicants", fields);
 
 
-      httpResponse.successResponse(res,"success");
+      httpResponse.successResponse(res,applicant);
     } catch (e) {
       console.log(e);
       logger.info({ e, application: "Hacker", email: fields.email });
@@ -217,10 +217,10 @@ const readOne = async (req,res) => {
   try{
     const user = await Applicant.findOne({shellID});
 
-    httpResponses.successResponse(res,user);
+    httpResponse.successResponse(res,user);
 
   }catch(e){
-    httpResponses.failureResponse(res,e);
+    httpResponse.failureResponse(res,e);
   }
 }
 
@@ -397,9 +397,7 @@ const apply = async (req,res) => {
 const login = async (req, res) => {
    const {email,password} = req.body;
   try{
-    const user = await Applicant.findOne({
-      email
-    })
+    const user = await Applicant.findOne({email})
 
     if(!user)
       throw 'wrong login info'
@@ -494,6 +492,7 @@ const forgotPassword = async (req,res) => {
 }
 
 const resetPassword = async (req,res) => {
+  
     try{
       const {email, newPassword, token} = req.body;
 
@@ -551,6 +550,12 @@ const confirmEmail = (req,res) => {
     }
 
     httpResponse.successResponse(res,"Email succesfully confirmed");
+  }catch(e)
+  {
+    logger.info(e)
+    httpResponse.failureResponse(res, "fail")
+  }
+}
 
 const remindApply = async (req,res) =>
 {
@@ -566,12 +571,50 @@ const remindApply = async (req,res) =>
     httpResponse.failureResponse(res, e)
 
   }
-  catch(err){
-    console.log(err);
-    httpResponse.failureResponse(res,err);
-  }
   
 }
 
-export default { create, read, readOne, update, confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword, resetPassword, checkIn, accept, confirmEmail };
+const emailConfirmation = async (req, res) =>
+{
+  try
+  {
+    const {emailConfirmationToken, email} = req.body;
 
+    const confirm = await Applicant.findOneAndUpdate({email: email, emailConfirmationToken: emailConfirmationToken}, 
+      {
+        emailConfirmed: true
+      })
+
+      if(!confirm)
+      {
+        return httpResponse.failureResponse(res, "User not found")
+      }
+
+      httpResponse.successResponse(res, confirm)
+  }catch(e)
+  {
+    logger.info({e})
+    httpResponse.failureResponse(res, e);
+  }
+}
+
+const readOneUser = async (req, res) =>
+{
+  try
+  {
+    const shellID = req.body
+
+    User = await Applicant.findOne({shellID: shellID});
+
+    httpResponse.successResponse(res, User);
+  }catch(e)
+  {
+    logger.info({e})
+    httpResponse.failureResponse(res, e)
+  }
+}
+
+
+
+
+export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindConfirm, remindApply, emailConfirmation, readOneUser};
