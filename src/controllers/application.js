@@ -607,4 +607,4 @@ const readOneUser = async (req, res) =>
 
 
 
-export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindConfirm, remindApply, emailConfirmation, readOneUser};
+export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindApply, emailConfirmation, readOneUser};
