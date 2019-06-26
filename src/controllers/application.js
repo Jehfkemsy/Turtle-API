@@ -20,7 +20,7 @@ const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID, SECRET_KEY} = process.env;
 const create = async (req, res) => {
 
 
-const {firstName,lastName,password,email} = req.body;
+const {firstName,lastName,email} = req.body;
  
 
   try {
@@ -37,16 +37,8 @@ const {firstName,lastName,password,email} = req.body;
     /*
       hash password
     */
-
-    /*const hpassword = await bcrypt.hash(password ,12, (err,hash) => {
-      
-        return hash;
-      
-    })*/
- 
-
-    //var salt = bcrypt.genSaltSync(12);
-    //var hash = bcrypt.hashSync(password, salt);
+    const hash = bcrypt.hashSync(req.body.password)
+   
     /*
       generate unique shell id
     */
@@ -55,8 +47,6 @@ const {firstName,lastName,password,email} = req.body;
 
     do{unique = Applicant.findOne({shellID: id})}while(!unique)
 
-    const hash = bcrypt.hashSync(req.body.password)
-    //console.log('hashed password')
     /*
       generate unique shell id
     */
@@ -519,7 +509,7 @@ const resetPassword = async (req,res) => {
     }
 }
 
-const confirmEmail = (req,res) => {
+const confirmEmail = async (req,res) => {
   const email = req.params.email;
 
   try{
