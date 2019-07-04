@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 const {PORT} = process.env;
 if(PORT === null)
 {
-    PORT = 3000
+    PORT = 3001
 }
 app.use(cors());
 app.use(helmet());
