@@ -22,7 +22,7 @@ const applied = applicant => {
     to: applicant.email,
     subject: `You are now registered for Shell Hacks`,
     template: "applied_new",
-    context: { firstName: applicant.firstName }
+    context: {emailConfirmationToken: applicant.emailConfirmationToken}
   };
   gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
 };

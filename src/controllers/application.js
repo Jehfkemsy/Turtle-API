@@ -111,7 +111,7 @@ const {firstName,lastName,email} = req.body;
        */
 
 
-      await applicationService.validateHacker(email);
+      await applicationService.validateHacker(fields);
 
 
       /**
