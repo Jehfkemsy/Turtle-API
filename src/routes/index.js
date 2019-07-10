@@ -12,6 +12,7 @@ import token from "../controllers/token";
 // import walkIn from "../controllers/walkin";
 // import checkin from "../controllers/checkin";
 import schedule from "../controllers/schedule";
+import sponsor from "../controllers/sponsor"
 
 import adminAuthMiddleware from "../middleware/adminAuth";
 import hackerAuthMiddleware from '../middleware/hackerAuth';
@@ -45,9 +46,14 @@ apiRouter.get("/admin/remind_apply",adminAuthMiddleware,application.remindApply)
 apiRouter.post("/admin/schedule/create",adminAuthMiddleware,schedule.create);
 apiRouter.get("/admin/schedule/read", adminAuthMiddleware,schedule.read);
 apiRouter.put("/admin/schedule/update" , adminAuthMiddleware,schedule.update)
-apiRouter.delete("/admin/schedule/delete", adminAuthMiddleware,schedule.remove);
+apiRouter.delete("/admin/schedule/remove", adminAuthMiddleware,schedule.remove);
 
 
+/* ------ Sponsor Routes ------ */
+apiRouter.post("/admin/sponsor/create",adminAuthMiddleware, sponsor.create);
+apiRouter.get("/sponsor/read", sponsor.read)
+apiRouter.put("/admin/sponsor/update",adminAuthMiddleware, sponsor.update)
+apiRouter.delete("/admin/sponsor/remove",adminAuthMiddleware, sponsor.remove)
 /* ------ Expo Token routes ------ */
 //apiRouter.post('/expo',expoToken.addToken);
 
