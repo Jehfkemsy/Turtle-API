@@ -5,7 +5,7 @@ import httpResponse from "../utils/httpResponses";
 const create = async (req, res) => 
 {
     try{
-        const {title, description, host, logo, category} = req.body;
+        const {title, description, host, logo, category, startTime, endTime} = req.body;
 
         const date = new Date();
 
@@ -15,8 +15,8 @@ const create = async (req, res) =>
             host: host,
             logo: logo,
             category: category,
-            startTime: date,
-            endTime: date
+            startTime: startTime,
+            endTime: endTime
             };
 
         const schedule = await Schedule.create(fields);
@@ -48,7 +48,7 @@ const update = async (req, res) =>
 {
     try
     {
-        const {title, description, host, logo, category} = req.body;
+        const {title, description, host, logo, category, startTime, endTime} = req.body;
 
         const schedule = await Schedule.findOneAndUpdate({title: title}, 
             {
@@ -56,8 +56,11 @@ const update = async (req, res) =>
                 description: description,
                 host: host,
                 logo: logo,
-                category: category
+                category: category,
+                startTime: startTime,
+                endTime: endTime
             }).exec();
+            
         httpResponse.successResponse(res, schedule);
     }catch(e)
     {
