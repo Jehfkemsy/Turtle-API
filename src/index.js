@@ -16,8 +16,11 @@ app.use((req, res, next) => {
     req.io = io;
     next();
   });
-const { PORT = 3000 } = process.env;
-
+const {PORT} = process.env;
+if(PORT === null)
+{
+    PORT = 3001
+}
 app.use(cors());
 app.use(helmet());
 app.use(bodyParser.json());

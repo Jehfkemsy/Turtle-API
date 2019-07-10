@@ -18,44 +18,59 @@ import mail from "../services/mail";
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID, SECRET_KEY} = process.env;
 
 const create = async (req, res) => {
-  const{firstName,lastName,email} = req.body;
-  console.log(firstName,lastName,email)
+
+
+const {firstName,lastName,email} = req.body;
+ 
+
   try {
+
 
     /*
       validate email is unique
     */
+
     await applicationService.validateHacker(req.body.email)
-    console.log('unique email')
+
+    const date = new Date();
 
     /*
       hash password
     */
-    const password = bcrypt.hashSync(req.body.password)
-    console.log('hashed password')
+    const hash = bcrypt.hashSync(req.body.password)
+   
     /*
       generate unique shell id
     */
-   let unique;
-   let id;
+    let unique = false
+    let id = createID.createId(5);
+
+    do{unique = Applicant.findOne({shellID: id})}while(!unique)
+
+    /*
+      generate unique shell id
+    */
     do{
-    id = createID.createId(5);
-    console.log(id);
+      
+      id = createID.createId(5);
       
       unique = await Applicant.findOne({shellID: id})
-      console.log(unique);
+
     }while(unique != null)
 
-    console.log('id is unique')
+
 
     const shellID = id
     const emailConfirmationToken = await crypto.randomBytes(20).toString('hex');
+
+    const lowercaseemail = email.toLowerCase();
+
           
     const fields = {
       firstName,
       lastName,
-      email,
-      password,
+      email: lowercaseemail,
+      password : hash,
       shellID,
       emailConfirmationToken,
       avatarID:"Id1",
@@ -86,13 +101,17 @@ const create = async (req, res) => {
       needReimburesment: null,
       location: null,
       shirtSize: null,
+      timeCreated: date,
+      timeApplied: null
     };
     
 
       /**
        * Validate applicant fields
        */
-      //await applicationService.validateHacker(fields);
+
+
+      await applicationService.validateHacker(fields);
 
 
       /**
@@ -103,7 +122,9 @@ const create = async (req, res) => {
       /**
        * Send applicant email
        */
-      //mailerService.confirmationEmail(email, emailConfirmationToken);
+
+      mailService.applied(fields);
+
 
       /**
        * Insert applicant in google sheets
@@ -111,7 +132,7 @@ const create = async (req, res) => {
       // sheets.write("Applicants", fields);
 
 
-      httpResponse.successResponse(res, applicant);
+      httpResponse.successResponse(res,applicant);
     } catch (e) {
       console.log(e);
       logger.info({ e, application: "Hacker", email: fields.email });
@@ -186,10 +207,10 @@ const readOne = async (req,res) => {
   try{
     const user = await Applicant.findOne({shellID});
 
-    httpResponses.successResponse(res,user);
+    httpResponse.successResponse(res,user);
 
   }catch(e){
-    httpResponses.failureResponse(res,e);
+    httpResponse.failureResponse(res,e);
   }
 }
 
@@ -267,7 +288,7 @@ const confirm = async (req,res) => {
       return httpResponse.successResponse(res,null)
   }
   
-  catch(e){
+  catch(e){   
     httpResponse.failureResponse(res, e);
   }
 }
@@ -284,7 +305,7 @@ const apply = async (req,res) => {
           reasonForAttending,haveBeenToShell,likeAMentor,
           needReimburesment,location} = req.body;
           
-    
+    const date = new Date();
     //need to generate avatarID, ShellID, and Hash password
     const fields = {
       schoolName,
@@ -312,6 +333,8 @@ const apply = async (req,res) => {
       needReimburesment,
       location,
       shirtSize,
+      timeCreated,
+      timeApplied: date
     };
 
     try {
@@ -352,7 +375,7 @@ const apply = async (req,res) => {
        */
       sheets.write("Applicants", fields);
 
-      httpResponse.successResponse(res, applicant);
+      httpResponse.successResponse(res, null);
     } catch (e) {
       logger.info({ e, application: "Hacker", email: fields.email });
       httpResponse.failureResponse(res, e);
@@ -364,9 +387,7 @@ const apply = async (req,res) => {
 const login = async (req, res) => {
    const {email,password} = req.body;
   try{
-    const user = await Applicant.findOne({
-      email
-    })
+    const user = await Applicant.findOne({email})
 
     if(!user)
       throw 'wrong login info'
@@ -461,6 +482,7 @@ const forgotPassword = async (req,res) => {
 }
 
 const resetPassword = async (req,res) => {
+  
     try{
       const {email, newPassword, token} = req.body;
 
@@ -487,5 +509,102 @@ const resetPassword = async (req,res) => {
     }
 }
 
-export default { create, read, readOne, update, confirm, acceptOne, acceptSchool, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept};
+const confirmEmail = async (req,res) => {
+  const email = req.params.email;
 
+  try{
+    const token = req.params.token;
+
+    const applicant = await Applicant.findOne({email})
+
+    if(!email){ throw "Email not found"}
+
+
+    if(applicant.emailConfirmed){
+      httpResponse.successResponse(res,"Email already confirmed");
+    }
+
+    if(applicant.emailConfirmationToken != token){
+      throw "Email confirmation link is invalid"
+    }
+
+    await Applicant.findOneAndUpdate({email},{emailConfirmed: true});
+    const confirmedApplicant = await Applicant.findOne({email});
+
+    if(!confirmedApplicant){
+      throw "Email not confirmed, please try again later"
+    }
+
+    if(!confirmedApplicant.emailConfirmed){
+      throw "Email not confirmed, please try again later 2"
+    }
+
+    httpResponse.successResponse(res,"Email succesfully confirmed");
+  }catch(e)
+  {
+    logger.info(e)
+    httpResponse.failureResponse(res, "fail")
+  }
+}
+
+const remindApply = async (req,res) =>
+{
+  try{
+    const remind = await Applicant.find({applicationStatus : "not applied"})
+
+    remind.map(applicant => {mailService.applied(applicant)})
+
+  httpResponse.successResponse(res, null);
+  }catch(e)
+  {
+    logger.info({ e});
+    httpResponse.failureResponse(res, e)
+
+  }
+  
+}
+
+const emailConfirmation = async (req, res) =>
+{
+  try
+  {
+    const {emailConfirmationToken, email} = req.body;
+
+    const confirm = await Applicant.findOneAndUpdate({email: email, emailConfirmationToken: emailConfirmationToken}, 
+      {
+        emailConfirmed: true
+      })
+
+      if(!confirm)
+      {
+        return httpResponse.failureResponse(res, "User not found")
+      }
+
+      httpResponse.successResponse(res, confirm)
+  }catch(e)
+  {
+    logger.info({e})
+    httpResponse.failureResponse(res, e);
+  }
+}
+
+const readOneUser = async (req, res) =>
+{
+  try
+  {
+    const shellID = req.body
+
+    User = await Applicant.findOne({shellID: shellID});
+
+    httpResponse.successResponse(res, User);
+  }catch(e)
+  {
+    logger.info({e})
+    httpResponse.failureResponse(res, e)
+  }
+}
+
+
+
+
+export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindApply, emailConfirmation, readOneUser};
