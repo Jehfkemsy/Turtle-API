@@ -605,23 +605,8 @@ const emailConfirmation = async (req, res) =>
   }
 }
 
-const readOneUser = async (req, res) =>
-{
-  try
-  {
-    const shellID = req.body
-
-    User = await Applicant.findOne({shellID: shellID});
-
-    httpResponse.successResponse(res, User);
-  }catch(e)
-  {
-    logger.info({e})
-    httpResponse.failureResponse(res, e)
-  }
-}
 
 
 
 
-export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindApply, emailConfirmation, readOneUser, remindConfirm};
+export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindApply, emailConfirmation,remindConfirm};

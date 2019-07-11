@@ -54,6 +54,8 @@ apiRouter.post("/admin/sponsor/create",adminAuthMiddleware, sponsor.create);
 apiRouter.get("/sponsor/read", sponsor.read)
 apiRouter.put("/admin/sponsor/update",adminAuthMiddleware, sponsor.update)
 apiRouter.delete("/admin/sponsor/remove",adminAuthMiddleware, sponsor.remove)
+
+
 /* ------ Expo Token routes ------ */
 //apiRouter.post('/expo',expoToken.addToken);
 

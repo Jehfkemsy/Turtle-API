@@ -7,16 +7,15 @@ const create = async (req, res) =>
     try{
         const {title, description, host, logo, category, startTime, endTime} = req.body;
 
-        const date = new Date();
 
         const fields = {
-            title: title,
-            description: description,
-            host: host,
-            logo: logo,
-            category: category,
-            startTime: startTime,
-            endTime: endTime
+            title,
+            description,
+            host,
+            logo,
+            category,
+            startTime,
+            endTime
             };
 
         const schedule = await Schedule.create(fields);
@@ -52,13 +51,13 @@ const update = async (req, res) =>
 
         const schedule = await Schedule.findOneAndUpdate({title: title}, 
             {
-                title: title,
-                description: description,
-                host: host,
-                logo: logo,
-                category: category,
-                startTime: startTime,
-                endTime: endTime
+                title,
+                description,
+                host,
+                logo,
+                category,
+                startTime,
+                endTime
             }).exec();
             
         httpResponse.successResponse(res, schedule);
@@ -76,7 +75,7 @@ const remove = async (req, res) =>
     {
         const title = req.body;
 
-        const schedule = await Schedule.deleteOne({title: title}).exec();
+        const schedule = await Schedule.deleteOne({title}).exec();
 
         httpResponse.successResponse(res,schedule);
     }catch(e)
