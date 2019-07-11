@@ -564,6 +564,23 @@ const remindApply = async (req,res) =>
   
 }
 
+const remindConfirm = async (req,res) =>
+{
+  try{
+    const remind = await Applicant.find({applicationStatus : "accepted"})
+
+    remind.map(applicant => {mailService.applied(applicant)})
+
+  httpResponse.successResponse(res, null);
+  }catch(e)
+  {
+    logger.info({ e});
+    httpResponse.failureResponse(res, e)
+
+  }
+  
+}
+
 const emailConfirmation = async (req, res) =>
 {
   try
@@ -588,23 +605,8 @@ const emailConfirmation = async (req, res) =>
   }
 }
 
-const readOneUser = async (req, res) =>
-{
-  try
-  {
-    const shellID = req.body
-
-    User = await Applicant.findOne({shellID: shellID});
-
-    httpResponse.successResponse(res, User);
-  }catch(e)
-  {
-    logger.info({e})
-    httpResponse.failureResponse(res, e)
-  }
-}
 
 
 
 
-export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindApply, emailConfirmation, readOneUser};
+export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindApply, emailConfirmation,remindConfirm};

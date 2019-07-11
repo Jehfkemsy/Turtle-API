@@ -10,11 +10,11 @@ const create = async (req,res) =>
         const {name, category, logo, description, jobsite} = req.body
 
         const fields = {
-            name: name,
-            category: category,
-            logo: logo,
-            description: description,
-            jobsite: jobsite
+            name,
+            category,
+            logo,
+            description,
+            jobsite
         }
 
         const sponsor = await Sponsor.create(fields)
@@ -52,10 +52,10 @@ const update = async (req, res) =>
         const {name, description, logo, category, jobsite} = req.body
 
         const sponsor = await Sponsor.findOneAndUpdate({name},
-             {description: description,
-              logo: logo,
-              category: category,
-              jobsite: jobsite  
+             {description,
+              logo,
+              category,
+              jobsite  
              }, {new: true})
 
 

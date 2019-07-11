@@ -41,7 +41,7 @@ apiRouter.get("/application/readOneUser", hackerAuthMiddleware, application.read
 //apiRouter.post('/admin/notification',expoToken.sendMsgTokens);
 apiRouter.put("/admin/accept",adminAuthMiddleware,application.accept);
 apiRouter.put("/admin/checkIn",adminAuthMiddleware,application.checkIn);
-//apiRouter.get("/admin/remind_confirm",adminAuthMiddleware,application.remindConfirm);
+apiRouter.get("/admin/remind_confirm",adminAuthMiddleware,application.remindConfirm);
 apiRouter.get("/admin/remind_apply",adminAuthMiddleware,application.remindApply);
 apiRouter.post("/admin/schedule/create",adminAuthMiddleware,schedule.create);
 apiRouter.get("/admin/schedule/read", adminAuthMiddleware,schedule.read);
@@ -54,6 +54,8 @@ apiRouter.post("/admin/sponsor/create",adminAuthMiddleware, sponsor.create);
 apiRouter.get("/sponsor/read", sponsor.read)
 apiRouter.put("/admin/sponsor/update",adminAuthMiddleware, sponsor.update)
 apiRouter.delete("/admin/sponsor/remove",adminAuthMiddleware, sponsor.remove)
+
+
 /* ------ Expo Token routes ------ */
 //apiRouter.post('/expo',expoToken.addToken);
 
