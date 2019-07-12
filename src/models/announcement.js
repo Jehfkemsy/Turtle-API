@@ -1,9 +1,11 @@
 import mongoose from 'mongoose';
 
 const announcementSchema = new mongoose.Schema({
-    message_id: {type: String, required: true, unique: true},
-    message: {type: String, required: true},
-    time: {type: String, required:true}
+    title: {type: String, required: true},
+    category: {type: String},
+    body: {type: String},
+    sentTime: {type: String},
+    author: {type: String, default: "ShellHacks Team"}
 });
 
 const Announcement = mongoose.model("Announcement", announcementSchema);

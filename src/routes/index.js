@@ -33,7 +33,6 @@ apiRouter.put("/application/unconfirm", hackerAuthMiddleware, application.unconf
 apiRouter.put("/application/forgot_password",hackerAuthMiddleware,application.forgotPassword);
 apiRouter.put("/application/reset_password",hackerAuthMiddleware,application.resetPassword);
 apiRouter.put("/application/confirmation",hackerAuthMiddleware ,application.emailConfirmation);
-apiRouter.get("/application/readOneUser", hackerAuthMiddleware, application.readOneUser);
 //apiRouter.post("/application/:email/:token",application.confirmEmail);
 
 
@@ -88,6 +87,9 @@ apiRouter.get("/workshop/read", workshop.read);
 /* ------ Live-Site Announcements ------ */
  apiRouter.post("/announcement", announcement.create);
  apiRouter.get("/announcement", announcement.read);
+ apiRouter.put("/announcement/update", announcement.update);
+ apiRouter.delete("/announcement/remove", announcement.remove);
+ apiRouter.post("/announcement/announce", announcement.announce);
 
 /* ------ Prereg signup Route ------ */
 // Deprecating this route, this alert is no longer needed
