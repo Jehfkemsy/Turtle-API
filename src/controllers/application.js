@@ -509,44 +509,6 @@ const resetPassword = async (req,res) => {
     }
 }
 
-const confirmEmail = async (req,res) => {
-  const email = req.params.email;
-
-  try{
-    const token = req.params.token;
-
-    const applicant = await Applicant.findOne({email})
-
-    if(!email){ throw "Email not found"}
-
-
-    if(applicant.emailConfirmed){
-      httpResponse.successResponse(res,"Email already confirmed");
-    }
-
-    if(applicant.emailConfirmationToken != token){
-      throw "Email confirmation link is invalid"
-    }
-
-    await Applicant.findOneAndUpdate({email},{emailConfirmed: true});
-    const confirmedApplicant = await Applicant.findOne({email});
-
-    if(!confirmedApplicant){
-      throw "Email not confirmed, please try again later"
-    }
-
-    if(!confirmedApplicant.emailConfirmed){
-      throw "Email not confirmed, please try again later 2"
-    }
-
-    httpResponse.successResponse(res,"Email succesfully confirmed");
-  }catch(e)
-  {
-    logger.info(e)
-    httpResponse.failureResponse(res, "fail")
-  }
-}
-
 const remindApply = async (req,res) =>
 {
   try{
@@ -605,8 +567,27 @@ const emailConfirmation = async (req, res) =>
   }
 }
 
+const resend = async (req, res) =>
+{
+  try
+  {
+    const {email} = req.body
+
+    const applicant = await Applicant.findOne({email})
+
+    mailService.applied(applicant);
+
+    httpResponse.successResponse(res, "success")
+  }catch(e)
+  {
+    logger.info(e)
+    console.log(e)
+    httpResponse.failureResponse(res, e)
+  }
+}
 
 
 
 
-export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindApply, emailConfirmation,remindConfirm};
+
+export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindApply, emailConfirmation,remindConfirm, resend};
