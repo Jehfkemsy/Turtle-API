@@ -61,7 +61,6 @@ const create = async(req, res) =>
   }catch(e)
   {
     logger.info(e)
-    console.log(e)
     httpResponse.failureResponse(res, e)
   }
 }
@@ -70,7 +69,7 @@ const read = async (req, res) =>
 {
   try
   {
-    const title = req.body.title
+    const {title} = req.body
 
     const announcement = await Announcement.findOne({title})
 
@@ -78,7 +77,6 @@ const read = async (req, res) =>
   }catch(e)
   {
     logger.info(e)
-    console.log(e)
     httpResponse.failureResponse(res, e)
   }
 
@@ -88,7 +86,7 @@ const announce = async (req, res) =>
 {
   try
   {
-    const title = req.body.title
+    const {title} = req.body
 
     const sentTime = new Date();
     announcement = await Announcement.findOneAndUpdate({title}, {
@@ -101,7 +99,6 @@ const announce = async (req, res) =>
   }catch(e)
   {
     logger.info(e)
-    console.log(e)
     httpResponse.failureResponse(res, e)
   }
 }
@@ -124,7 +121,6 @@ const update = async (req, res) =>
   }catch(e)
   {
     logger.info(e)
-    console.log(e)
     httpResponse.failureResponse(res, e)
   }
 }
@@ -133,7 +129,7 @@ const remove = async (req, res) =>
 {
   try
   {
-    const title = req.body.title
+    const {title} = req.body
 
     const announcement = await Announcement.findOneAndDelete({title})
 
@@ -141,7 +137,6 @@ const remove = async (req, res) =>
   }catch(e)
   {
     logger.info(e)
-    console.log(e)
     httpResponse.failureResponse(res, e)
   }
 
