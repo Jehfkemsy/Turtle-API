@@ -1,5 +1,5 @@
 /**
- * Handles all outgoing emails
+ * Handles outgoing emails using domain named email address with mailgun
  */
 import nodemailer from "nodemailer";
 import handlebars from "express-handlebars";
@@ -13,170 +13,211 @@ const { POC_EMAIL, MAILGUN_KEY, MAILGUN_DOMAIN, MAILGUN_EMAIL } = process.env;
 const auth = { auth: { api_key: MAILGUN_KEY, domain: MAILGUN_DOMAIN } };
 
 const gun = nodemailer.createTransport(mg(auth));
-// Default layout has to be set to null and a path has to be defined even if you aren't using layouts
+
+const path = require("path");
 const viewEngine = handlebars.create({
-  partialsDir: "src/templates",
-  layoutsDir: "src/templates",
+  //Default layout has to be set to null and a path
+  //has to be defined even if you aren't using layouts
+  partialsDir: path.resolve("src/templates"),
+  layoutsDir: path.resolve("src/templates"),
   defaultLayout: null,
 });
-const viewPath = "src/templates";
 
+const viewPath = path.resolve("src/templates");
 gun.use("compile", nodemailerHandlebars({ viewEngine, viewPath }));
 
 /**
- * sends email verification code
- * @param {Object} applicant
+ * Sends user email verification code
+ * @param {Object} applicant - user application model
  */
-const emailVerification = applicant => {
+const emailVerification = ({ email, emailConfirmationToken }) => {
   const mail = {
     from: `ShellHacks <${MAILGUN_EMAIL}>`,
-    to: applicant.email,
-    subject: `You are now registered for Shell Hacks`,
+    to: email,
+    subject: "You are now registered for Shell Hacks",
     template: "verify_email",
-    context: { emailConfirmationToken: applicant.emailConfirmationToken },
+    context: { emailConfirmationToken: emailConfirmationToken },
   };
   gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
 };
 
 /**
- * confirms user account has been created
- * @param {Object} applicant
+ * Confirms user account has been created
+ * @param {Object} applicant - user application model
  */
-const accountConfirmation = applicant => {
+const accountConfirmation = ({ email, firstName, lastName }) => {
   const mail = {
     from: `ShellHacks <${MAILGUN_EMAIL}>`,
-    to: applicant.email,
+    to: email,
     subject: `Your ShellHacks Account Has Been Created`,
     template: "account_confirmation",
     context: {
-      firstName: applicant.firstName,
-      lastName: applicant.lastName,
+      firstName: firstName,
+      lastName: lastName,
     },
   };
   gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
 };
 
 /**
- * reminds user to submit application
- * @param {Object} applicant
+ * Reminds user to submit application
+ * @param {Object} applicant - user application model
  */
-const applicationReminder = applicant => {
+const applicationReminder = ({ email, firstName, lastName }) => {
   const mail = {
     from: `ShellHacks <${MAILGUN_EMAIL}>`,
-    to: applicant.email,
+    to: email,
     subject: `Please submit your application ASAP`,
     template: "application_reminder",
     context: {
-      firstName: applicant.firstName,
-      lastName: applicant.lastName,
+      firstName: firstName,
+      lastName: lastName,
     },
   };
   gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
 };
 
 /**
- * confirms user application has been submitted
- * @param {Object} applicant
+ * Confirms user application has been submitted
+ * @param {Object} applicant - user application model
  */
-const applicantionConfirmation = applicant => {
+const applicantionConfirmation = ({ email, firstName, lastName }) => {
   const mail = {
     from: `ShellHacks <${MAILGUN_EMAIL}>`,
-    to: applicant.email,
+    to: email,
     subject: `We've received your application`,
     template: "application_confirmation",
     context: {
-      firstName: applicant.firstName,
-      lastName: applicant.lastName,
+      firstName: firstName,
+      lastName: lastName,
     },
   };
   gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
 };
 
 /**
- * reminds user to confirm that they're coming
- * @param {Object} applicant
+ * Reminds user to confirm that they're attending
+ * @param {Object} applicant - user application model
  */
-const acceptReminder = applicant => {
+const acceptReminder = ({ email, firstName, lastName }) => {
   const mail = {
     from: `ShellHacks <${MAILGUN_EMAIL}>`,
-    to: applicant.email,
+    to: email,
     subject: `Don't Forgot to Confirm Your Attendance`,
     template: "acceptance_confirmation_reminder",
     context: {
-      firstName: applicant.firstName,
-      lastName: applicant.lastName,
+      firstName: firstName,
+      lastName: lastName,
     },
   };
   gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
 };
 
 /**
- * let user know that they've been accepted
- * @param {Object} applicant
+ * Let user know that they've been accepted
+ * @param {Object} applicant - user application model
  */
-const accepted = applicant => {
+const accepted = ({ email, firstName, lastName }) => {
   const mail = {
     from: `ShellHacks <${MAILGUN_EMAIL}>`,
-    to: applicant.email,
+    to: email,
     subject: `You've Been Accepted to ShellHacks`,
     template: "acceptance",
     context: {
-      firstName: applicant.firstName,
-      lastName: applicant.lastName,
+      firstName: firstName,
+      lastName: lastName,
     },
   };
   gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
 };
 
 /**
- * confirms user's confirmation has successfully submitted
- * @param {Object} applicant
+ * Confirms user's attendance confirmation has been successfully submitted
+ * @param {Object} applicant - user application model
  */
-const acceptedConfirmation = applicant => {
+const acceptedConfirmation = ({ email, firstName, lastName }) => {
   const mail = {
     from: `ShellHacks <${MAILGUN_EMAIL}>`,
-    to: applicant.email,
+    to: email,
     subject: `You are All Set For ShellHacks`,
     template: "accepted_confirmation",
     context: {
-      firstName: applicant.firstName,
-      lastName: applicant.lastName,
+      firstName: firstName,
+      lastName: lastName,
     },
   };
   gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
 };
 
 /**
- * sends token to reset password
- * @param {Object} applicant
+ * Sends token to reset password
+ * @param {Object} applicant - user application model
  */
-const forgotPassword = applicant => {
+const forgotPassword = ({ email, firstName, lastName }) => {
   const mail = {
     from: `ShellHacks <${MAILGUN_EMAIL}>`,
-    to: applicant.email,
+    to: email,
     subject: `Here's your Reset Token`,
     template: "forgot_password",
     context: {
-      firstName: applicant.firstName,
-      lastName: applicant.lastName,
+      firstName: firstName,
+      lastName: lastName,
     },
   };
   gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
 };
 
 /**
- * confirmation that account has been reset
- * @param {Object} applicant
+ * Confirmation that account password has been reset
+ * @param {Object} applicant - user application model
  */
-const resetPassword = applicant => {
+const resetPassword = ({ email, firstName, lastName }) => {
   const mail = {
     from: `ShellHacks <${MAILGUN_EMAIL}>`,
-    to: applicant.email,
+    to: email,
     subject: `Your Password Has Been Updated`,
     template: "reset_password",
     context: {
-      firstName: applicant.firstName,
-      lastName: applicant.lastName,
+      firstName: firstName,
+      lastName: lastName,
+    },
+  };
+  gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
+};
+
+/**
+ * Sends a custom email with passed parameters values
+ * @param {String} email - user email address
+ * @param {String} subject - email subject
+ * @param {String} firstName - user first name
+ * @param {String} lastName - user last name
+ * @param {String} title - body title
+ * @param {String} paragraph - body
+ * @param {String} action - action button label ... if null, no button if shown
+ * @param {String} actionURL - action button link
+ */
+const customMail = (
+  email,
+  subject,
+  firstName,
+  lastName,
+  title,
+  paragraph,
+  action,
+  actionURL
+) => {
+  const mail = {
+    from: `ShellHacks <${MAILGUN_EMAIL}>`,
+    to: email,
+    subject: subject || "Update From ShellHacks",
+    template: "custom",
+    context: {
+      firstName: firstName,
+      lastName: lastName,
+      title,
+      paragraph: paragraph,
+      action: action,
+      actionURL: actionURL,
     },
   };
   gun.sendMail(mail, (err, info) => (err ? console.log(err) : info));
@@ -266,6 +307,7 @@ export default {
   accepted,
   acceptReminder,
   acceptedConfirmation,
+  customMail,
   workshop,
   mentor,
   volunteer,
