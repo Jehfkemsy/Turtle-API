@@ -85,11 +85,11 @@ apiRouter.get("/workshop/read", workshop.read);
 // apiRouter.get("/cabinet/checkin", cabinet.checkedIn);
 
 /* ------ Live-Site Announcements ------ */
- apiRouter.post("/announcement", announcement.create);
+ apiRouter.post("/announcement",adminAuthMiddleware, announcement.create);
  apiRouter.get("/announcement", announcement.read);
- apiRouter.put("/announcement/update", announcement.update);
- apiRouter.delete("/announcement/remove", announcement.remove);
- apiRouter.post("/announcement/announce", announcement.announce);
+ apiRouter.put("/announcement/update",adminAuthMiddleware, announcement.update);
+ apiRouter.delete("/announcement/remove",adminAuthMiddleware, announcement.remove);
+ apiRouter.post("/announcement/announce",adminAuthMiddleware, announcement.announce);
 
 /* ------ Prereg signup Route ------ */
 // Deprecating this route, this alert is no longer needed
