@@ -132,7 +132,7 @@ const {firstName,lastName,email} = req.body;
       // sheets.write("Applicants", fields);
 
 
-      httpResponse.successResponse(res,applicant);
+      httpResponse.successResponse(res,"success");
     } catch (e) {
       console.log(e);
       logger.info({ e, application: "Hacker", email: fields.email });
