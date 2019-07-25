@@ -40,5 +40,5 @@ io.on('connection', function(socket) {
 app.use("/", apiRouter);
 
 server.listen(PORT, () => {
-    console.log("> 🍐 Listening")
+    console.log("> 🐢 Listening")
 });

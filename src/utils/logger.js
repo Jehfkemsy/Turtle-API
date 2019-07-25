@@ -5,7 +5,7 @@ import "winston-daily-rotate-file";
 const transports = [
   new winston.transports.File({
     level: "info",
-    filename: resolve("logs/pear.log"),
+    filename: resolve("logs/turtle.log"),
     handleExceptions: true,
     json: true,
     maxsize: 5242880,
@@ -15,7 +15,7 @@ const transports = [
   new winston.transports.DailyRotateFile({
     name: "file",
     datePattern: "MM-DD-YYYY",
-    filename: resolve("logs/pear.log")
+    filename: resolve("logs/turtle.log")
   })
 ];
 
