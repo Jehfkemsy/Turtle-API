@@ -2,14 +2,23 @@
 
 ## Start scripts
 
-- `yarn do:start`: rebuild service and start a PM2 process
-- `yarn do:restart`: rebuild service and restart an existing PM2 process
-- `yarn do:stop`: stop a PM2 process
-- `yarn do:delete`: delete a PM2 process
-
+- `yarn dev`: start dev server
+- `yarn start`: build service and start PM2 process with arg `--name Turtle`
+- `yarn restart`: rebuild service and restart named PM2 process
+- `yarn stop`: stop named PM2 process
+- `yarn delete`: delete named PM2 process
+- `yarn build`: run build scripts
+- `yarn logs`
+- `yarn hydrate`
+  
 ## Setting up .env
 
-Setup your env variables before anything else
+Setup your env variables before anything else </br>
+See [example.env](https://github.com/UPE-FIU/Turtle/blob/master/.env.example) 
+
+## Code Style
+
+We use [ESLint](https://github.com/eslint/eslint) with the [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript) and [Prettier](https://github.com/prettier/prettier)
 
 ## Using the email templates
 
