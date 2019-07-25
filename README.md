@@ -218,7 +218,32 @@ returns
       },
   ]
 ```
+### PUT'/application/forgot_password'
 
+```json
+  {
+    "email": "email"
+  }
+```
+
+### PUT'/application/reset_password'
+
+```json
+  {
+    "email":"example@email.com",
+    "newPassword": "5555555",
+    "token": "......"
+  }
+```
+
+###PUT '/application/confirmation'
+
+```json
+  {
+    "email": "example@email.com",
+    "emailConfrimationToken": "....."
+  }
+```
 
 Possible routes:
 - confirmed
