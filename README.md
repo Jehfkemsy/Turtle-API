@@ -244,7 +244,7 @@ returns
     "emailConfrimationToken": "....."
   }
 ```
-###POST '/announcement'
+### POST '/announcement'
 
 requires admin token
 
@@ -256,7 +256,7 @@ requires admin token
     "author": "thatboi"
   }
 ```
-###GET '/announcement'
+### GET '/announcement'
 
 ```json
   {
@@ -264,7 +264,7 @@ requires admin token
   }
 ```
 
-###PUT '/announcement/update'
+### PUT '/announcement/update'
 
 requires admin token
 
@@ -277,7 +277,7 @@ requires admin token
   }
 ```
 
-###DELETE '/announcement/remove'
+### DELETE '/announcement/remove'
 
 requires admin token
 
@@ -287,7 +287,7 @@ requires admin token
   }
 ```
 
-###POST '/announcement/remove'
+### POST '/announcement/remove'
 
 requires admin token
 

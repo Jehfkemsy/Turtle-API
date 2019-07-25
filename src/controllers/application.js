@@ -123,7 +123,7 @@ const {firstName,lastName,email} = req.body;
        * Send applicant email
        */
 
-      mailService.applied(fields);
+      mailService.emailVerification(fields);
 
 
       /**
