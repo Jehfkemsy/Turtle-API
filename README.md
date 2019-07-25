@@ -1,4 +1,4 @@
-![Turtle](https://media.discordapp.net/attachments/562693946774650890/604060614288998418/shell-tutle.gif)
+![Turtle](https://github.com/UPE-FIU/Turtle/blob/documentation/assets/shell-turtle.gif)
 
 ## Start scripts
 
