@@ -44,7 +44,7 @@ const create = async(req, res) =>
 {
   try
   {
-    const {title, category, body, sentTime, author} = req.body
+    const {title, category, body, sentTime, author} = req.body;
 
     fields = 
     {
@@ -53,15 +53,15 @@ const create = async(req, res) =>
       body,
       sentTime,
       author
-    }
+    };
 
-    const announcement = await Announcement.create(fields)
+    const announcement = await Announcement.create(fields);
 
-    httpResponse.successResponse(res, "success")
+    httpResponse.successResponse(res, "success");
   }catch(e)
   {
-    logger.info(e)
-    httpResponse.failureResponse(res, e)
+    logger.info(e);
+    httpResponse.failureResponse(res, e);
   }
 }
 
@@ -69,15 +69,15 @@ const read = async (req, res) =>
 {
   try
   {
-    const {title} = req.body
+    const {title} = req.body;
 
-    const announcement = await Announcement.findOne({title})
+    const announcement = await Announcement.findOne({title});
 
-    httpResponse.successResponse(res, announcement)
+    httpResponse.successResponse(res, announcement);
   }catch(e)
   {
-    logger.info(e)
-    httpResponse.failureResponse(res, e)
+    logger.info(e);
+    httpResponse.failureResponse(res, e);
   }
 
 }
@@ -86,20 +86,20 @@ const announce = async (req, res) =>
 {
   try
   {
-    const {title} = req.body
+    const {title} = req.body;
 
-    const sentTime = new Date();
+    const sentTime = new Date();;
     announcement = await Announcement.findOneAndUpdate({title}, {
       sentTime
-    }, {new: true}) 
+    }, {new: true}); 
     
-    req.io.emit("announcement",announcement)
+    req.io.emit("announcement",announcement);
 
-    httpResponse.successResponse(res, "success")
+    httpResponse.successResponse(res, "success");
   }catch(e)
   {
-    logger.info(e)
-    httpResponse.failureResponse(res, e)
+    logger.info(e);
+    httpResponse.failureResponse(res, e);
   }
 }
 
@@ -107,7 +107,7 @@ const update = async (req, res) =>
 {
   try
   {
-    const {title, category, body, sentTime, author} = req.body
+    const {title, category, body, sentTime, author} = req.body;
 
     announcement = Announcement.findOneAndUpdate({title}, 
       {
@@ -115,13 +115,13 @@ const update = async (req, res) =>
         body,
         sentTime,
         author
-      }, {new: true})
+      }, {new: true});
 
-    httpResponse.successResponse(res, announcement)  
+    httpResponse.successResponse(res, announcement);  
   }catch(e)
   {
-    logger.info(e)
-    httpResponse.failureResponse(res, e)
+    logger.info(e);
+    httpResponse.failureResponse(res, e);
   }
 }
 
@@ -129,15 +129,15 @@ const remove = async (req, res) =>
 {
   try
   {
-    const {title} = req.body
+    const {title} = req.body;
 
-    const announcement = await Announcement.findOneAndDelete({title})
+    const announcement = await Announcement.findOneAndDelete({title});
 
-    httpResponse.successResponse(res,"success")
+    httpResponse.successResponse(res,"success");
   }catch(e)
   {
-    logger.info(e)
-    httpResponse.failureResponse(res, e)
+    logger.info(e);
+    httpResponse.failureResponse(res, e);
   }
 
 }
