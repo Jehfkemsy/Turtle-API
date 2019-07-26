@@ -3,24 +3,21 @@ import "./db";
 import express from "express";
 import bodyParser from "body-parser";
 import helmet from "helmet";
-import http from 'http';
+import http from "http";
 import cors from "cors";
 import passport from "passport";
+import socket from "socket.io";
 import { apiRouter } from "./routes";
-import socket from 'socket.io';
 
 const app = express();
 const server = http.Server(app);
 const io = socket(server);
+const { PORT = 3001 } = process.env;
 app.use((req, res, next) => {
-    req.io = io;
-    next();
-  });
-const {PORT} = process.env;
-if(PORT === null)
-{
-    PORT = 3001
-}
+  req.io = io;
+  next();
+});
+
 app.use(cors());
 app.use(helmet());
 app.use(bodyParser.json());
@@ -28,17 +25,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.disable("x-powered-by");
 
-
-
-io.on('connection', function(socket) {
-    console.log("Connected");
+io.on("connection", function(event) {
+  console.log("Connected");
 });
 
-//Adds socket to middleware and makes it useable in routes
-
+// Adds socket to middleware and makes it useable in routes
 
 app.use("/", apiRouter);
 
 server.listen(PORT, () => {
-    console.log("> 🐢 Listening")
+  console.log("> 🐢 Listening");
 });

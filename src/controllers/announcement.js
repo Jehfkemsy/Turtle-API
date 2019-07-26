@@ -72,13 +72,12 @@ const update = async (req, res) =>
 {
   try
   {
-    const {title, category, body, sentTime, author} = req.body;
+    const {title, category, body, author} = req.body;
 
     announcement = Announcement.findOneAndUpdate({title}, 
       {
         category,
         body,
-        sentTime,
         author
       }, {new: true});
 

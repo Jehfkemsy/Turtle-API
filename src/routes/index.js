@@ -12,10 +12,9 @@ import token from "../controllers/token";
 // import walkIn from "../controllers/walkin";
 // import checkin from "../controllers/checkin";
 import schedule from "../controllers/schedule";
-import sponsor from "../controllers/sponsor"
-
+import sponsor from "../controllers/sponsor";
 import adminAuthMiddleware from "../middleware/adminAuth";
-import hackerAuthMiddleware from '../middleware/hackerAuth';
+import hackerAuthMiddleware from "../middleware/hackerAuth";
 
 const apiRouter = Router();
 
@@ -23,8 +22,8 @@ apiRouter.get("/", (req, res) => res.send("biensupernice."));
 
 /* ------ Application Routes ------ */
 apiRouter.get("/application", adminAuthMiddleware, application.read);
-apiRouter.post("/application",application.create);
-apiRouter.post("/application/readOne",hackerAuthMiddleware, application.readOne);
+apiRouter.post("/application", application.create);
+apiRouter.post("/application/readOne", hackerAuthMiddleware, application.readOne);
 apiRouter.post("/application/login", application.login);
 apiRouter.put("/application/confirm",hackerAuthMiddleware, application.confirm);
 apiRouter.put("/application/update", hackerAuthMiddleware, application.update);
