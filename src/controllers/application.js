@@ -123,7 +123,7 @@ const {firstName,lastName,email} = req.body;
        * Send applicant email
        */
 
-      mailService.applied(fields);
+      mailService.emailVerification(fields);
 
 
       /**
@@ -268,6 +268,8 @@ const accept = async (req,res) => {
         {applicationStatus:"accepted"}
         ).exec();
     });
+
+    mailService.accepted(accepted);
     
     return httpResponse.successResponse(res,null);
 
@@ -285,6 +287,8 @@ const confirm = async (req,res) => {
       {email},
       {applicationStatus:"confirmed"}
       ).exec();
+
+      mailService.acceptedConfirmation(user)
       return httpResponse.successResponse(res,null)
   }
   
@@ -368,7 +372,7 @@ const apply = async (req,res) => {
       /**
        * Send applicant email
        */
-      mailService.applied(fields);
+      mailService.applicantionConfirmation(fields);
 
       /**
        * Insert applicant in google sheets
@@ -471,7 +475,7 @@ const forgotPassword = async (req,res) => {
       resetPasswordExpiration: tomorrow
     })
 
-    mailerService.forgotPassword(email,token);
+    mailService.forgotPassword(applicant);
 
     httpResponse.successResponse(res,"Reset password email sent");
   }
@@ -499,6 +503,8 @@ const resetPassword = async (req,res) => {
 
         if(!updatedApplicant) throw "Error, try again later"
 
+        mailService.resetPassword(updatedApplicant);
+
       
       httpResponse.successResponse(res,"Email succesfully reset");
 
@@ -514,7 +520,7 @@ const remindApply = async (req,res) =>
   try{
     const remind = await Applicant.find({applicationStatus : "not applied"})
 
-    remind.map(applicant => {mailService.applied(applicant)})
+    remind.map(applicant => {mailService.applicationReminder(applicant)});
 
   httpResponse.successResponse(res, null);
   }catch(e)
@@ -531,7 +537,7 @@ const remindConfirm = async (req,res) =>
   try{
     const remind = await Applicant.find({applicationStatus : "accepted"})
 
-    remind.map(applicant => {mailService.applied(applicant)})
+    remind.map(applicant => {mailService.acceptReminder(applicant)})
 
   httpResponse.successResponse(res, null);
   }catch(e)
@@ -553,6 +559,8 @@ const emailConfirmation = async (req, res) =>
       {
         emailConfirmed: true
       })
+
+      mailService.accountConfirmation(confirm);
 
       if(!confirm)
       {
