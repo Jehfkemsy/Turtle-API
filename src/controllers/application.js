@@ -61,7 +61,7 @@ const {firstName,lastName,email} = req.body;
 
 
     const shellID = id
-    const emailConfirmationToken = await crypto.randomBytes(20).toString('hex');
+    const emailConfirmationToken = await crypto.randomBytes(8).toString('hex');
 
     const lowercaseemail = email.toLowerCase();
 
@@ -465,7 +465,7 @@ const forgotPassword = async (req,res) => {
       throw 'User email does not exist';
     }
 
-    const token = await crypto.randomBytes(6).toString('hex');
+    const token = await crypto.randomBytes(8).toString('hex');
 
     const date = new Date();
     const tomorrow = await date.setTime(date.getTime() + (24 * 60 * 60 * 1000))
@@ -557,8 +557,9 @@ const emailConfirmation = async (req, res) =>
 
     const confirm = await Applicant.findOneAndUpdate({email: email, emailConfirmationToken: emailConfirmationToken}, 
       {
-        emailConfirmed: true
-      })
+        emailConfirmed: true,
+        emailConfirmationToken: null
+      }, {new: true})
 
       mailService.accountConfirmation(confirm);
 
@@ -567,7 +568,7 @@ const emailConfirmation = async (req, res) =>
         return httpResponse.failureResponse(res, "User not found")
       }
 
-      httpResponse.successResponse(res, confirm)
+      httpResponse.successResponse(res,"success")
   }catch(e)
   {
     logger.info({e})
@@ -594,8 +595,24 @@ const resend = async (req, res) =>
   }
 }
 
+const resendVerify = async => (req, res) =>
+{
+  try
+  {
+    const {email} = req.body;
+
+    const user  = Applicant.findOne({email});
+
+    mailService.emailVerification(user);
+
+    httpResponse.successResponse(res, "success");
+  }catch(e)
+  {
+    logger.info(e);
+    httpResponse.failureResponse(res, e)
+  }
+}
 
 
 
-
-export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindApply, emailConfirmation,remindConfirm, resend};
+export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindApply, emailConfirmation,remindConfirm, resend, resendVerify};

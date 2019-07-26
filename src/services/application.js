@@ -99,12 +99,12 @@ const validateCandidate = applicant =>
 
   const resetPasswordValidation = async(email, newPassword, token)=>{
 
-    const applicant = await Applicant.findOne({email: email});
+    const applicant = await Applicant.findOne({email});
 
     if(!applicant){throw "Email does not exist";}
 
     if(!applicant.resetPasswordToken){
-      throw "User has not requested to change password";
+      throw "Invalid Token";
     }
 
     if(applicant.resetPasswordExpiration < Date.now()){

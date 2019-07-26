@@ -5,7 +5,6 @@ const { SECRET_KEY, DASHBOARD_PASSWORD } = process.env;
 
 passport.use('hacker-rule',
     new BearerStrategy(async (token,done) => {
-        console.log(token);
         let decoded;
         try{
             decoded = await jwt.verify(token,SECRET_KEY);
