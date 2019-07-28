@@ -1,4 +1,5 @@
 const dotenv = require("dotenv");
+
 dotenv.config({ silent: true });
 
 const mongoose = require("mongoose");
@@ -34,12 +35,7 @@ const options = {
 };
 
 async function db() {
-  Promise.resolve(
-    mongoose.connect(
-      MONGO_URI,
-      options
-    )
-  );
+  Promise.resolve(mongoose.connect(MONGO_URI, options));
 }
 
 db()

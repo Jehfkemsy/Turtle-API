@@ -16,10 +16,6 @@
 Setup your env variables before anything else </br>
 See [example.env](https://github.com/UPE-FIU/Turtle/blob/master/.env.example) 
 
-## Code Style
-
-We use [ESLint](https://github.com/eslint/eslint) with the [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript) and [Prettier](https://github.com/prettier/prettier)
-
 ## Using the email templates
 
 - The email templates are housed in the following [pen](https://codepen.io/dashboard/)
