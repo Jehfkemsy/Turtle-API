@@ -1,9 +1,11 @@
 import passport from "passport";
 import { Strategy as BearerStrategy } from "passport-http-bearer";
 import jwt from "jsonwebtoken";
+
 const { SECRET_KEY, DASHBOARD_PASSWORD } = process.env;
 
-passport.use('admin-rule',
+passport.use(
+  "admin-rule",
   new BearerStrategy(async (token, done) => {
     let decoded;
     try {
@@ -23,6 +25,8 @@ passport.use('admin-rule',
   })
 );
 
-const adminAuthMiddleware = passport.authenticate("admin-rule", { session: false });
+const adminAuthMiddleware = passport.authenticate("admin-rule", {
+  session: false
+});
 
 export default adminAuthMiddleware;

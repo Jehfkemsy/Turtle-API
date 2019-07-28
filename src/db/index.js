@@ -9,13 +9,7 @@ const options = {
   useFindAndModify: false
 };
 
-const db = () =>
-  Promise.resolve(
-    mongoose.connect(
-      MONGO_URI,
-      options
-    )
-  );
+const db = () => Promise.resolve(mongoose.connect(MONGO_URI, options));
 
 db()
   .then(() => console.log("> 🍃  Mongo connected"))

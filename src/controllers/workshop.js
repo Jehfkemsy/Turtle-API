@@ -38,20 +38,15 @@ const create = async (req, res) => {
   }
 };
 
-const read = async (req,res) =>
-{
+const read = async (req, res) => {
+  try {
+    const workshops = await Workshop.find({});
 
-  try{
-
-  const workshops = await Workshop.find({});
-  
-  return httpResponse.successResponse(res, workshops);
-  }catch (e) {
+    return httpResponse.successResponse(res, workshops);
+  } catch (e) {
     logger.info({ e, application: "Workshop", email: fields.email });
     httpResponse.failureResponse(res, e);
   }
-
-
-}
+};
 
 export default { create, read };

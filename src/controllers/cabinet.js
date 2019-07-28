@@ -4,7 +4,7 @@ import httpResponse from "../utils/httpResponses";
 
 import googleService from "../services/google/drive";
 
-import applicationService from '../services/application';
+import applicationService from "../services/application";
 
 const confirmed = async (req, res) => {
   try {
@@ -68,16 +68,22 @@ const download = async (req, res) => {
   }
 };
 
-const statistics = async (req,res) => {
-  try{
-
+const statistics = async (req, res) => {
+  try {
     const statistics = await applicationService.applicationStatistics();
 
-    httpResponse.successResponse(res,statistics);
-
-  }catch(e){
-    httpResponse.failureResponse(res,err);
+    httpResponse.successResponse(res, statistics);
+  } catch (e) {
+    httpResponse.failureResponse(res, err);
   }
-}
+};
 
-export default { confirmed, unconfirmed, females, males, download, checkedIn, statistics };
+export default {
+  confirmed,
+  unconfirmed,
+  females,
+  males,
+  download,
+  checkedIn,
+  statistics
+};

@@ -12,11 +12,13 @@ import { apiRouter } from "./routes";
 const app = express();
 const server = http.Server(app);
 const io = socket(server);
-const { PORT = 3001 } = process.env;
+
 app.use((req, res, next) => {
-  req.io = io;
-  next();
+    req.io = io;
+    next();
 });
+const PORT = process.env.PORT || 3000;
+
 
 app.use(cors());
 app.use(helmet());
@@ -25,8 +27,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.disable("x-powered-by");
 
-io.on("connection", function(event) {
-  console.log("Connected");
+io.on("connection", socket => {
+    console.log("Connected");
 });
 
 // Adds socket to middleware and makes it useable in routes
@@ -34,5 +36,6 @@ io.on("connection", function(event) {
 app.use("/", apiRouter);
 
 server.listen(PORT, () => {
-  console.log("> 🐢 Listening");
+    console.log("> 🐢 Listening");
 });
+
