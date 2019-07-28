@@ -13,7 +13,6 @@ import token from "../controllers/token";
 // import checkin from "../controllers/checkin";
 import schedule from "../controllers/schedule";
 import sponsor from "../controllers/sponsor";
-
 import adminAuthMiddleware from "../middleware/adminAuth";
 import hackerAuthMiddleware from "../middleware/hackerAuth";
 
@@ -24,62 +23,41 @@ apiRouter.get("/", (req, res) => res.send("biensupernice."));
 /* ------ Application Routes ------ */
 apiRouter.get("/application", adminAuthMiddleware, application.read);
 apiRouter.post("/application", application.create);
-apiRouter.post(
-    "/application/readOne",
-    hackerAuthMiddleware,
-    application.readOne
-);
+apiRouter.post("/application/readOne", hackerAuthMiddleware, application.readOne);
 apiRouter.post("/application/login", application.login);
-apiRouter.put(
-    "/application/confirm",
-    hackerAuthMiddleware,
-    application.confirm
-);
+apiRouter.put("/application/confirm", hackerAuthMiddleware, application.confirm);
 apiRouter.put("/application/update", hackerAuthMiddleware, application.update);
 apiRouter.put("/application/apply", hackerAuthMiddleware, application.apply);
-apiRouter.put(
-    "/application/unconfirm",
-    hackerAuthMiddleware,
-    application.unconfirm
-);
-apiRouter.put("/application/forgot_password", application.forgotPassword);
-apiRouter.put("/application/reset_password", application.resetPassword);
-apiRouter.put("/application/confirmation", application.emailConfirmation);
+apiRouter.put("/application/unconfirm", hackerAuthMiddleware, application.unconfirm);
+apiRouter.put("/application/forgot_password", hackerAuthMiddleware, application.forgotPassword);
+apiRouter.put("/application/reset_password", hackerAuthMiddleware, application.resetPassword);
+apiRouter.put("/application/confirmation", hackerAuthMiddleware, application.emailConfirmation);
 // apiRouter.post("/application/:email/:token",application.confirmEmail);
+
 
 /* ------ Administrator Routes ------ */
 // apiRouter.post('/admin/notification',expoToken.sendMsgTokens);
 apiRouter.put("/admin/accept", adminAuthMiddleware, application.accept);
 apiRouter.put("/admin/checkIn", adminAuthMiddleware, application.checkIn);
-apiRouter.get(
-    "/admin/remind_confirm",
-    adminAuthMiddleware,
-    application.remindConfirm
-);
-apiRouter.get(
-    "/admin/remind_apply",
-    adminAuthMiddleware,
-    application.remindApply
-);
+apiRouter.get("/admin/remind_confirm", adminAuthMiddleware, application.remindConfirm);
+apiRouter.get("/admin/remind_apply", adminAuthMiddleware, application.remindApply);
 apiRouter.post("/admin/schedule/create", adminAuthMiddleware, schedule.create);
 apiRouter.get("/admin/schedule/read", adminAuthMiddleware, schedule.read);
-apiRouter.put("/admin/schedule/update", adminAuthMiddleware, schedule.update);
-apiRouter.delete(
-    "/admin/schedule/remove",
-    adminAuthMiddleware,
-    schedule.remove
-);
+apiRouter.put("/admin/schedule/update", adminAuthMiddleware, schedule.update)
+apiRouter.delete("/admin/schedule/remove", adminAuthMiddleware, schedule.remove);
+
 
 /* ------ Sponsor Routes ------ */
 apiRouter.post("/admin/sponsor/create", adminAuthMiddleware, sponsor.create);
-apiRouter.get("/sponsor/read", sponsor.read);
-apiRouter.put("/admin/sponsor/update", adminAuthMiddleware, sponsor.update);
-apiRouter.delete("/admin/sponsor/remove", adminAuthMiddleware, sponsor.remove);
+apiRouter.get("/sponsor/read", sponsor.read)
+apiRouter.put("/admin/sponsor/update", adminAuthMiddleware, sponsor.update)
+apiRouter.delete("/admin/sponsor/remove", adminAuthMiddleware, sponsor.remove)
+
 
 /* ------ Expo Token routes ------ */
 // apiRouter.post('/expo',expoToken.addToken);
 
-/* ------- Day of Routes -------- */
+/* ------- Day of Routes --------*/
 // apiRouter.post("/walkin", adminAuthMiddleware, walkIn.create);
 // apiRouter.post("/checkin", adminAuthMiddleware, checkin.create);
 
@@ -109,16 +87,8 @@ apiRouter.get("/workshop/read", workshop.read);
 apiRouter.post("/announcement", adminAuthMiddleware, announcement.create);
 apiRouter.get("/announcement", announcement.read);
 apiRouter.put("/announcement/update", adminAuthMiddleware, announcement.update);
-apiRouter.delete(
-    "/announcement/remove",
-    adminAuthMiddleware,
-    announcement.remove
-);
-apiRouter.post(
-    "/announcement/announce",
-    adminAuthMiddleware,
-    announcement.announce
-);
+apiRouter.delete("/announcement/remove", adminAuthMiddleware, announcement.remove);
+apiRouter.post("/announcement/announce", adminAuthMiddleware, announcement.announce);
 
 /* ------ Prereg signup Route ------ */
 // Deprecating this route, this alert is no longer needed
