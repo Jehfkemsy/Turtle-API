@@ -1,17 +1,17 @@
-import bcrypt from 'bcrypt-nodejs'
-import jwt from 'jsonwebtoken';
-import { runInNewContext } from "vm";
-import { http } from "winston";
-import crypto from 'crypto'
 import mailService from "../services/mail";
 import fileService from "../services/file";
 import drive from "../services/google/drive";
 import sheets from "../services/google/sheets";
 import createID from '../utils/idGenerator'
 import applicationService from "../services/application";
+import bcrypt from 'bcrypt-nodejs'
 import logger from "../utils/logger";
 import httpResponse from "../utils/httpResponses";
 import Applicant from "../models/applicant";
+import jwt from 'jsonwebtoken';
+import { runInNewContext } from "vm";
+import { http } from "winston";
+import crypto from 'crypto'
 import mailerService from '../services/nodemailer-temp'
 import mail from "../services/mail";
 
@@ -54,35 +54,7 @@ const create = async(req, res) => {
 
             id = createID.createId(5);
 
-
             unique = await Applicant.findOne({ shellID: id })
-
-      /**
-       * Insert applicant in the database
-       */
-      const applicant = await Applicant.create(fields);
-
-      /**
-       * Send applicant email
-       */
-
-      mailService.emailVerification(fields);
-
-
-      /**
-       * Insert applicant in google sheets
-       */
-      // sheets.write("Applicants", fields);
-
-
-      httpResponse.successResponse(res,"success");
-    } catch (e) {
-      console.log(e);
-      logger.info({ e, application: "Hacker", email: fields.email });
-      httpResponse.failureResponse(res, e);
-    }
-  
-};
 
         } while (unique != null)
 
@@ -182,15 +154,15 @@ const read = async(req, res) => {
         if (q && q.length > 0 && q !== "") {
             searchCriteria = {
                 $or: [
-                    { firstName: new RegExp(`.*${  q  }.*`, "i") },
-                    { lastName: new RegExp(`.*${  q  }.*`, "i") },
-                    { email: new RegExp(`.*${  q  }.*`, "i") },
-                    { schoolName: new RegExp(`.*${  q  }.*`, "i") }
+                    { firstName: new RegExp(".*" + q + ".*", "i") },
+                    { lastName: new RegExp(".*" + q + ".*", "i") },
+                    { email: new RegExp(".*" + q + ".*", "i") },
+                    { schoolName: new RegExp(".*" + q + ".*", "i") }
                 ]
             }
         }
 
-        filter ? searchCriteria.$and = [{ applicationStatus: filter }] : null
+        filter ? searchCriteria['$and'] = [{ applicationStatus: filter }] : null
 
         const allApplicants = await Applicant.find(searchCriteria)
 
@@ -297,7 +269,7 @@ const accept = async(req, res) => {
     }
 }
 
-// changes a single hacker's status from accepted to confirmed
+//changes a single hacker's status from accepted to confirmed
 const confirm = async(req, res) => {
     const { email } = req.body;
 
@@ -342,7 +314,7 @@ const apply = async(req, res) => {
         } = req.body;
 
         const date = new Date();
-        // need to generate avatarID, ShellID, and Hash password
+        //need to generate avatarID, ShellID, and Hash password
         const fields = {
             schoolName,
             levelOfStudy,
@@ -434,9 +406,9 @@ const login = async(req, res) => {
 
         const expDate = 60 * 60 * 144
 
-        const { shellID } = user;
+        let { shellID } = user;
 
-        const JWT = await jwt.sign({ key: shellID },
+        let JWT = await jwt.sign({ key: shellID },
             SECRET_KEY, { expiresIn: expDate }
         );
 
@@ -450,12 +422,12 @@ const login = async(req, res) => {
 
 const unconfirm = async(req, res) => {
     try {
-        const {email} = req.body;
+        const email = req.body.email;
 
         const unconfirmation = await Applicant.findOneAndUpdate({ email }, { applicationStatus: "accepted" }).exec();
         httpResponse.successResponse(res, unconfirmation);
     } catch (e) {
-        logger.info({ e, application: "Hacker", email });
+        logger.info({ e, application: "Hacker", email: email });
         console.log(e);
         httpResponse.failureResponse(res, e)
     }
@@ -480,7 +452,7 @@ const forgotPassword = async(req, res) => {
     try {
         const { email } = req.body;
 
-        const emailFound = await Applicant.findOne({ email });
+        const emailFound = await Applicant.findOne({ email: email });
 
         if (!emailFound) {
             throw 'User email does not exist';
@@ -491,7 +463,7 @@ const forgotPassword = async(req, res) => {
         const date = new Date();
         const tomorrow = await date.setTime(date.getTime() + (24 * 60 * 60 * 1000))
 
-        const applicant = await Applicant.findOneAndUpdate({ email }, {
+        const applicant = await Applicant.findOneAndUpdate({ email: email }, {
             resetPasswordToken: token,
             resetPasswordExpiration: tomorrow
         })
@@ -514,10 +486,10 @@ const resetPassword = async(req, res) => {
 
         const password = bcrypt.hashSync(newPassword)
 
-        const updatedApplicant = await Applicant.findOneAndUpdate({ email }, {
+        const updatedApplicant = await Applicant.findOneAndUpdate({ email: email }, {
             resetPasswordToken: null,
             resetPasswordExpiration: null,
-            password,
+            password: password,
         });
 
         if (!updatedApplicant) throw "Error, try again later"
@@ -565,7 +537,7 @@ const emailConfirmation = async(req, res) => {
     try {
         const { emailConfirmationToken, email } = req.body;
 
-        const confirm = await Applicant.findOneAndUpdate({ email, emailConfirmationToken }, {
+        const confirm = await Applicant.findOneAndUpdate({ email: email, emailConfirmationToken: emailConfirmationToken }, {
             emailConfirmed: true
         })
 
@@ -595,5 +567,9 @@ const resend = async(req, res) => {
         httpResponse.failureResponse(res, e)
     }
 }
+
+
+
+
 
 export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword, resetPassword, checkIn, accept, remindApply, emailConfirmation, remindConfirm, resend };
