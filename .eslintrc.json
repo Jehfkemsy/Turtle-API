@@ -15,6 +15,7 @@
     "node": true
   },
   "rules": {
+
     "no-console": "off",
     "prettier/prettier": "off"
   }

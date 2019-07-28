@@ -54,7 +54,35 @@ const create = async(req, res) => {
 
             id = createID.createId(5);
 
+
             unique = await Applicant.findOne({ shellID: id })
+
+      /**
+       * Insert applicant in the database
+       */
+      const applicant = await Applicant.create(fields);
+
+      /**
+       * Send applicant email
+       */
+
+      mailService.emailVerification(fields);
+
+
+      /**
+       * Insert applicant in google sheets
+       */
+      // sheets.write("Applicants", fields);
+
+
+      httpResponse.successResponse(res,"success");
+    } catch (e) {
+      console.log(e);
+      logger.info({ e, application: "Hacker", email: fields.email });
+      httpResponse.failureResponse(res, e);
+    }
+  
+};
 
         } while (unique != null)
 

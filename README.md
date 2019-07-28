@@ -1,4 +1,4 @@
-![Pear](https://github.com/hackfiu/pear/blob/master/assets/banner.jpg?raw=true)
+![Turtle](https://github.com/UPE-FIU/Turtle/blob/documentation/assets/shell-turtle.gif)
 
 ## Start scripts
 
@@ -240,10 +240,55 @@ returns
     "emailConfrimationToken": "....."
   }
 ```
+### POST '/announcement'
 
-Possible routes:
-- confirmed
-- unconfirmed
-- females
-- males
+requires admin token
 
+```json
+  {
+    "title": "example",
+    "category": "emergency",
+    "body": "SHEEEEEEEEELLLLLLLLLHACKKKKKKS",
+    "author": "thatboi"
+  }
+```
+### GET '/announcement'
+
+```json
+  {
+    "title": "example",
+  }
+```
+
+### PUT '/announcement/update'
+
+requires admin token
+
+```json
+  {
+    "title": "example",
+    "category": "emergency",
+    "body": "SHEEEEEEEEELLLLLLLLLHACKKKKKKS",
+    "author": "thatboi"
+  }
+```
+
+### DELETE '/announcement/remove'
+
+requires admin token
+
+```json
+  {
+    "title": "example"
+  }
+```
+
+### POST '/announcement/remove'
+
+requires admin token
+
+```json
+  {
+    "title": "example"
+  }
+```

@@ -12,11 +12,13 @@ import { apiRouter } from "./routes";
 const app = express();
 const server = http.Server(app);
 const io = socket(server);
+
 app.use((req, res, next) => {
     req.io = io;
     next();
 });
 const PORT = process.env.PORT || 3000;
+
 
 app.use(cors());
 app.use(helmet());
@@ -36,3 +38,4 @@ app.use("/", apiRouter);
 server.listen(PORT, () => {
     console.log("> 🐢 Listening");
 });
+

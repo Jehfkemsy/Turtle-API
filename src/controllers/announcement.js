@@ -61,16 +61,17 @@ const announce = async (req, res) => {
   }
 };
 
+
 const update = async (req, res) => {
   try {
     const { title, category, body, sentTime, author } = req.body;
+
 
     announcement = Announcement.findOneAndUpdate(
       { title },
       {
         category,
         body,
-        sentTime,
         author
       },
       { new: true }
