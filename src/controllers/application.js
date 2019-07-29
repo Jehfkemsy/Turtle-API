@@ -457,10 +457,11 @@ const forgotPassword = async (req, res) => {
       {
         resetPasswordToken: token,
         resetPasswordExpiration: tomorrow
-      }
+      },
+      {new: true}
     );
 
-    mailerService.forgotPassword(email, token);
+    mailerService.forgotPassword(applicant);
 
     httpResponse.successResponse(res, "Reset password email sent");
   } catch (err) {
