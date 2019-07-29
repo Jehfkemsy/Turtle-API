@@ -11,24 +11,22 @@ const forgotPassword = (email, token) => {
     service: "gmail",
     auth: {
       user: EMAIL,
-      pass: EMAIL_PASSWORD,
-    },
+      pass: EMAIL_PASSWORD
+    }
   });
 
   const mailOptions = {
     from: EMAIL,
     to: email,
     subject: "Sending Email using Node.js",
-    text:
-      "Yo, I heard you like tokens, so I got you a token for your token " +
-      token,
+    text: `Yo, I heard you like tokens, so I got you a token for your token ${token}`
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.log(error);
     } else {
-      console.log("Email sent: " + info.response);
+      console.log(`Email sent: ${info.response}`);
     }
   });
 };
@@ -38,22 +36,22 @@ const confirmationEmail = (email, confirmationToken) => {
     service: "gmail",
     auth: {
       user: EMAIL,
-      pass: EMAIL_PASSWORD,
-    },
+      pass: EMAIL_PASSWORD
+    }
   });
 
   const mailOptions = {
     from: EMAIL,
     to: email,
     subject: "Sending Email using Node.js",
-    text: `Click the link to confirm your email localhost:3000/${email}/${confirmationToken}`,
+    text: `Click the link to confirm your email localhost:3000/${email}/${confirmationToken}`
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.log(error);
     } else {
-      console.log("Email sent: " + info.response);
+      console.log(`Email sent: ${info.response}`);
     }
   });
 };

@@ -7,7 +7,7 @@ import Candidate from "../models/candidate";
 import Applicant from "../models/applicant";
 
 const create = async (req, res) => {
-  let { hacker, company } = req.body;
+  const { hacker, company } = req.body;
   try {
     await applicationService.validateCandidate(hacker);
     const applicant = await Applicant.findOne({ email: hacker.email });

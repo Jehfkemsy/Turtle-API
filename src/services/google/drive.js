@@ -39,7 +39,12 @@ const asyncDownload = fileId =>
     const drive = google.drive("v3");
 
     drive.files.get(
-      { auth, fileId: fileId, alt: "media", mimeType: "application/pdf" },
+      {
+        auth,
+        fileId,
+        alt: "media",
+        mimeType: "application/pdf"
+      },
       {
         responseType: "stream"
       },
@@ -59,7 +64,7 @@ const asyncDownload = fileId =>
   });
 
 const bufferToStream = buffer => {
-  let stream = new Duplex();
+  const stream = new Duplex();
   stream.push(buffer);
   stream.push(null);
   return stream;
@@ -75,7 +80,12 @@ const upload = async (file, filename, folder) => {
 
     const media = { mimeType: mimetype, body: bufferToStream(buffer) };
 
-    const payload = { auth, resource, media, fields: "webViewLink" };
+    const payload = {
+      auth,
+      resource,
+      media,
+      fields: "webViewLink"
+    };
 
     const { webViewLink } = await asyncUpload(drive, payload);
 

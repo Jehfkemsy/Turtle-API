@@ -1,22 +1,22 @@
 {
-  "env": {
-    "es6": true,
-    "node": true
+  "parser": "babel-eslint",
+ "extends": ["airbnb", "plugin:prettier/recommended"],
+
+  "parserOptions": {
+    "ecmaVersion": 2019,
+    "sourceType": "module"
   },
-  "extends": ["airbnb-base", "plugin:prettier/recommended"],
   "globals": {
     "Atomics": "readonly",
     "SharedArrayBuffer": "readonly"
   },
-  "parserOptions": {
-    "ecmaVersion": 2018,
-    "sourceType": "module"
+  "env": {
+    "es6": true,
+    "node": true
   },
   "rules": {
-    "brace-style": ["error", "stroustrup"],
-    "comma-dangle": ["error", "never"],
-    "no-unused-vars": ["warn"],
-    "no-var": ["off"],
-    "one-var": ["off"]
+
+    "no-console": "off",
+    "prettier/prettier": "off"
   }
 }

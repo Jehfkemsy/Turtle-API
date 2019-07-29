@@ -152,25 +152,121 @@ const read = async (req, res) => {
 
     const allApplicants = await Applicant.find(searchCriteria);
 
-    const applicants = await Applicant.find(searchCriteria, {
-      _id: 0,
-      __v: 0
-    })
-      .skip(pageQuery)
-      .limit(queryLimit)
-      .sort({ timestamp: -1 });
 
-    if (!applicants || applicants.length <= 0) {
-      throw new Error("No Applicants found.");
-    }
+    try {
 
-    const count = await Applicant.countDocuments(searchCriteria);
-    const checkedInCount = await Applicant.countDocuments({ checkIn: true });
-    const overallPages = Math.ceil(count / queryLimit);
-    const currentQuery = applicants.length;
 
-    if (currentPage > overallPages) {
-      throw new Error("Out of range.");
+        /*
+          validate email is unique
+        */
+
+        await applicationService.validateHacker(req.body.email)
+
+        const date = new Date();
+
+        /*
+          hash password
+        */
+        const hash = bcrypt.hashSync(req.body.password)
+
+        /*
+          generate unique shell id
+        */
+        let unique = false
+        let id = createID.createId(5);
+
+        do { unique = Applicant.findOne({ shellID: id }) } while (!unique)
+
+        /*
+          generate unique shell id
+        */
+        do {
+
+            id = createID.createId(5);
+
+            unique = await Applicant.findOne({ shellID: id })
+
+        } while (unique != null)
+
+
+
+        const shellID = id
+        const emailConfirmationToken = await crypto.randomBytes(20).toString('hex');
+
+        const lowercaseemail = email.toLowerCase();
+
+
+        const fields = {
+            firstName,
+            lastName,
+            email: lowercaseemail,
+            password: hash,
+            shellID,
+            emailConfirmationToken,
+            avatarID: "Id1",
+            applicationStatus: 'not applied',
+            resetPasswordToken: null,
+            resetPasswordExpiration: null,
+            schoolName: null,
+            levelOfStudy: null,
+            graduationYear: null,
+            major: null,
+            gender: null,
+            dob: null,
+            race: null,
+            phoneNumber: null,
+            shirtSize: null,
+            dietaryRestriction: null,
+            firstTimeHack: null,
+            howDidYouHear: null,
+            favoriteEvents: null,
+            areaOfFocus: null,
+            resume: null,
+            linkedIn: null,
+            portfolio: null,
+            github: null,
+            reasonForAttending: null,
+            haveBeenToShell: null,
+            likeAMentor: null,
+            needReimburesment: null,
+            location: null,
+            shirtSize: null,
+            timeCreated: date,
+            timeApplied: null
+        };
+
+
+        /**
+         * Validate applicant fields
+         */
+
+
+        await applicationService.validateHacker(fields);
+
+
+        /**
+         * Insert applicant in the database
+         */
+        const applicant = await Applicant.create(fields);
+
+        /**
+         * Send applicant email
+         */
+
+        mailService.emailVerification(fields);
+
+
+        /**
+         * Insert applicant in google sheets
+         */
+        // sheets.write("Applicants", fields);
+
+
+        httpResponse.successResponse(res, "success");
+    } catch (e) {
+        console.log(e);
+        logger.info({ e, application: "Hacker", email: fields.email });
+        httpResponse.failureResponse(res, e);
     }
 
     return httpResponse.successResponse(res, {
@@ -559,9 +655,7 @@ const resend = async (req, res) => {
       {
         emailConfirmationToken
       });
-    
-
-    mailService.applied(applicant);
+        mailService.applied(applicant);
 
     httpResponse.successResponse(res, "success");
   }
