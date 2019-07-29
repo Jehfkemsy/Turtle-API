@@ -54,6 +54,7 @@ const create = async (req, res) => {
 
     const shellID = id;
     const emailConfirmationToken = await crypto.randomBytes(8).toString("hex");
+    const avatarID = createID.avatarID();
 
     const lowercaseemail = email.toLowerCase();
 
@@ -92,7 +93,8 @@ const create = async (req, res) => {
       needReimburesment: null,
       location: null,
       timeCreated: date,
-      timeApplied: null
+      timeApplied: null,
+      avatarID
     };
 
     /**
@@ -441,12 +443,6 @@ const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const emailFound = await Applicant.findOne({ email });
-
-    if (!emailFound) {
-      throw new Error(["User email does not exist"]);
-    }
-
     const token = await crypto.randomBytes(6).toString("hex");
 
     const date = new Date();
@@ -459,6 +455,10 @@ const forgotPassword = async (req, res) => {
         resetPasswordExpiration: tomorrow
       },
       {new: true}
+
+      if (!applicant) {
+      throw new Error(["User email does not exist"]);
+    }
     );
 
     mailerService.forgotPassword(applicant);
