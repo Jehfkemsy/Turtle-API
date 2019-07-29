@@ -4,7 +4,7 @@ const createId = (N) => {
 };
 
 const createAvatar = () => {
-   Math.floor((Math.random() * 7 + 1)
-}
+   return Math.floor((Math.random() * 7 + 1))
+};
 
-export default {createId};
+export default {createId, createAvatar};

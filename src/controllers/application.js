@@ -418,7 +418,7 @@ const unconfirm = async (req, res) => {
     httpResponse.successResponse(res, unconfirmation);
   }
  catch (e) {
-    logger.info({ e, application: "Hacker", "sucess"});
+    logger.info({ e, application: "Hacker"});
     httpResponse.failureResponse(res, e);
   }
 };
@@ -454,12 +454,12 @@ const forgotPassword = async (req, res) => {
         resetPasswordToken: token,
         resetPasswordExpiration: tomorrow
       },
-      {new: true}
+      {new: true})
+    
 
-      if (!applicant) {
+    if(!applicant) {
       throw new Error(["User email does not exist"]);
     }
-    );
 
     mailerService.forgotPassword(applicant);
 
