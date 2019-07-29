@@ -10,7 +10,8 @@ passport.use(
     let decoded;
     try {
       decoded = await jwt.verify(token, SECRET_KEY);
-    } catch (err) {
+    }
+ catch (err) {
       return done(null, false);
     }
 
@@ -19,7 +20,8 @@ passport.use(
         throw new Error("Unauthorized auth attempt");
       }
       return done(null, true);
-    } catch (err) {
+    }
+ catch (err) {
       return done(err);
     }
   })

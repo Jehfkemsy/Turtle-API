@@ -10,6 +10,7 @@ const applicantSchema = new mongoose.Schema({
   resetPasswordToken: { type: String },
   resetPasswordExpiration: { type: Date },
   schoolName: { type: String },
+  avatarID: { type: String },
   checkIn: { type: Boolean, default: false },
   levelOfStudy: { type: String, default: "N/A" },
   graduationYear: { type: String },

@@ -46,6 +46,9 @@ const validateHacker = async fields => {
 
 
 
+    if(applicantExist) throw new Error(["Email already exists"])
+
+
 }
 
 const validateWorkshop = applicant =>
@@ -101,29 +104,29 @@ const resetPasswordValidation = async(email, newPassword, token) => {
 
     const applicant = await Applicant.findOne({ email });
 
-    if (!applicant) { throw "Email does not exist"; }
+    if(!applicant){throw new Error(["Email does not exist"])}
 
-    if (!applicant.resetPasswordToken) {
-        throw "User has not requested to change password";
+    if(!applicant.resetPasswordToken){
+      throw new Error(["User has not requested to change password"]);
     }
 
-    if (applicant.resetPasswordExpiration < Date.now()) {
-        throw "Token provided is expired";
+    if(applicant.resetPasswordExpiration < Date.now()){
+      throw new Error(["Token provided is expired"]);
     }
 
-    if (!token) {
-        throw "Reset password token must be provided";
+    if(!token){
+      throw new Error(["Reset password token must be provided"]);
     }
 
-    if (token != applicant.resetPasswordToken.trim()) {
-        console.log(`token ${  token  } provided token: ${  applicant.resetPasswordToken}`);
-        throw "Token is invalid";
+    if(token != applicant.resetPasswordToken.trim()){
+      console.log("token " + token + " provided token: " +  applicant.resetPasswordToken);
+      throw new Error(["Token is invalid"]);
     }
 
-    if (!newPassword) {
-        throw "new password must be provided";
-    }
-}
+      if(!newPassword){
+        throw new Error(["new password must be provided"]);
+      }
+  }
 
 const applicationStatistics = async() => {
     const numApplicants = await Applicant.countDocuments({});
