@@ -97,4 +97,4 @@ apiRouter.get("/workshop/read", workshop.read);
 /* ------ Token Route ------ */
 apiRouter.post("/token", token.create);
 
-export { apiRouter };
+export default apiRouter;

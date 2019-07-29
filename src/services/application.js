@@ -42,7 +42,7 @@ const validateHacker = async fields =>{
     
     const applicantExist = await Applicant.findOne({email : fields.email})
 
-    if(applicantExist) throw("Email already exists")
+    if(applicantExist) throw new Error(["Email already exists"])
 
   
   
@@ -101,27 +101,27 @@ const validateCandidate = applicant =>
 
     const applicant = await Applicant.findOne({email: email});
 
-    if(!applicant){throw "Email does not exist";}
+    if(!applicant){throw new Error(["Email does not exist"])}
 
     if(!applicant.resetPasswordToken){
-      throw "User has not requested to change password";
+      throw new Error(["User has not requested to change password"]);
     }
 
     if(applicant.resetPasswordExpiration < Date.now()){
-      throw "Token provided is expired";
+      throw new Error(["Token provided is expired"]);
     }
 
     if(!token){
-      throw "Reset password token must be provided";
+      throw new Error(["Reset password token must be provided"]);
     }
 
     if(token != applicant.resetPasswordToken.trim()){
       console.log("token " + token + " provided token: " +  applicant.resetPasswordToken);
-      throw "Token is invalid";
+      throw new Error(["Token is invalid"]);
     }
 
       if(!newPassword){
-        throw "new password must be provided";
+        throw new Error(["new password must be provided"]);
       }
   }
 

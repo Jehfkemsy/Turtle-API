@@ -1,80 +1,71 @@
+import bcrypt from "bcrypt-nodejs";
+import jwt from "jsonwebtoken";
+import { runInNewContext } from "vm";
+import { http } from "winston";
+import crypto from "crypto";
 import mailService from "../services/mail";
 import fileService from "../services/file";
 import drive from "../services/google/drive";
 import sheets from "../services/google/sheets";
-import createID from '../utils/idGenerator'
+import createID from '../utils/idGenerator';
 import applicationService from "../services/application";
-import bcrypt from 'bcrypt-nodejs'
 import logger from "../utils/logger";
 import httpResponse from "../utils/httpResponses";
 import Applicant from "../models/applicant";
-import jwt from 'jsonwebtoken';
-import { runInNewContext } from "vm";
-import { http } from "winston";
-import crypto from 'crypto'
-import mailerService from '../services/nodemailer-temp'
-import mail from "../services/mail";
+import mailerService from "../services/nodemailer-temp";
 
-const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID, SECRET_KEY} = process.env;
+const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID, SECRET_KEY } = process.env;
 
 const create = async (req, res) => {
-
-
-const {firstName,lastName,email} = req.body;
- 
+  const { firstName, lastName, email } = req.body;
 
   try {
-
-
     /*
       validate email is unique
     */
 
-    await applicationService.validateHacker(req.body.email)
+    await applicationService.validateHacker(req.body.email);
 
     const date = new Date();
 
     /*
       hash password
     */
-    const hash = bcrypt.hashSync(req.body.password)
-   
+    const hash = bcrypt.hashSync(req.body.password);
+
     /*
       generate unique shell id
     */
-    let unique = false
+    let unique = false;
     let id = createID.createId(5);
 
-    do{unique = Applicant.findOne({shellID: id})}while(!unique)
+    do {
+      unique = Applicant.findOne({ shellID: id });
+    } while (!unique);
 
     /*
       generate unique shell id
     */
-    do{
-      
+    do {
       id = createID.createId(5);
-      
-      unique = await Applicant.findOne({shellID: id})
 
-    }while(unique != null)
+      unique = await Applicant.findOne({ shellID: id });
+    } while (unique != null);
 
-
-
-    const shellID = id
-    const emailConfirmationToken = await crypto.randomBytes(20).toString('hex');
+    const shellID = id;
+    const emailConfirmationToken = await crypto.randomBytes(8).toString("hex");
 
     const lowercaseemail = email.toLowerCase();
 
-          
     const fields = {
       firstName,
       lastName,
       email: lowercaseemail,
-      password : hash,
+      password: hash,
       shellID,
       emailConfirmationToken,
-      avatarID:"Id1",
-      applicationStatus: 'not applied',
+      avatarID: "Id1",
+      applicationStatus: "not applied",
       resetPasswordToken: null,
       resetPasswordExpiration: null,
       schoolName: null,
@@ -100,49 +91,42 @@ const {firstName,lastName,email} = req.body;
       likeAMentor: null,
       needReimburesment: null,
       location: null,
-      shirtSize: null,
       timeCreated: date,
       timeApplied: null
     };
-    
 
-      /**
-       * Validate applicant fields
-       */
+    /**
+     * Validate applicant fields
+     */
 
+    await applicationService.validateHacker(fields);
 
-      await applicationService.validateHacker(fields);
+    /**
+     * Insert applicant in the database
+     */
+    const applicant = await Applicant.create(fields);
 
+    /**
+     * Send applicant email
+     */
 
-      /**
-       * Insert applicant in the database
-       */
-      const applicant = await Applicant.create(fields);
+    mailService.emailVerification(fields);
 
-      /**
-       * Send applicant email
-       */
+    /**
+     * Insert applicant in google sheets
+     */
+    // sheets.write("Applicants", fields);
 
-      mailService.emailVerification(fields);
-
-
-      /**
-       * Insert applicant in google sheets
-       */
-      // sheets.write("Applicants", fields);
-
-
-      httpResponse.successResponse(res,"success");
-    } catch (e) {
-      console.log(e);
-      logger.info({ e, application: "Hacker", email: fields.email });
-      httpResponse.failureResponse(res, e);
-    }
-  
+    httpResponse.successResponse(res, "success");
+  }
+ catch (e) {
+    logger.info({ e, application: "Hacker", email: fields.email });
+    httpResponse.failureResponse(res, e);
+  }
 };
 
 const read = async (req, res) => {
-  const { page = 0, limit = 30, q, filter} = req.query;
+  const { page = 0, limit = 30, q, filter } = req.query;
 
   const queryLimit = parseInt(Math.abs(limit));
   const pageQuery = parseInt(Math.abs(page)) * queryLimit;
@@ -154,17 +138,17 @@ const read = async (req, res) => {
     if (q && q.length > 0 && q !== "") {
       searchCriteria = {
         $or: [
-          { firstName: new RegExp(".*" + q + ".*", "i") },
-          { lastName: new RegExp(".*" + q + ".*", "i") },
-          { email: new RegExp(".*" + q + ".*", "i") },
-          { schoolName: new RegExp(".*" + q + ".*", "i") }
+          { firstName: new RegExp(`.*${q}.*`, "i") },
+          { lastName: new RegExp(`.*${q}.*`, "i") },
+          { email: new RegExp(`.*${q}.*`, "i") },
+          { schoolName: new RegExp(`.*${q}.*`, "i") }
         ]
-      }
+      };
     }
 
-    filter ? searchCriteria['$and'] = [{ applicationStatus: filter }] : null
+    filter ? (searchCriteria.$and = [{ applicationStatus: filter }]) : null;
 
-    const allApplicants = await Applicant.find(searchCriteria)
+    const allApplicants = await Applicant.find(searchCriteria);
 
     const applicants = await Applicant.find(searchCriteria, {
       _id: 0,
@@ -196,23 +180,23 @@ const read = async (req, res) => {
       allApplicants,
       checkedInCount
     });
-  }catch(e) {
+  }
+ catch (e) {
     return httpResponse.failureResponse(res, e);
   }
 };
 
-const readOne = async (req,res) => {
-  const {shellID} = req.body;
+const readOne = async (req, res) => {
+  const { shellID } = req.body;
 
-  try{
-    const user = await Applicant.findOne({shellID});
+  try {
+    const user = await Applicant.findOne({ shellID });
 
-    httpResponse.successResponse(res,user);
-
-  }catch(e){
-    httpResponse.failureResponse(res,e);
+    httpResponse.successResponse(res, user);
+  } catch (e) {
+    httpResponse.failureResponse(res, e);
   }
-}
+};
 
 const update = async (req, res) => {
   const { email } = req.query;
@@ -245,68 +229,86 @@ const update = async (req, res) => {
       }
 
       httpResponse.successResponse(res, confirm);
-    } else {
+    }
+ else {
       httpResponse.successResponse(res, null);
     }
+  }
+ catch (e) {
+    httpResponse.failureResponse(res, e);
+  }
+};
+
+const accept = async (req, res) => {
+  const { shellIDs } = req.body;
+
+  try {
+    shellIDs.forEach(async shellID => {
+      let accepted = await Applicant.findOne({ shellID });
+
+      if (accepted.applicationStatus !== "applied") return;
+
+      accepted = await Applicant.findOneAndUpdate(
+        { shellID },
+        { applicationStatus: "accepted" }
+      ).exec();
+    });
+
+    return httpResponse.successResponse(res, null);
   } catch (e) {
     httpResponse.failureResponse(res, e);
   }
 };
 
-const accept = async (req,res) => {
-  const{shellIDs} = req.body;
+// changes a single hacker's status from accepted to confirmed
+const confirm = async (req, res) => {
+  const { email } = req.body;
 
-  try{
-    shellIDs.forEach(async shellID => {
-      let accepted = await Applicant.findOne({shellID});
-
-      if(accepted.applicationStatus =! 'applied')
-        return;
-
-      accepted = await Applicant.findOneAndUpdate(
-        {shellID},
-        {applicationStatus:"accepted"}
-        ).exec();
-    });
-    
-    return httpResponse.successResponse(res,null);
-
-  }catch(e){
-    httpResponse.failureResponse(res, e);
-  }
-}
-
-//changes a single hacker's status from accepted to confirmed
-const confirm = async (req,res) => {
-  const {email} = req.body;
-
-  try{
+  try {
     const user = await Applicant.findOneAndUpdate(
-      {email},
-      {applicationStatus:"confirmed"}
-      ).exec();
-      return httpResponse.successResponse(res,null)
-  }
-  
-  catch(e){   
+      { email },
+      { applicationStatus: "confirmed" }
+    ).exec();
+    return httpResponse.successResponse(res, null);
+  } catch (e) {
     httpResponse.failureResponse(res, e);
   }
-}
+};
 
-const apply = async (req,res) => {
+const apply = async (req, res) => {
   fileService.extractResume(req, res, async err => {
     if (err) return httpResponse.failureResponse(res, err);
     const { file } = req;
 
-    const{email,schoolName,levelOfStudy,
-          graduationYear,major,gender,dob,race,phoneNumber,shirtSize,
-          dietaryRestriction,firstTimeHack,howDidYouHear,
-          favoriteEvents,areaOfFocus,resume,linkedIn,portfolio,github,
-          reasonForAttending,haveBeenToShell,likeAMentor,
-          needReimburesment,location} = req.body;
-          
+    const {
+      email,
+      schoolName,
+      levelOfStudy,
+      graduationYear,
+      major,
+      gender,
+      dob,
+      race,
+      phoneNumber,
+      shirtSize,
+      dietaryRestriction,
+      firstTimeHack,
+      howDidYouHear,
+      favoriteEvents,
+      areaOfFocus,
+      resume,
+      linkedIn,
+      portfolio,
+      github,
+      reasonForAttending,
+      haveBeenToShell,
+      likeAMentor,
+      needReimburesment,
+      location
+    } = req.body;
+
     const date = new Date();
-    //need to generate avatarID, ShellID, and Hash password
+    // need to generate avatarID, ShellID, and Hash password
     const fields = {
       schoolName,
       levelOfStudy,
@@ -329,16 +331,14 @@ const apply = async (req,res) => {
       reasonForAttending,
       haveBeenToShell,
       likeAMentor,
-      applicationStatus: 'applied',
+      applicationStatus: "applied",
       needReimburesment,
       location,
-      shirtSize,
-      timeCreated,
       timeApplied: date
     };
 
     try {
-      if (!file) throw "Resume is required.";
+      if (!file) throw new Error(["Resume is required."]);
 
       /**
        * Validate applicant fields
@@ -360,10 +360,7 @@ const apply = async (req,res) => {
       /**
        * update applicant in the database
        */
-      const user = await Applicant.findOneAndUpdate(
-        {email},
-        fields
-        ).exec();
+      const user = await Applicant.findOneAndUpdate({ email }, fields).exec();
 
       /**
        * Send applicant email
@@ -376,218 +373,218 @@ const apply = async (req,res) => {
       sheets.write("Applicants", fields);
 
       httpResponse.successResponse(res, null);
-    } catch (e) {
+    }
+ catch (e) {
       logger.info({ e, application: "Hacker", email: fields.email });
       httpResponse.failureResponse(res, e);
     }
   });
-}
-
+};
 
 const login = async (req, res) => {
-   const {email,password} = req.body;
-  try{
-    const user = await Applicant.findOne({email})
+  const { email, password } = req.body;
+  try {
+    const user = await Applicant.findOne({ email });
 
-    if(!user)
-      throw 'wrong login info'
-  
+    if (!user) throw new Error(["Wrong login info"]);
 
-    const correctPass = bcrypt.compareSync(password, user.password)
-    if (!correctPass)
-      throw 'Wrong login info';
+    const correctPass = bcrypt.compareSync(password, user.password);
+    if (!correctPass) throw new Error(["Wrong login info"]);
 
-    const expDate =  60 * 60 * 144
+    const expDate = 60 * 60 * 144;
 
-    let {shellID} = user;
+    const { shellID } = user;
 
-    let JWT = await jwt.sign(
-      {key:shellID},
-      SECRET_KEY,
-      {expiresIn:expDate}
-    );
+    const JWT = await jwt.sign({ key: shellID }, SECRET_KEY, {
+      expiresIn: expDate
+    });
 
     httpResponse.successResponse(res, JWT);
-    
-  } catch(e){
+  } catch (e) {
     httpResponse.failureResponse(res, e);
-    console.log(e);
   }
-}
+};
 
-const unconfirm = async (req, res) =>
-{
-  try{
-    const email = req.body.email;
+const unconfirm = async (req, res) => {
+  try {
+    const { email } = req.body;
 
     const unconfirmation = await Applicant.findOneAndUpdate(
-      {email},
-      {applicationStatus : "accepted"}
+      { email },
+      { applicationStatus: "accepted" }
     ).exec();
     httpResponse.successResponse(res, unconfirmation);
-  }catch(e)
-  {
-    logger.info({ e, application: "Hacker", email: email });
-    console.log(e);
-    httpResponse.failureResponse(res, e)
   }
-
-  
-}
-
-const checkIn = async (req,res) => {
-  const {shellID} = req.body
-
-  try{
-    const checkedIn = await Applicant.findOneAndUpdate(
-      {shellID},
-      {checkIn: true}
-    ).exec()
-
-    httpResponse.successResponse(res,checkedIn);
-  }catch(e){
-    httpResponse.failureResponse(res,e)
-  }
-}
-
-const forgotPassword = async (req,res) => {  
-
-  try{
-    const {email} = req.body;
-
-    const emailFound = await Applicant.findOne({email: email});
-
-    if(!emailFound){
-      throw 'User email does not exist';
-    }
-
-    const token = await crypto.randomBytes(6).toString('hex');
-
-    const date = new Date();
-    const tomorrow = await date.setTime(date.getTime() + (24 * 60 * 60 * 1000))
-
-    const applicant = await Applicant.findOneAndUpdate({email: email},{
-      resetPasswordToken: token,
-      resetPasswordExpiration: tomorrow
-    })
-
-    mailerService.forgotPassword(email,token);
-
-    httpResponse.successResponse(res,"Reset password email sent");
-  }
-  catch(err){
-    console.log(err)
-    httpResponse.failureResponse(res,err);
-  }
-}
-
-const resetPassword = async (req,res) => {
-  
-    try{
-      const {email, newPassword, token} = req.body;
-
-      await applicationService.resetPasswordValidation(email, newPassword, token);
-
-      const password = bcrypt.hashSync(newPassword)
-
-      const updatedApplicant = await Applicant.findOneAndUpdate({email: email},
-        {
-          resetPasswordToken: null,
-          resetPasswordExpiration: null,
-          password: password,
-        });
-
-        if(!updatedApplicant) throw "Error, try again later"
-
-      
-      httpResponse.successResponse(res,"Email succesfully reset");
-
-    }
-    catch(err){
-      console.log(err)
-      httpResponse.failureResponse(res,err);
-    }
-}
-
-const remindApply = async (req,res) =>
-{
-  try{
-    const remind = await Applicant.find({applicationStatus : "not applied"})
-
-    remind.map(applicant => {mailService.applied(applicant)})
-
-  httpResponse.successResponse(res, null);
-  }catch(e)
-  {
-    logger.info({ e});
-    httpResponse.failureResponse(res, e)
-
-  }
-  
-}
-
-const remindConfirm = async (req,res) =>
-{
-  try{
-    const remind = await Applicant.find({applicationStatus : "accepted"})
-
-    remind.map(applicant => {mailService.applied(applicant)})
-
-  httpResponse.successResponse(res, null);
-  }catch(e)
-  {
-    logger.info({ e});
-    httpResponse.failureResponse(res, e)
-
-  }
-  
-}
-
-const emailConfirmation = async (req, res) =>
-{
-  try
-  {
-    const {emailConfirmationToken, email} = req.body;
-
-    const confirm = await Applicant.findOneAndUpdate({email: email, emailConfirmationToken: emailConfirmationToken}, 
-      {
-        emailConfirmed: true
-      })
-
-      if(!confirm)
-      {
-        return httpResponse.failureResponse(res, "User not found")
-      }
-
-      httpResponse.successResponse(res, confirm)
-  }catch(e)
-  {
-    logger.info({e})
+ catch (e) {
+    logger.info({ e, application: "Hacker", "sucess"});
     httpResponse.failureResponse(res, e);
   }
-}
+};
 
-const resend = async (req, res) =>
-{
-  try
-  {
-    const {email} = req.body
+const checkIn = async (req, res) => {
+  const { shellID } = req.body;
 
-    const applicant = await Applicant.findOne({email})
+  try {
+    const checkedIn = await Applicant.findOneAndUpdate(
+      { shellID },
+      { checkIn: true }
+    ).exec();
+
+    httpResponse.successResponse(res, checkedIn);
+  }
+ catch (e) {
+    httpResponse.failureResponse(res, e);
+  }
+};
+
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const emailFound = await Applicant.findOne({ email });
+
+    if (!emailFound) {
+      throw new Error(["User email does not exist"]);
+    }
+
+    const token = await crypto.randomBytes(6).toString("hex");
+
+    const date = new Date();
+    const tomorrow = await date.setTime(date.getTime() + 24 * 60 * 60 * 1000);
+
+    const applicant = await Applicant.findOneAndUpdate(
+      { email },
+      {
+        resetPasswordToken: token,
+        resetPasswordExpiration: tomorrow
+      }
+    );
+
+    mailerService.forgotPassword(email, token);
+
+    httpResponse.successResponse(res, "Reset password email sent");
+  } catch (err) {
+    httpResponse.failureResponse(res, err);
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { email, newPassword, token } = req.body;
+
+    await applicationService.resetPasswordValidation(email, newPassword, token);
+
+    const password = bcrypt.hashSync(newPassword);
+
+    const updatedApplicant = await Applicant.findOneAndUpdate(
+      { email },
+      {
+        resetPasswordToken: null,
+        resetPasswordExpiration: null,
+        password
+      }
+    );
+
+    if (!updatedApplicant) throw new Error(["Error, try again later"]);
+
+    httpResponse.successResponse(res, "Email succesfully reset");
+  } catch (err) {
+    httpResponse.failureResponse(res, err);
+  }
+};
+
+const remindApply = async (req, res) => {
+  try {
+    const remind = await Applicant.find({ applicationStatus: "not applied" });
+
+    remind.map(applicant => {
+      mailService.applied(applicant);
+    });
+
+    httpResponse.successResponse(res, null);
+  }
+ catch (e) {
+    logger.info({ e });
+    httpResponse.failureResponse(res, e);
+  }
+};
+
+const remindConfirm = async (req, res) => {
+  try {
+    const remind = await Applicant.find({ applicationStatus: "accepted" });
+
+    remind.map(applicant => {
+      mailService.applied(applicant);
+    });
+
+    httpResponse.successResponse(res, null);
+  }
+ catch (e) {
+    logger.info({ e });
+    httpResponse.failureResponse(res, e);
+  }
+};
+
+const emailConfirmation = async (req, res) => {
+  try {
+    const { emailConfirmationToken, email } = req.body;
+
+    const applicant = await Applicant.findOneAndUpdate(
+      { email, emailConfirmationToken },
+      {
+        emailConfirmed: true
+      }
+    );
+
+    if (!confirm) {
+      return httpResponse.failureResponse(res, "User not found");
+    }
+
+    httpResponse.successResponse(res, applicant);
+  }
+ catch (e) {
+    logger.info({ e });
+    httpResponse.failureResponse(res, e);
+  }
+};
+
+const resend = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const emailConfirmationToken = await crypto.randomBytes(8).toString("hex");
+
+    const applicant = await Applicant.findOneAndUpdate({ email }, 
+      {
+        emailConfirmationToken
+      });
+    
 
     mailService.applied(applicant);
 
-    httpResponse.successResponse(res, "success")
-  }catch(e)
-  {
-    logger.info(e)
-    console.log(e)
-    httpResponse.failureResponse(res, e)
+    httpResponse.successResponse(res, "success");
   }
-}
+ catch (e) {
+    logger.info(e);
+    httpResponse.failureResponse(res, e);
+  }
+};
 
-
-
-
-
-export default { create, read, readOne, update, confirm, apply, unconfirm, login, forgotPassword,resetPassword, checkIn, accept, remindApply, emailConfirmation,remindConfirm, resend};
+export default {
+  create,
+  read,
+  readOne,
+  update,
+  confirm,
+  apply,
+  unconfirm,
+  login,
+  forgotPassword,
+  resetPassword,
+  checkIn,
+  accept,
+  remindApply,
+  emailConfirmation,
+  remindConfirm,
+  resend
+};
