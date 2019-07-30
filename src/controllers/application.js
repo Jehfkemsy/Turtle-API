@@ -381,7 +381,7 @@ const login = async (req, res) => {
       expiresIn: expDate
     });
 
-    httpResponse.successResponse(res, JWT);
+    httpResponse.successResponse(res, {JWT, shellID});
   } catch (e) {
     httpResponse.failureResponse(res, e);
   }

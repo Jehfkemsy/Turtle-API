@@ -37,7 +37,7 @@ const emailVerification = ({ email, emailConfirmationToken, firstName, lastName 
         to: email,
         bcc: POC_EMAIL,
         'h:Reply-To': POC_EMAIL,
-        subject: "You are now registered for Shell Hacks",
+        subject: "Here, have a token",
         template: "verify_email",
         context: { emailConfirmationToken, firstName, lastName }
     };
