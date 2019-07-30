@@ -12,7 +12,6 @@ import applicationService from "../services/application";
 import logger from "../utils/logger";
 import httpResponse from "../utils/httpResponses";
 import Applicant from "../models/applicant";
-import mailerService from "../services/nodemailer-temp";
 
 const { GOOGLE_FOLDER_ID, GOOGLE_SPREADSHEET_ID, SECRET_KEY } = process.env;
 
@@ -50,7 +49,7 @@ const create = async (req, res) => {
       id = createID.createId(5);
 
       unique = await Applicant.findOne({ shellID: id });
-    } while (unique != null);
+    } while (unique !== null);
 
     const shellID = id;
     const emailConfirmationToken = await crypto.randomBytes(8).toString("hex");
@@ -517,11 +516,12 @@ const emailConfirmation = async (req, res) => {
       }
     );
 
-    if (!confirm) {
+    if (applicant === null) {
       return httpResponse.failureResponse(res, "User not found");
     }
+
     mailService.accountConfirmation(applicant);
-    httpResponse.successResponse(res, applicant);
+    httpResponse.successResponse(res, "success");
   }
  catch (e) {
     logger.info({ e });

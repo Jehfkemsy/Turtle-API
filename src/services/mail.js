@@ -54,7 +54,7 @@ const accountConfirmation = ({ email, firstName, lastName }) => {
         to: email,
         bcc: POC_EMAIL,
         'h:Reply-To': POC_EMAIL,
-        subject: "Your ShellHacks Account Has Been Created",
+        subject: "Your ShellHacks Was Created",
         template: "account_confirmation",
         context: {
             firstName,
