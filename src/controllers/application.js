@@ -44,8 +44,10 @@ const create = async (req, res) => {
       generate unique shell id
     */
 
+    let id;
+
     do {
-      let id = createID.createId(26);
+      id = createID.createId(5);
 
       unique = await Applicant.findOne({ shellID: id });
     } while (unique != null);
