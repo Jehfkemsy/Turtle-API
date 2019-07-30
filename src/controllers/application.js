@@ -89,9 +89,7 @@ const create = async (req, res) => {
       github: null,
       reasonForAttending: null,
       haveBeenToShell: null,
-      likeAMentor: null,
       needReimburesment: null,
-      location: null,
       timeCreated: date,
       timeApplied: null,
       avatarID
@@ -206,7 +204,7 @@ const update = async (req, res) => {
       };
 
       if (GOOGLE_SPREADSHEET_ID) {
-        sheets.write("Confirmed", confirmFields);
+        sheets.write("confirmed", confirmFields);
       }
 
       httpResponse.successResponse(res, confirm);
@@ -227,7 +225,7 @@ const accept = async (req, res) => {
     shellIDs.forEach(async shellID => {
       let accepted = await Applicant.findOne({ shellID });
 
-      if (accepted.applicationStatus !== "applied") return;
+      if (accepted.applicationStatus !== "applied") throw new Error(["User hasn't Applied"]);
 
       accepted = await Applicant.findOneAndUpdate(
         { shellID },
@@ -263,59 +261,58 @@ const apply = async (req, res) => {
 
     const {
       email,
+      dob,
+      gender,
+      race,
+      phoneNumber,
       schoolName,
       levelOfStudy,
       graduationYear,
       major,
-      gender,
-      dob,
-      race,
-      phoneNumber,
-      shirtSize,
-      dietaryRestriction,
-      firstTimeHack,
-      howDidYouHear,
-      favoriteEvents,
       areaOfFocus,
       resume,
       linkedIn,
       portfolio,
       github,
+      shirtSize,
+      dietaryRestriction,
+      firstTimeHack,
+      howDidYouHear,
       reasonForAttending,
       haveBeenToShell,
-      likeAMentor,
       needReimburesment,
-      location
+      mlh,
+      sponsorPromo
     } = req.body;
 
     const date = new Date();
     // need to generate avatarID, ShellID, and Hash password
     const fields = {
+      email,
+      dob,
+      gender,
+      race,
+      phoneNumber,
       schoolName,
       levelOfStudy,
       graduationYear,
       major,
-      gender,
-      dob,
-      race,
-      phoneNumber,
-      shirtSize,
-      dietaryRestriction,
-      firstTimeHack,
-      howDidYouHear,
-      favoriteEvents,
       areaOfFocus,
       resume,
       linkedIn,
       portfolio,
       github,
+      shirtSize,
+      dietaryRestriction,
+      firstTimeHack,
+      howDidYouHear,
       reasonForAttending,
       haveBeenToShell,
-      likeAMentor,
-      applicationStatus: "applied",
       needReimburesment,
-      location,
-      timeApplied: date
+      mlh,
+      sponsorPromo,
+      timeApplied: date,
+      applicationStatus: "applied"
     };
 
     try {
@@ -341,7 +338,7 @@ const apply = async (req, res) => {
       /**
        * update applicant in the database
        */
-      const user = await Applicant.findOneAndUpdate({ email }, fields).exec();
+      const user = await Applicant.findOneAndUpdate({ email }, fields, {new : true}).exec();
 
       /**
        * Send applicant email
