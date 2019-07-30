@@ -436,7 +436,7 @@ const forgotPassword = async (req, res) => {
       {new: true})
     
 
-    if(!applicant) {
+    if(applicant === null) {
       throw new Error(["User email does not exist"]);
     }
 
