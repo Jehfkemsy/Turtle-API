@@ -432,7 +432,7 @@ const forgotPassword = async (req, res) => {
       {
         resetPasswordToken: token,
         resetPasswordExpiration: tomorrow
-      })
+      }, {new: true});
     
 
     if(applicant === null) {
