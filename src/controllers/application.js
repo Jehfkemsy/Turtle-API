@@ -520,7 +520,7 @@ const emailConfirmation = async (req, res) => {
     if (!confirm) {
       return httpResponse.failureResponse(res, "User not found");
     }
-
+    mailService.accountConfirmation(applicant);
     httpResponse.successResponse(res, applicant);
   }
  catch (e) {
@@ -539,7 +539,7 @@ const resend = async (req, res) => {
       {
         emailConfirmationToken
       });
-        mailService.applied(applicant);
+        mailService.emailVerification(applicant);
 
     httpResponse.successResponse(res, "success");
   }
