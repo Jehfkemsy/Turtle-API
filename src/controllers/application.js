@@ -422,8 +422,7 @@ const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    //const token = await crypto.randomBytes(6).toString("hex");
-    const token = "9999"
+    const token = await crypto.randomBytes(6).toString("hex");
 
     const date = new Date();
     const tomorrow = await date.setTime(date.getTime() + 24 * 60 * 60 * 1000);
