@@ -465,7 +465,9 @@ const resetPassword = async (req, res) => {
       }
     );
 
-    if (!updatedApplicant) throw new Error(["Error, try again later"]);
+    if (updatedApplicant === null) throw new Error(["Error, try again later"]);
+
+    mailService.resetPassword(updatedApplicant)
 
     httpResponse.successResponse(res, "Email succesfully reset");
   } catch (err) {
@@ -512,7 +514,8 @@ const emailConfirmation = async (req, res) => {
     const applicant = await Applicant.findOneAndUpdate(
       { email, emailConfirmationToken },
       {
-        emailConfirmed: true
+        emailConfirmed: true,
+        emailConfirmationToken: null
       }
     );
 
