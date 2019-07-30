@@ -7,7 +7,7 @@ import mailService from "../services/mail";
 import fileService from "../services/file";
 import drive from "../services/google/drive";
 import sheets from "../services/google/sheets";
-import createID from '../utils/idGenerator';
+import createID from "../utils/idGenerator";
 import applicationService from "../services/application";
 import logger from "../utils/logger";
 import httpResponse from "../utils/httpResponses";
@@ -32,29 +32,28 @@ const create = async (req, res) => {
       hash password
     */
     const hash = bcrypt.hashSync(req.body.password);
+   
 
     /*
       generate unique shell id
     */
-    let unique = false;
-    let id = createID.createId(5);
-
-    do {
-      unique = Applicant.findOne({ shellID: id });
-    } while (!unique);
+    let unique = null;
+   
 
     /*
       generate unique shell id
     */
+
     do {
-      id = createID.createId(5);
+      let id = createID.createId(26);
 
       unique = await Applicant.findOne({ shellID: id });
     } while (unique != null);
 
     const shellID = id;
     const emailConfirmationToken = await crypto.randomBytes(8).toString("hex");
-    const avatarID = createID.avatarID();
+    const avatarID = await createID.createAvatar();
+
 
     const lowercaseemail = email.toLowerCase();
 
@@ -112,7 +111,7 @@ const create = async (req, res) => {
      * Send applicant email
      */
 
-    mailService.emailVerification(fields);
+    mailService.emailVerification(applicant);
 
     /**
      * Insert applicant in google sheets
@@ -122,7 +121,7 @@ const create = async (req, res) => {
     httpResponse.successResponse(res, "success");
   }
  catch (e) {
-    logger.info({ e, application: "Hacker", email: fields.email });
+    logger.info({ e, application: "Hacker", email });
     httpResponse.failureResponse(res, e);
   }
 };
@@ -150,124 +149,7 @@ const read = async (req, res) => {
 
     filter ? (searchCriteria.$and = [{ applicationStatus: filter }]) : null;
 
-    const allApplicants = await Applicant.find(searchCriteria);
-
-
-    try {
-
-
-        /*
-          validate email is unique
-        */
-
-        await applicationService.validateHacker(req.body.email)
-
-        const date = new Date();
-
-        /*
-          hash password
-        */
-        const hash = bcrypt.hashSync(req.body.password)
-
-        /*
-          generate unique shell id
-        */
-        let unique = false
-        let id = createID.createId(5);
-
-        do { unique = Applicant.findOne({ shellID: id }) } while (!unique)
-
-        /*
-          generate unique shell id
-        */
-        do {
-
-            id = createID.createId(5);
-
-            unique = await Applicant.findOne({ shellID: id })
-
-        } while (unique != null)
-
-
-
-        const shellID = id
-        const emailConfirmationToken = await crypto.randomBytes(20).toString('hex');
-
-        const lowercaseemail = email.toLowerCase();
-
-
-        const fields = {
-            firstName,
-            lastName,
-            email: lowercaseemail,
-            password: hash,
-            shellID,
-            emailConfirmationToken,
-            avatarID: "Id1",
-            applicationStatus: 'not applied',
-            resetPasswordToken: null,
-            resetPasswordExpiration: null,
-            schoolName: null,
-            levelOfStudy: null,
-            graduationYear: null,
-            major: null,
-            gender: null,
-            dob: null,
-            race: null,
-            phoneNumber: null,
-            shirtSize: null,
-            dietaryRestriction: null,
-            firstTimeHack: null,
-            howDidYouHear: null,
-            favoriteEvents: null,
-            areaOfFocus: null,
-            resume: null,
-            linkedIn: null,
-            portfolio: null,
-            github: null,
-            reasonForAttending: null,
-            haveBeenToShell: null,
-            likeAMentor: null,
-            needReimburesment: null,
-            location: null,
-            shirtSize: null,
-            timeCreated: date,
-            timeApplied: null
-        };
-
-
-        /**
-         * Validate applicant fields
-         */
-
-
-        await applicationService.validateHacker(fields);
-
-
-        /**
-         * Insert applicant in the database
-         */
-        const applicant = await Applicant.create(fields);
-
-        /**
-         * Send applicant email
-         */
-
-        mailService.emailVerification(fields);
-
-
-        /**
-         * Insert applicant in google sheets
-         */
-        // sheets.write("Applicants", fields);
-
-
-        httpResponse.successResponse(res, "success");
-    } catch (e) {
-        console.log(e);
-        logger.info({ e, application: "Hacker", email: fields.email });
-        httpResponse.failureResponse(res, e);
-    }
+    const allApplicants = await Applicant.find(searchCriteria)
 
     return httpResponse.successResponse(res, {
       overallPages,
