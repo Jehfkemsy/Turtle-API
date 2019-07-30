@@ -422,7 +422,8 @@ const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    const token = await crypto.randomBytes(6).toString("hex");
+    //const token = await crypto.randomBytes(6).toString("hex");
+    const token = "9999"
 
     const date = new Date();
     const tomorrow = await date.setTime(date.getTime() + 24 * 60 * 60 * 1000);
@@ -432,18 +433,18 @@ const forgotPassword = async (req, res) => {
       {
         resetPasswordToken: token,
         resetPasswordExpiration: tomorrow
-      },
-      {new: true})
+      })
     
 
     if(applicant === null) {
       throw new Error(["User email does not exist"]);
     }
 
-    mailerService.forgotPassword(applicant);
+    mailService.forgotPassword(applicant);
 
     httpResponse.successResponse(res, "Reset password email sent");
   } catch (err) {
+    logger.info();
     httpResponse.failureResponse(res, err);
   }
 };
