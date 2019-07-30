@@ -32,6 +32,7 @@ apiRouter.put("/application/unconfirm", hackerAuthMiddleware, application.unconf
 apiRouter.put("/application/forgot_password",application.forgotPassword);
 apiRouter.put("/application/reset_password",application.resetPassword);
 apiRouter.put("/application/confirmation",application.emailConfirmation);
+apiRouter.put("/application/resend",application.resend);
 // apiRouter.post("/application/:email/:token",application.confirmEmail);
 
 
