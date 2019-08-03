@@ -371,6 +371,8 @@ const login = async(req, res) => {
 
         if (!user) throw new Error(["Wrong login info"]);
 
+        if(!user.emailConfirmed) throw new Error(["Email isn't verified"]);
+
         const correctPass = bcrypt.compareSync(password, user.password);
         if (!correctPass) throw new Error(["Wrong login info"]);
 
