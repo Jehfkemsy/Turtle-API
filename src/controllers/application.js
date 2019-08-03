@@ -371,7 +371,7 @@ const login = async(req, res) => {
 
         if (!user) throw new Error(["Wrong login info"]);
 
-        if(!user.emailConfirmed) throw new Error(["Email isn't verified"]);
+        if(!user.emailConfirmed) return httpResponse.failureResponse(res, "Email not verfied");
 
         const correctPass = bcrypt.compareSync(password, user.password);
         if (!correctPass) throw new Error(["Wrong login info"]);
@@ -384,9 +384,9 @@ const login = async(req, res) => {
             expiresIn: expDate
         });
 
-        httpResponse.successResponse(res, { JWT, shellID });
+        return httpResponse.successResponse(res, { JWT, shellID });
     } catch (e) {
-        httpResponse.failureResponse(res, e);
+        return httpResponse.failureResponse(res, e);
     }
 };
 
