@@ -95,11 +95,6 @@ const create = async(req, res) => {
             avatarID
         };
 
-        /**
-         * Validate applicant fields
-         */
-
-        await applicationService.validateHacker(fields);
 
         /**
          * Insert applicant in the database
@@ -224,7 +219,7 @@ const accept = async(req, res) => {
 
         return httpResponse.successResponse(res, null);
     } catch (e) {
-        httpResponse.failureResponse(res, e);
+        return httpResponse.failureResponse(res, e);
     }
 };
 
@@ -236,7 +231,7 @@ const confirm = async(req, res) => {
         const user = await Applicant.findOneAndUpdate({ email }, { applicationStatus: "confirmed" }).exec();
         return httpResponse.successResponse(res, null);
     } catch (e) {
-        httpResponse.failureResponse(res, e);
+        return httpResponse.failureResponse(res, e);
     }
 };
 
