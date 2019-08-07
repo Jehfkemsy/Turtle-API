@@ -9,7 +9,7 @@ const create = async (req, res) => {
   try {
     const { title, category, body, sentTime, author } = req.body;
 
-    fields = {
+   const fields = {
       title,
       category,
       body,
@@ -44,7 +44,7 @@ const announce = async (req, res) => {
     const { title } = req.body;
 
     const sentTime = new Date();
-    announcement = await Announcement.findOneAndUpdate(
+    const announcement = await Announcement.findOneAndUpdate(
       { title },
       {
         sentTime
@@ -64,10 +64,10 @@ const announce = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    const { title, category, body, sentTime, author } = req.body;
+    const { title, category, body, author } = req.body;
 
 
-    announcement = Announcement.findOneAndUpdate(
+    const announcement = Announcement.findOneAndUpdate(
       { title },
       {
         category,

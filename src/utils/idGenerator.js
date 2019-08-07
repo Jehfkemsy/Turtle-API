@@ -6,4 +6,14 @@ const createAvatar = () => {
    return Math.abs(Math.floor(((Math.random() * (1 - 7) + 1))));
 };
 
-export default {createId, createAvatar};
+const makeid = (length) => {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+
+  for (let i = 0; i < length; i += 1) {
+     result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+export default {createId, createAvatar, makeid};

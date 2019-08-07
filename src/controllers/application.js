@@ -24,7 +24,7 @@ const create = async(req, res) => {
           validate email is unique
         */
 
-        await applicationService.validateHacker(req.body.email);
+        await applicationService.validateHacker(req.body);
 
         const date = new Date();
 
@@ -53,7 +53,7 @@ const create = async(req, res) => {
         } while (unique !== null);
 
         const shellID = id;
-        const emailConfirmationToken = await crypto.randomBytes(8).toString("hex");
+        const emailConfirmationToken = await createID.makeid(6).toUpperCase();
         const avatarID = await createID.createAvatar();
 
 
@@ -101,6 +101,7 @@ const create = async(req, res) => {
          */
         const applicant = await Applicant.create(fields);
 
+
         /**
          * Send applicant email
          */
@@ -110,12 +111,12 @@ const create = async(req, res) => {
         /**
          * Insert applicant in google sheets
          */
-        // sheets.write("Applicants", fields);
+        sheets.write("Applicants", fields);
 
-        httpResponse.successResponse(res, "success");
+        return httpResponse.successResponse(res, "success");
     } catch (e) {
         logger.info({ e, application: "Hacker", email });
-        httpResponse.failureResponse(res, e);
+        return httpResponse.failureResponse(res, e.toString());
     }
 };
 
@@ -495,7 +496,9 @@ const emailConfirmation = async(req, res) => {
     try {
         const { emailConfirmationToken, email } = req.body;
 
-        const applicant = await Applicant.findOneAndUpdate({ email, emailConfirmationToken }, {
+        const token = emailConfirmationToken.toUpperCase();
+
+        const applicant = await Applicant.findOneAndUpdate({ email, emailConfirmationToken: token }, {
             emailConfirmed: true,
             emailConfirmationToken: null
         });
