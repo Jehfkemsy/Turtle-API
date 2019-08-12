@@ -2,6 +2,7 @@ import Applicant from "../models/applicant";
 import Volunteer from "../models/volunteer";
 import Workshop from "../models/workshop";
 import Mentor from "../models/mentor";
+import httpResponses from "../utils/httpResponses";
 
 const validateWalkin = applicant => {
     new Promise(async(resolve, reject) => {
@@ -42,11 +43,9 @@ const validateHacker = async fields => {
 
     const applicantExist = await Applicant.findOne({ email: fields.email })
 
-    if (applicantExist) throw ("Email already exists")
-
-
-
-    if(applicantExist) throw new Error(["Email already exists"])
+    if(applicantExist){
+        throw new Error("Email already exists");
+    }
 
 
 }

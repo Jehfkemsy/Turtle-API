@@ -29,9 +29,10 @@ apiRouter.put("/application/confirm", hackerAuthMiddleware, application.confirm)
 apiRouter.put("/application/update", hackerAuthMiddleware, application.update);
 apiRouter.put("/application/apply", hackerAuthMiddleware, application.apply);
 apiRouter.put("/application/unconfirm", hackerAuthMiddleware, application.unconfirm);
-apiRouter.put("/application/forgot_password", hackerAuthMiddleware, application.forgotPassword);
-apiRouter.put("/application/reset_password", hackerAuthMiddleware, application.resetPassword);
-apiRouter.put("/application/confirmation", hackerAuthMiddleware, application.emailConfirmation);
+apiRouter.put("/application/forgot_password",application.forgotPassword);
+apiRouter.put("/application/reset_password",application.resetPassword);
+apiRouter.put("/application/confirmation",application.emailConfirmation);
+apiRouter.put("/application/resend",application.resend);
 // apiRouter.post("/application/:email/:token",application.confirmEmail);
 
 
